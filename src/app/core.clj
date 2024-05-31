@@ -18,7 +18,7 @@
 (defmethod ->res (str ::app) [_]
   (res-html
    [:div
-    [:h1 "COOL"]
+    [:h1 "App"]
     (app.ui/button {:hx-get (str ::clicked-append) :hx-swap "afterend"} "Click me")]))
 
 (defmethod ->res :default [_]
