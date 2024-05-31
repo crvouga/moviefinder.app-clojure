@@ -1,34 +1,48 @@
 (ns app.core
-  (:require [ring.adapter.jetty :refer [run-jetty]]
+  (:require [clojure.string]
+            [hiccup2.core :refer [html]]
+            [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [hiccup2.core]))
+            [app.ui]))
 
-(defn html [html]
+(defn res-html [html-content]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body (str (hiccup2.core/html html))})
+   :body (str (html html-content))})
 
-(defn button 
-  [props & children]
-  [:button.bg-blue-500.hover:bg-blue-700.text-white.font-bold.py-2.px-4.rounded.active:opacity-50 props children])
+(defmulti ->res :req-name)
 
+(defmethod ->res (str ::clicked-append) [_]
+  (res-html [:p "Clicked!"]))
 
-(defn ring-request->request [ring-request]
-  {:name (:uri ring-request)})
+(defmethod ->res (str ::app) [_]
+  (res-html
+   [:div
+    [:h1 "COOL"]
+    (app.ui/button {:hx-get (str ::clicked-append) :hx-swap "afterend"} "Click me")]))
 
-(defn handler [ring-request]
-  (let [request (ring-request->request ring-request)]
-    (print request))
-  
-  (html
+(defmethod ->res :default [_]
+  (res-html
    [:html
     [:head
-     [:title "COOL"]
+     [:title "moviefinder.app"]
      [:script {:src "https://cdn.tailwindcss.com"}]
      [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]]
-    [:body.bg-neutral-950.text-white {:hx-boost true}
-     [:h1 "COOL"] 
-     (button {:hx-get ::clicked-append :hx-swap :afterend} "Click me")]]))
+    [:body.bg-neutral-950.text-white 
+     {:hx-boost true :hx-get (str ::app) :hx-swap "innerHTML" :hx-trigger "load"}
+     [:p "Loading..."]]]))
+
+(defn remove-leading-backslash [uri]
+  (if (clojure.string/starts-with? uri "/") (subs uri 1) uri))
+
+(defn ring-req->req [ring-req]
+  {:req-name (-> ring-req :uri remove-leading-backslash)})
+
+(defn handler [ring-req]
+  (let [req (ring-req->req ring-req)
+        response (->res req)]
+    (println req)
+    response))
 
 (defn -main []
   (run-jetty (wrap-reload #'handler) {:port 3000 :join? false}))
