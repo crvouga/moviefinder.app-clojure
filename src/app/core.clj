@@ -2,28 +2,28 @@
   (:require [clojure.string]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [app.ui]
-            [app.res :refer [req->res html html-document]]))
+            [app.view]
+            [app.res]))
 
 (def clicks! (atom 0))
 
-(defmethod req->res (str ::clicked-append) [_]
+(defmethod app.res/req->res (str ::clicked-append) [_]
   (swap! clicks! inc)
-  (html [:p "Clicked!"]))
+  (app.res/html [:p "Clicked!"]))
 
-(defmethod req->res (str ::clicked-clear) [_]
+(defmethod app.res/req->res (str ::clicked-clear) [_]
   (reset! clicks! 0)
-  (html ""))
+  (app.res/html))
 
 (defn view-app []
   [:div
    [:h1 "App"]
    
-   (app.ui/button
+   (app.view/button
     {:hx-get (str ::clicked-clear) :hx-swap "innerHTML" :hx-target (str "#" "clicks")}
     "Clear")
    
-   (app.ui/button
+   (app.view/button
     {:hx-post (str ::clicked-append) :hx-swap "beforeend" :hx-target (str "#" "clicks")}
     "Append")
   
@@ -31,11 +31,11 @@
     (for [_ (range @clicks!)]
       [:p "Clicked!"])]])
 
-(defmethod req->res (str ::app) [_]
-  (html (view-app)))
+(defmethod app.res/req->res (str ::app) [_]
+  (app.res/html (view-app)))
 
-(defmethod req->res :default [_]
-  (html-document 
+(defmethod app.res/req->res :default [_]
+  (app.res/html-document 
    [:html {:lang "en" :doctype :html5}
     [:head
      [:title "moviefinder.app"]
@@ -49,12 +49,11 @@
       (view-app)]]]))
 
 
-#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def state! (atom {}))
 
 (defn ring-req->res [ring-req]
   (let [req (app.res/ring-req->req ring-req)
-        res (req->res req)]
+        res (app.res/req->res req)]
     res))
 
 (defn handler [ring-req]

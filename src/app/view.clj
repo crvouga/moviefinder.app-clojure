@@ -1,4 +1,4 @@
-(ns app.ui)
+(ns app.view)
 
 (defn button
   [props & children]

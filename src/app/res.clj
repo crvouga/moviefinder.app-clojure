@@ -10,10 +10,12 @@
 
 (defmulti req->res :req-name)
 
-(defn html [html-content]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (str (hiccup2.core/html html-content))})
+(defn html 
+  ([] (html ""))
+  ([html-content]
+   {:status 200
+    :headers {"Content-Type" "text/html"}
+    :body (str (hiccup2.core/html html-content))}))
 
 (defn html-document [html-content]
   {:status 200
