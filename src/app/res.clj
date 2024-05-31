@@ -14,3 +14,8 @@
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (str (hiccup2.core/html html-content))})
+
+(defn html-document [html-content]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (str "<!doctype html>" (hiccup2.core/html html-content))})

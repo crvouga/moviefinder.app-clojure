@@ -7,7 +7,7 @@
                  [hiccup "2.0.0-RC3"]
                  [ring/ring-core "1.9.3"]
                  [ring/ring-jetty-adapter "1.9.3"]
-                 [ring/ring-devel "1.9.3"]] ; Added ring-devel for hot reloading
+                 [ring/ring-devel "1.9.3"]]
   :main ^:skip-aot app.core
   :target-path "target/%s"
   :profiles {:dev {:dependencies [[ring/ring-mock "0.4.0"]]}}
