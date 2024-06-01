@@ -1,6 +1,7 @@
 (ns app.res
   (:require [clojure.string]
-            [hiccup2.core]))
+            [hiccup2.core]
+            [app.base64]))
 
 (defn remove-leading-backslash [uri]
   (if (clojure.string/starts-with? uri "/") (subs uri 1) uri))
