@@ -19,10 +19,8 @@
 
 (defn view-feed-panel []
   (let [movies (app.movie.db.core/find-movies movie-db {})]
-    [:div
-     [:h1 "Feed"]
-     [:pre (pr-str movies)]
-     [:swiper-container.flex.flex-col.w-full.h-full.max-h-full {:slides-per-view 1 :direction :vertical}
+    [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
+     [:swiper-container.w-full.flex-1.max-h-96 {:slides-per-view 1 :direction :vertical}
       (for [movie (-> movies :results)]
         [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
          (view-feed-item movie)])]]))
