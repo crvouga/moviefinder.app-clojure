@@ -1,7 +1,12 @@
 (ns app.feed
   (:require [app.res]
             [app.view]
-            [app.routes]))
+            [app.routes]
+            [app.movie.movie]
+            [app.movie.db.core]
+            [app.movie.db.impl :refer [movie-db]]))
+
+(def movies (app.movie.db.core/find-movies movie-db "star wars"))
 
 (defn view-feed-panel []
   [:div [:h1 "Feed"]])
