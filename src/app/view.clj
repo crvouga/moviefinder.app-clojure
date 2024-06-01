@@ -22,4 +22,4 @@
   [:nav.flex.w-full.shrink-0.border-t.border-neutral-700.divide-x.divide-neutral-700 {} children])
 
 (defn tab-panel [children]
-  [:div.w-full.flex-1.overflow-y-scroll {} children])
+  [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll {} children])

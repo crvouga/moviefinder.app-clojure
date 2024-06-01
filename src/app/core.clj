@@ -1,7 +1,6 @@
 (ns app.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
-            #_[app.dotenv]
             [app.view]
             [app.routes]
             [app.feed]
@@ -24,7 +23,8 @@
     [:meta {:charset "utf-8"}]
     [:meta {:name :viewport :content "width=device-width, initial-scale=1.0"}]
     [:script {:src "https://cdn.tailwindcss.com"}]
-    [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]]
+    [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
+    [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]]
    
    [:body.bg-neutral-950.text-white {:hx-boost true :hx-target "#app" :hx-swap "innerHTML"}
     [:div
