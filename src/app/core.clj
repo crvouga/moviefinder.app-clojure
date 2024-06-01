@@ -2,6 +2,7 @@
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
             [app.view]
+            [app.routes]
             [app.feed]
             [app.counter]
             [app.res]))
@@ -32,7 +33,7 @@
       (-> req app.res/req->res :hiccup)]]]])
 
   (defmethod app.res/req->res :default [req]
-    (app.res/html [:p (str "Not Found" (app.res/req->route req))]))
+    (-> req (assoc app.res/route-key app.routes/route-feed) app.res/req->res ))
 
 
 ;; 

@@ -13,6 +13,8 @@
   {::route (-> ring-req :uri remove-leading-backslash remove-leading-colon keyword)
    :hx-request? (boolean (get-in ring-req [:headers "hx-request"]))})
 
+(def route-key ::route )
+
 (defn req->route [req]
   (::route req))
 
