@@ -67,22 +67,24 @@
    :vote_average :movie/vote-average
    :vote_count :movie/vote-count})
 
-(defn youtube-video-url [key] (str "https://www.youtube.com/watch?v=" key))
+(defn youtube-video-url [key]
+  (str "https://www.youtube.com/embed/" key))
 
 (defn assoc-video-url [video]
   (-> video
-      (assoc :url (youtube-video-url (video :key)))))
+      (assoc :youtube-video-url (youtube-video-url (video :key)))))
 
-(def tmdb-video-keys->video-keys
-  {:id :video/tmdb-id
-   :key :video/key
-   :name :video/name
-   :url :video/url})
+(defn tmdb-video->video [tmdb-video]
+  (rename-keys tmdb-video 
+               {:id :video/tmdb-id
+                :key :video/key
+                :name :video/name
+                :youtube-video-url :video/:youtube-video-url}))
 
 (defn tmdb->video [tmdb-video]
   (-> tmdb-video
       assoc-video-url
-      (rename-keys tmdb-video-keys->video-keys)))
+      tmdb-video->video))
 
 
 (defn tmdb->movie [tmdb-movie]
@@ -90,11 +92,12 @@
       assoc-image-urls
       (rename-keys tmdb-movie-keys->movie-keys)))
 
-(defn tmdb->paginated-results [tmdb-paginated-results map-result]
-{:total-results (:total_results tmdb-paginated-results)
- :total-pages (:total_pages tmdb-paginated-results)
- :page (:page tmdb-paginated-results)
- :results (map map-result (:results tmdb-paginated-results))})
+(defn tmdb->paginated-results [tmdb-paginated-results]
+  (rename-keys tmdb-paginated-results 
+               {:total_results :total-results
+                :total_pages :total-pages
+                :page :page
+                :results :results}))
 
 (defn map-paginated-results [paginated-result map-result]
   (let [results-new (map map-result (:results paginated-result))]
@@ -120,8 +123,7 @@
 
 (defn get-discover! []
   (let [response (client/get discover-url discover-params)
-        results (tmdb->paginated-results (response :body) tmdb->movie)]
-    (println "video" (-> response :body :results first :id))
+        results (-> response :body tmdb->paginated-results (map-paginated-results tmdb->movie))]
     results))
 
 ;; 

@@ -10,6 +10,11 @@
 (defn view-feed-item [movie]
   [:div.w-full.flex.flex-col.justify-center.items-center
    [:img.w-full.h-full {:src (-> movie :movie/poster-url)}]
+   (let [youtube-video-url (-> movie :movie/videos first :video/:youtube-video-url)]
+     [:iframe.w-full.h-64 {:src youtube-video-url
+                           :frameBorder "0"
+                           :allow "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                           :allowFullScreen true}])
    [:p (-> movie :movie/title)]])
 
 (defn view-feed-panel []
