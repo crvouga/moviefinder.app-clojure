@@ -15,7 +15,7 @@
 
 (def route-key ::route)
 
-(defmulti req->res ::route)
+(defmulti handle ::route)
 
 (defn html [view]
   {:status 200

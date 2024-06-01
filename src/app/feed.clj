@@ -41,6 +41,6 @@
 (defn view-feed-route []
   (app.routes/view-app-tabs-layout app.routes/route-feed (view-feed-panel)))
 
-(defmethod app.res/req->res app.routes/route-feed [_]
+(defmethod app.res/handle app.routes/route-feed [_]
   (app.res/html (view-feed-route)))
 

@@ -5,11 +5,11 @@
 
 (def clicks! (atom 0))
 
-(defmethod app.res/req->res ::clicked-append [_]
+(defmethod app.res/handle ::clicked-append [_]
   (swap! clicks! inc)
   (app.res/html [:p "Clicked!"]))
 
-(defmethod app.res/req->res ::clicked-clear [_]
+(defmethod app.res/handle ::clicked-clear [_]
   (reset! clicks! 0)
   (app.res/html ""))
 
@@ -37,5 +37,5 @@
 (defn view-couter-route []
   (app.routes/view-app-tabs-layout app.routes/route-counter (view-counter-panel)))
 
-(defmethod app.res/req->res app.routes/route-counter [_]
+(defmethod app.res/handle app.routes/route-counter [_]
   (app.res/html (view-couter-route)))

@@ -30,10 +30,10 @@
     [:div
      {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center justify-center overflow-hidden rounded border border-neutral-700"}
-      (-> req app.res/req->res :view)]]]])
+      (-> req app.res/handle :view)]]]])
 
-  (defmethod app.res/req->res :default [req]
-    (-> req (assoc app.res/route-key app.routes/route-feed) app.res/req->res))
+  (defmethod app.res/handle :default [req]
+    (-> req (assoc app.res/route-key app.routes/route-feed) app.res/handle))
 
 
 ;; 
@@ -48,7 +48,7 @@
 
   (defn ring-req->res [ring-req]
     (let [req (app.res/ring-req->req ring-req)
-          res (if (:hx-request? req) (app.res/req->res req) (app.res/html-document (view req)))]
+          res (if (:hx-request? req) (app.res/handle req) (app.res/html-document (view req)))]
       (println req)
       res))
 
