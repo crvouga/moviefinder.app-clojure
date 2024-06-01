@@ -26,14 +26,14 @@
     [:script {:src "https://cdn.tailwindcss.com"}]
     [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]]
    
-   [:body.bg-neutral-950.text-white {:hx-boost true}
+   [:body.bg-neutral-950.text-white {:hx-boost true :hx-target "#app" :hx-swap "innerHTML"}
     [:div
-     {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-screen flex flex-col items-center justify-center"}
-     [:div {:class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center justify-center overflow-hidden rounded border border-neutral-700"}
+     {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
+     [:div#app {:class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center justify-center overflow-hidden rounded border border-neutral-700"}
       (-> req app.res/req->res :hiccup)]]]])
 
   (defmethod app.res/req->res :default [req]
-    (-> req (assoc app.res/route-key app.routes/route-feed) app.res/req->res ))
+    (-> req (assoc app.res/route-key app.routes/route-feed) app.res/req->res))
 
 
 ;; 
