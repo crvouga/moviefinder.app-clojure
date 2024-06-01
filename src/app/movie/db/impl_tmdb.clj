@@ -143,15 +143,15 @@
 (defn movie-video-url [movie-id]
   (str base-url "/movie/" movie-id "/videos"))
 
-(def movie-videos-by-movie-id (atom {}))
+(def movie-videos-by-movie-id! (atom {}))
 (defn get-movie-videos! [movie-id]
-  (if-let [videos (get @movie-videos-by-movie-id movie-id)]
+  (if-let [videos (get @movie-videos-by-movie-id! movie-id)]
       videos
     (let [response (client/get (movie-video-url movie-id) base-params)
           tmdb-videos (-> response :body :results)
           videos (map tmdb->video tmdb-videos)]
       []
-      (swap! movie-videos-by-movie-id assoc movie-id videos)
+      (swap! movie-videos-by-movie-id! assoc movie-id videos)
       videos)))
 
 (defn assoc-movie-videos! [movie] 
