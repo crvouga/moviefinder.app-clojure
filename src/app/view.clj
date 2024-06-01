@@ -14,7 +14,8 @@
     :class (if (= route active-route) "bg-neutral-800" "hover:bg-neutral-800")
     :hx-target "#tabs"
     :hx-swap "innerHTML"
-    :hx-push-url (app.res/keyword->url route)}  
+    :hx-push-url (app.res/keyword->url route)
+    :href (app.res/keyword->url route)}  
    label])
 
 (defn tabs [& children]
