@@ -14,7 +14,10 @@
     (doseq [[key val] env-vars]
       (System/setProperty key val))))
 
-(load! ".env")
+(try
+  (load! ".env")
+  (catch Exception e
+    (println "Error loading .env file")))
 
 (defn get-env-var! [key]
   (let [env-var (System/getProperty key)]
