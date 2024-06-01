@@ -17,17 +17,17 @@
 
 (defmulti req->res ::route)
 
-(defn html [hiccup]
+(defn html [view]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :hiccup hiccup
-   :body (str (hiccup2.core/html hiccup))})
+   :view view
+   :body (str (hiccup2.core/html view))})
 
-(defn html-document [hiccup]
+(defn html-document [view]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :hiccup hiccup
-   :body (str "<!doctype html>" (hiccup2.core/html hiccup))})
+   :view view
+   :body (str "<!doctype html>" (hiccup2.core/html view))})
 
 
 (defn keyword->url [keyword]
