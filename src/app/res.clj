@@ -13,12 +13,9 @@
   {::route (-> ring-req :uri remove-leading-backslash remove-leading-colon keyword)
    :hx-request? (boolean (get-in ring-req [:headers "hx-request"]))})
 
-(def route-key ::route )
+(def route-key ::route)
 
-(defn req->route [req]
-  (::route req))
-
-(defmulti req->res req->route)
+(defmulti req->res ::route)
 
 (defn html [hiccup]
   {:status 200
