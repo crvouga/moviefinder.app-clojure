@@ -31,5 +31,5 @@
    :body (str "<!doctype html>" (hiccup2.core/html hiccup))})
 
 
-(defn route->url [keyword]
+(defn keyword->url [keyword]
   (str "/" keyword))

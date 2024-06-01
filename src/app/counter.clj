@@ -19,11 +19,15 @@
    [:h1 "Counter"]
 
    (app.view/button
-    {:hx-get (app.res/route->url ::clicked-clear) :hx-swap "innerHTML" :hx-target (str "#" "counter-clicks")}
+    {:hx-get (app.res/keyword->url ::clicked-clear) 
+     :hx-swap "innerHTML" 
+     :hx-target (str "#" "counter-clicks")}
     "Clear")
 
    (app.view/button
-    {:hx-post (app.res/route->url ::clicked-append) :hx-swap "beforeend" :hx-target (str "#" "counter-clicks")}
+    {:hx-post (app.res/keyword->url ::clicked-append) 
+     :hx-swap "beforeend" 
+     :hx-target (str "#" "counter-clicks")}
     "Append")
 
    [:div {:id "counter-clicks"}
