@@ -1,11 +1,14 @@
 (ns app.feed
-  (:require [app.res]))
+  (:require [app.res]
+            [app.view]
+            [app.routes]))
 
-(defn view-feed []
-  [:div
-   [:h1 "Feed"]])
+(defn view-feed-panel []
+  [:div [:h1 "Feed"]])
 
-(defmethod app.res/req->res ::feed [_]
-  (app.res/html (view-feed)))
+(defn view-feed-route []
+  (app.routes/view-app-tabs-layout app.routes/route-feed (view-feed-panel)))
 
-(def route-feed ::feed)
+(defmethod app.res/req->res app.routes/route-feed [_]
+  (app.res/html (view-feed-route)))
+

@@ -1,6 +1,7 @@
 (ns app.counter
   (:require [app.view] 
-            [app.res]))
+            [app.res]
+            [app.routes]))
 
 (def clicks! (atom 0))
 
@@ -12,7 +13,8 @@
   (reset! clicks! 0)
   (app.res/html ""))
 
-(defn view-counter []
+
+(defn view-counter-panel []
   [:div
    [:h1 "Counter"]
 
@@ -28,9 +30,8 @@
     (for [_ (range @clicks!)]
       [:p "Clicked!"])]])
 
+(defn view-couter-route []
+  (app.routes/view-app-tabs-layout app.routes/route-counter (view-counter-panel)))
 
-
-(def route-counter ::counter)
-
-(defmethod app.res/req->res route-counter [_]
-  (app.res/html (view-counter)))
+(defmethod app.res/req->res app.routes/route-counter [_]
+  (app.res/html (view-couter-route)))
