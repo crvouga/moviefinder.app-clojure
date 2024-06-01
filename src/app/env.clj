@@ -20,7 +20,7 @@
     (println "Error loading .env file")))
 
 (defn get-env-var! [key]
-  (let [env-var (System/getProperty key)]
+  (let [env-var (or (System/getenv key) (System/getProperty key))]
     (if (nil? env-var)
       (throw (Exception. (str key " not set")))
       env-var)))
