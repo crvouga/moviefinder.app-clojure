@@ -17,7 +17,7 @@
 (def base-url "https://api.themoviedb.org/3")
 (def base-headers
   {:Authorization (str "Bearer " api-read-access-token)})
-(def base-query-params 
+(def base-params 
   {:headers base-headers
    :as :json-strict})
 
@@ -145,15 +145,14 @@
 
 (def movie-videos-by-movie-id (atom {}))
 (defn get-movie-videos! [movie-id]
-  (println (movie-video-url movie-id))
   (if-let [videos (get @movie-videos-by-movie-id movie-id)]
       videos
-    (let [#_response #_(client/get (movie-video-url movie-id) base-query-params)
-          #_tmdb-videos #_(-> response :body :results)
-          #_videos #_(map tmdb->video tmdb-videos)]
+    (let [response (client/get (movie-video-url movie-id) base-params)
+          tmdb-videos (-> response :body :results)
+          videos (map tmdb->video tmdb-videos)]
       []
-      #_(swap! movie-videos-by-movie-id assoc movie-id videos)
-      #_videos)))
+      (swap! movie-videos-by-movie-id assoc movie-id videos)
+      videos)))
 
 (defn assoc-movie-videos! [movie] 
   (let [videos (get-movie-videos! (movie :movie/tmdb-id))]
@@ -172,6 +171,6 @@
 (defrecord MoveDbTmdb [] 
   app.movie.db.core/MovieDb
   (find-movies [_this _query]
-               (let [paginated-movies (get-discover!)
+               (let [paginated-movies (get-discover!) 
                      paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos!)]
-                 paginated-movies-with-videos)))
+                   paginated-movies-with-videos)))
