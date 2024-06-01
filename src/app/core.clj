@@ -1,12 +1,12 @@
 (ns app.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
+            #_[app.dotenv]
             [app.view]
             [app.routes]
             [app.feed]
             [app.counter]
             [app.res]))
-
 ;; 
 ;; 
 ;; 

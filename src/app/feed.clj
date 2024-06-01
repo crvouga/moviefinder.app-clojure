@@ -6,10 +6,20 @@
             [app.movie.db.core]
             [app.movie.db.impl :refer [movie-db]]))
 
-(def movies (app.movie.db.core/find-movies movie-db "star wars"))
+
+(defn view-feed-item [movie]
+  [:div.w-full.flex.flex-col.justify-center.items-center
+   [:img.w-full.h-full {:src (-> movie :movie/poster-url)}]
+   [:p (-> movie :movie/title)]])
 
 (defn view-feed-panel []
-  [:div [:h1 "Feed"]])
+  (let [movies (app.movie.db.core/find-movies movie-db {})]
+    [:div
+     [:h1 "Feed"]
+     [:pre (pr-str movies)]
+     [:ul
+      (for [movie (:results movies)]
+        (view-feed-item movie))]]))
 
 (defn view-feed-route []
   (app.routes/view-app-tabs-layout app.routes/route-feed (view-feed-panel)))

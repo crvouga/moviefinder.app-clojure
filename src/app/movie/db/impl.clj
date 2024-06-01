@@ -2,4 +2,4 @@
   (:require [app.movie.db.impl-tmdb]))
 
 
-(def movie-db (app.movie.db.impl-tmdb/->MoveDbTmdb "api-key"))
+(def movie-db (app.movie.db.impl-tmdb/->MoveDbTmdb))
