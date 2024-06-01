@@ -32,12 +32,15 @@
 (def configuration-url (str base-url "/configuration"))
 (def configuration-params {:headers base-headers
                            :as :json-strict})
-(defn get-confguration! []
-  (let [response (client/get configuration-url configuration-params)]
-    (response :body)))
 
-(def configuration (get-confguration!))
-
+(def configuration! (atom nil))
+(defn get-confguration! [] 
+  (if-let [configuration @configuration!]
+      configuration
+    (let [response (client/get configuration-url configuration-params)
+          configuration (-> response :body)]
+      (reset! configuration! configuration)
+      configuration)))
 ;; 
 ;; 
 ;; 
@@ -47,10 +50,10 @@
 ;; 
 ;; 
 
-(defn assoc-image-urls [tmdb-data]
-  (let [base-url (-> configuration :images :secure_base_url)
-        poster-size (-> configuration :images :poster_sizes last)
-        backdrop-size  (-> configuration :images :backdrop_sizes last)]
+(defn assoc-image-urls [tmdb-data tmdb-configration]
+  (let [base-url (-> tmdb-configration :images :secure_base_url)
+        poster-size (-> tmdb-configration :images :poster_sizes last)
+        backdrop-size  (-> tmdb-configration :images :backdrop_sizes last)]
     (-> tmdb-data
         (assoc :poster_url (str base-url poster-size (tmdb-data :poster_path)))
         (assoc :backdrop_url (str base-url backdrop-size (tmdb-data :backdrop_path))))))
@@ -87,10 +90,13 @@
       tmdb-video->video))
 
 
-(defn tmdb->movie [tmdb-movie]
+(defn tmdb->movie [tmdb-configration tmdb-movie]
   (-> tmdb-movie
-      assoc-image-urls
+      (assoc-image-urls tmdb-configration)
       (rename-keys tmdb-movie-keys->movie-keys)))
+
+(defn tmdb->movie! [tmdb-movie]
+   (tmdb->movie (get-confguration!) tmdb-movie))
 
 (defn tmdb->paginated-results [tmdb-paginated-results]
   (rename-keys tmdb-paginated-results 
@@ -123,7 +129,7 @@
 
 (defn get-discover! []
   (let [response (client/get discover-url discover-params)
-        results (-> response :body tmdb->paginated-results (map-paginated-results tmdb->movie))]
+        results (-> response :body tmdb->paginated-results (map-paginated-results tmdb->movie!))]
     results))
 
 ;; 
@@ -139,15 +145,17 @@
 
 (def movie-videos-by-movie-id (atom {}))
 (defn get-movie-videos! [movie-id]
+  (println (movie-video-url movie-id))
   (if-let [videos (get @movie-videos-by-movie-id movie-id)]
       videos
-    (let [response (client/get (movie-video-url movie-id) base-query-params)
-          tmdb-videos (-> response :body :results)
-          videos (map tmdb->video tmdb-videos)]
-      (swap! movie-videos-by-movie-id assoc movie-id videos)
-      videos)))
+    (let [#_response #_(client/get (movie-video-url movie-id) base-query-params)
+          #_tmdb-videos #_(-> response :body :results)
+          #_videos #_(map tmdb->video tmdb-videos)]
+      []
+      #_(swap! movie-videos-by-movie-id assoc movie-id videos)
+      #_videos)))
 
-(defn assoc-movie-videos [movie] 
+(defn assoc-movie-videos! [movie] 
   (let [videos (get-movie-videos! (movie :movie/tmdb-id))]
       (assoc movie :movie/videos videos)))
 
@@ -165,5 +173,5 @@
   app.movie.db.core/MovieDb
   (find-movies [_this _query]
                (let [paginated-movies (get-discover!)
-                     paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos)]
+                     paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos!)]
                  paginated-movies-with-videos)))
