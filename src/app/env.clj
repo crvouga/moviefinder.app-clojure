@@ -17,7 +17,7 @@
 (try
   (load! ".env")
   (catch Exception e
-    (println "Error loading .env file")))
+    (println "Error loading .env file" e)))
 
 (doseq [key (keys (System/getenv))
         :let [val (System/getenv key)]
