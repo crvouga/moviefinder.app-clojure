@@ -4,11 +4,11 @@
 
 (def clicks! (atom 0))
 
-(defmethod app.res/req->res (str ::clicked-append) [_]
+(defmethod app.res/req->res ::clicked-append [_]
   (swap! clicks! inc)
   (app.res/html [:p "Clicked!"]))
 
-(defmethod app.res/req->res (str ::clicked-clear) [_]
+(defmethod app.res/req->res ::clicked-clear [_]
   (reset! clicks! 0)
   (app.res/html ""))
 
@@ -17,11 +17,11 @@
    [:h1 "Counter"]
 
    (app.view/button
-    {:hx-get (str "/" ::clicked-clear) :hx-swap "innerHTML" :hx-target (str "#" "counter-clicks")}
+    {:hx-get (app.res/route->url ::clicked-clear) :hx-swap "innerHTML" :hx-target (str "#" "counter-clicks")}
     "Clear")
 
    (app.view/button
-    {:hx-post (str "/" ::clicked-append) :hx-swap "beforeend" :hx-target (str "#" "counter-clicks")}
+    {:hx-post (app.res/route->url ::clicked-append) :hx-swap "beforeend" :hx-target (str "#" "counter-clicks")}
     "Append")
 
    [:div {:id "counter-clicks"}
@@ -30,7 +30,7 @@
 
 
 
-(def req-name-counter ::counter)
+(def route-counter ::counter)
 
-(defmethod app.res/req->res (str req-name-counter) [_]
+(defmethod app.res/req->res route-counter [_]
   (app.res/html (view-counter)))
