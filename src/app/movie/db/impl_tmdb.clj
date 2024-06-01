@@ -73,7 +73,7 @@
 (defn youtube-video-url [key]
   (str "https://www.youtube.com/embed/" key))
 
-(defn assoc-video-url [video]
+(defn assoc-youtube-video-url [video]
   (-> video
       (assoc :youtube-video-url (youtube-video-url (video :key)))))
 
@@ -86,7 +86,7 @@
 
 (defn tmdb->video [tmdb-video]
   (-> tmdb-video
-      assoc-video-url
+      assoc-youtube-video-url
       tmdb-video->video))
 
 
