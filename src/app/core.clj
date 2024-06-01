@@ -55,5 +55,11 @@
     (let [res (ring-req->res ring-req)]
       res))
 
+  (defn port! [] 
+    (when-let [port (System/getenv "PORT")]
+      (Integer. port)))
+  
   (defn -main []
-    (run-jetty (wrap-reload #'handler) {:port 3000 :join? false}))
+    (let [port (or (port!) 3000)]
+      (run-jetty (wrap-reload #'handler) {:port port :join? false})
+      (println (str "Server listening on port " port "..."))))
