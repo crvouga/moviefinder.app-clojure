@@ -19,6 +19,11 @@
   (catch Exception e
     (println "Error loading .env file")))
 
+(doseq [key (keys (System/getenv))
+        :let [val (System/getenv key)]
+        :when (not (nil? val))]
+  (System/setProperty key val))
+
 (defn get-env-var! [key]
   (let [env-var (or (System/getenv key) (System/getProperty key))]
     (if (nil? env-var)
