@@ -133,10 +133,19 @@
                       :query-params discover-query-params
                       :as :json-strict})
 
-(defn get-discover! []
+(def discover-by-page! (atom {}))
+
+(defn get-discover-from-source! []
   (let [response (client/get discover-url discover-params)
         results (-> response :body tmdb->paginated-results (map-paginated-results tmdb->movie!))]
     results))
+
+(defn get-discover! []
+  (if-let [discover (get @discover-by-page! 1)]
+      discover
+    (let [discover (get-discover-from-source!)]
+      (swap! discover-by-page! assoc 1 discover)
+      discover)))
 
 ;; 
 ;; 
@@ -180,12 +189,21 @@
 (def movie-details-params 
   (merge-with merge base-params {:query-params {:language "en-US"}}))
 
-(defn get-movie-details! [movie-id]
+(def movie-details-by-movie-id! (atom {}))
+
+(defn get-movie-details-from-source! [movie-id]
   (let [details-url (movie-details-url movie-id)
         details (client/get details-url movie-details-params)
         movie (-> details :body tmdb->movie!)
         movie-with-videos (assoc-movie-videos! movie)]
     movie-with-videos))
+
+(defn get-movie-details! [movie-id]
+  (if-let [movie (get @movie-details-by-movie-id! movie-id)]
+      movie
+    (let [movie (get-movie-details-from-source! movie-id)]
+      (swap! movie-details-by-movie-id! assoc movie-id movie)
+      movie)))
 
 ;; 
 ;; 
