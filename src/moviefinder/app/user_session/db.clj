@@ -1,4 +1,4 @@
-(ns moviefinder.user-session.db)
+(ns moviefinder.app.user-session.db)
 
 
 (defprotocol UserSessionDb

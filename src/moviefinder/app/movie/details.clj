@@ -1,9 +1,9 @@
-(ns moviefinder.movie.details
-  (:require [moviefinder.requests]
-            [moviefinder.view]
-            [moviefinder.route]
-            [moviefinder.movie.db]
-            [moviefinder.movie.db-impl :refer [movie-db]]))
+(ns moviefinder.app.movie.details
+  (:require [moviefinder.app.requests]
+            [moviefinder.app.view]
+            [moviefinder.app.route]
+            [moviefinder.app.movie.db]
+            [moviefinder.app.movie.db-impl :refer [movie-db]]))
 
 (defn year [maybe-date-string]
   (when maybe-date-string
@@ -49,7 +49,7 @@
 
 (defn view-movie-details [movie]
   [:div.w-full.flex.flex-col.h-full.flex-1
-   (moviefinder.view/top-bar {:top-bar/title (-> movie :movie/title)})
+   (moviefinder.app.view/top-bar {:top-bar/title (-> movie :movie/title)})
    [:div.w-full.flex.flex-col.h-full.flex-1.relative.pt-14.overflow-y-scroll.p-4.gap-4
     (view-backdrop movie)
     (view-poster movie)
@@ -61,8 +61,8 @@
   
 (defn view-movie-details! [request]
   (let [movie-id (-> request :request/route :movie/id)
-        movie (moviefinder.movie.db/get! movie-db movie-id)]
+        movie (moviefinder.app.movie.db/get! movie-db movie-id)]
     (view-movie-details movie)))
 
-(defmethod moviefinder.requests/route-hx :movie/detail [request]
-  (moviefinder.requests/html (view-movie-details! request)))
+(defmethod moviefinder.app.requests/route-hx :movie/detail [request]
+  (moviefinder.app.requests/html (view-movie-details! request)))
