@@ -1,6 +1,7 @@
 (ns app.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.session :refer [wrap-session]]
             [app.view]
             [app.account]
             [app.movie.details]
@@ -67,5 +68,5 @@
   
 (defn -main []
     (let [port (or (get-port!) 3000)]
-      (run-jetty (wrap-reload #'handle-ring-request) {:port port :join? false})
+      (run-jetty (wrap-reload (wrap-session #'handle-ring-request)) {:port port :join? false})
       (println (str "Server listening on port " port "..."))))

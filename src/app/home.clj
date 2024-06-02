@@ -13,17 +13,23 @@
            :allowFullScreen true})])
 
 
+(defn movie-details-href [movie]
+  (app.route/encode {:movie/id (-> movie :movie/id)
+                     :route/name :movie/detail}))
+
+(defn view-feed-item-title [movie]
+  [:div.w-full.p-4.pb-6
+   [:a.text-2xl.font-bold.underline
+    {:href (movie-details-href movie)}
+    (-> movie :movie/title)]])
+
 (defn view-feed-item [movie]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover {:src (-> movie :movie/poster-url)}]
-   [:div.w-full.flex-1.flex-col.justify-center.items-center.flex
+   [:a.w-full.flex-1.flex-col.justify-center.items-center.flex {:href (movie-details-href movie)}
     #_(let [youtube-video-url (-> movie :movie/videos first :video/youtube-embed-url)]
         (view-youtube-video {:src youtube-video-url}))] 
-   [:div.w-full.p-4.pb-6
-    [:a.text-2xl.font-bold.underline
-     {:href (app.route/encode {:movie/id (-> movie :movie/id) 
-                               :route/name :movie/detail})}
-     (-> movie :movie/title)]]])
+   #_(view-feed-item-title movie)])
 
 (defn view-swiper-slide [children]
   [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full

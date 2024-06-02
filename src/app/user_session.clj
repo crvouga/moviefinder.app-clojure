@@ -6,6 +6,11 @@
 (defn assoc-user-session! [request] 
   (-> request :user-session/session-id))
 
+(defn guard-auth! [request view-logged-out view-logged-in]
+  (if (-> request :request/session-id)
+    view-logged-in
+    view-logged-out))
+
 (defmethod app.requests/route-hx :user-session/clicked-send-login-link [_request]
   nil)
 
