@@ -3,8 +3,10 @@
             [hiccup2.core]
             [app.base64]))
 
+(def add-leading-backslash (partial str "/"))
+
 (defn encode [route]
-  (-> route pr-str app.base64/encode))
+  (-> route pr-str app.base64/encode add-leading-backslash))
 
 (defn decode [route]
   (try

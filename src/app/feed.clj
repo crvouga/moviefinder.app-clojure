@@ -2,6 +2,7 @@
   (:require [app.requests]
             [app.view]
             [app.movie.movie]
+            [app.route]
             [app.movie.db.core]
             [app.movie.db.impl :refer [movie-db]]))
 
@@ -18,7 +19,7 @@
    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover {:src (-> movie :movie/poster-url)}]
    [:div.w-full.flex-1.flex-col.justify-center.items-center.flex
     #_(let [youtube-video-url (-> movie :movie/videos first :video/:youtube-video-url)]
-      (view-youtube-video {:src youtube-video-url}))] 
+        (view-youtube-video {:src youtube-video-url}))] 
    [:div.w-full.p-4.pb-6
     [:p.text-2xl.font-bold (-> movie :movie/title)]]])
 
@@ -26,25 +27,32 @@
   [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
    children])
 
-(defn view-swiper-container [children]
-  [:swiper-container.w-full.flex-1.max-h-full.overflow-hidden {:slides-per-view 1 :direction :vertical}
+;; https://swiperjs.com/element
+(defn view-swiper-container [props children]
+  [:swiper-container.w-full.flex-1.max-h-full.overflow-hidden (merge {:slides-per-view 1 :direction :vertical} props)
    children])
 
-(defn view-swiper [view-slides]
-  (view-swiper-container
-   (for [vide-slide view-slides]
-     (view-swiper-slide vide-slide))))
-
-(defn view-feed-panel [{:keys [movie-db]}]
+(defn view-feed-index-panel [input]
   (let [movies (app.movie.db.core/find-movies! movie-db {})]
     [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
-     (view-swiper
-      (for [movie (-> movies :results)]
-         (view-feed-item movie)))]))
+     (-> input :request/route :feed/slide-index)
+     (view-swiper-container {:initial-slide (-> input :request/route :feed/slide-index)}
+      (for [[slide-index movie] (map-indexed vector (-> movies :results))]
+        (view-swiper-slide
+         [:div.w-full.h-full.flex-1
+          {:hx-post (-> input :request/route (assoc :feed/slide-index slide-index) app.route/encode)
+           :hx-swap "none"
+           :hx-push-url (-> input :request/route (assoc :feed/slide-index slide-index) app.route/encode)
+           :hx-trigger "intersect"}
+          slide-index
+          (view-feed-item movie)])))]))
 
-(defn view-feed-route [input]
-  (app.view/view-app-tabs-layout {:route/name :feed/index}  (view-feed-panel input)))
+(defn view-feed-index [input]
+  (app.view/view-app-tabs-layout {:route/name :feed/index}  (view-feed-index-panel input)))
 
-(defmethod app.requests/handle :feed/index [_]
-  (app.requests/html (view-feed-route {:movie-db movie-db})))
+(defmethod app.requests/handle :noop [_request]
+  {:status 200})
+
+(defmethod app.requests/handle :feed/index [request]
+  (app.requests/html (view-feed-index request)))
 
