@@ -1,1 +1,0 @@
-(ns moviefinder.app.user-session.db-impl-postgres)

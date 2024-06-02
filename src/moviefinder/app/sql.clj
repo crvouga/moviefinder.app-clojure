@@ -1,4 +1,4 @@
-(ns moviefinder.app.db
+(ns moviefinder.app.sql
   (:require [clojure.java.jdbc]))
 
 (def db
