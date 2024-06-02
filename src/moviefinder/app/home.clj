@@ -25,7 +25,7 @@
 
 (defn view-feed-item [movie]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
-   [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover {:src (-> movie :movie/poster-url)}]
+   [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200 {:src (-> movie :movie/poster-url) :loading :lazy}]
    [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
     {:hx-get (movie-details-href movie)
      :hx-target "#app"
