@@ -5,11 +5,11 @@
 
 (def clicks! (atom 0))
 
-(defmethod app.requests/route ::clicked-append [_]
+(defmethod app.requests/route-hx ::clicked-append [_]
   (swap! clicks! inc)
   (app.requests/html [:p "Clicked!"]))
 
-(defmethod app.requests/route ::clicked-clear [_]
+(defmethod app.requests/route-hx ::clicked-clear [_]
   (reset! clicks! 0)
   (app.requests/html ""))
 
@@ -37,5 +37,5 @@
 (defn view-couter-index []
   (app.view/view-app-tabs-layout :counter/index (view-counter-panel)))
 
-(defmethod app.requests/route :counter/index [_]
+(defmethod app.requests/route-hx :counter/index [_]
   (app.requests/html (view-couter-index)))

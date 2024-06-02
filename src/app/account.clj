@@ -12,5 +12,5 @@
     [:h1 "Account"]
     [:p "This is the account page."]]))
 
-(defmethod app.requests/route :account/index [request]
+(defmethod app.requests/route-hx :account/index [request]
   (app.requests/html (view-account-index request)))

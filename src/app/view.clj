@@ -32,8 +32,8 @@
    (app.view/tab-panel view-tab-panel)
    (app.view/tabs
     (app.view/tab {:label "Feed"
-                   :active? (= (active-route :route/name) :feed/index)
-                   :route {:route/name :feed/index}
+                   :active? (= (active-route :route/name) :home/home)
+                   :route {:route/name :home/home}
                    :icon (app.icon/home)})
     (app.view/tab {:label "Account"
                    :active? (= (active-route :route/name) :account/index)

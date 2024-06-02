@@ -30,12 +30,12 @@
     [:div
      {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center justify-center overflow-hidden rounded border border-neutral-700"}
-      (-> request app.requests/route :view)]]]])
+      (-> request app.requests/route-hx :view)]]]])
 
-  (defmethod app.requests/route :default [request]
+  (defmethod app.requests/route-hx :default [request]
     (-> request 
-        (assoc :request/route {:route/name :feed/index}) 
-        app.requests/route))
+        (assoc :request/route {:route/name :home/home}) 
+        app.requests/route-hx))
 
 
 ;; 
@@ -48,20 +48,23 @@
 ;; 
 ;; 
 
-  (defn handle-ring-request [ring-request]
+
+
+  
+(defn handle-ring-request [ring-request]
     (let [request (app.requests/ring-request->request ring-request)
           response (if (:request/hx-request? request) 
-                (app.requests/route request) 
+                (app.requests/route-hx request) 
                 (app.requests/html-document (view request)))]
       (println request) 
       response))
 
 
-  (defn get-port! [] 
+(defn get-port! [] 
     (when-let [port (System/getenv "PORT")]
       (Integer. port)))
   
-  (defn -main []
+(defn -main []
     (let [port (or (get-port!) 3000)]
       (run-jetty (wrap-reload #'handle-ring-request) {:port port :join? false})
       (println (str "Server listening on port " port "..."))))

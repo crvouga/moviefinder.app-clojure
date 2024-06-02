@@ -11,7 +11,7 @@
   {:request/route (-> ring-request :uri remove-leading-backslash app.route/decode)
    :request/hx-request? (boolean (get-in ring-request [:headers "hx-request"]))})
 
-(defmulti route (fn [request] (-> request :request/route :route/name)))
+(defmulti route-hx (fn [request] (-> request :request/route :route/name)))
 
 (defn response->ring-response [response]
   (let [view (get response :view)]
@@ -32,7 +32,7 @@
    :headers {"Content-Type" "text/html"}
    :view view
    :body (str (hiccup2.core/html view))})
-
+  
 (defn html-document [view]
   {:status 200
    :headers {"Content-Type" "text/html"}

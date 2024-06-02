@@ -32,7 +32,7 @@
   [:swiper-container.w-full.flex-1.max-h-full.overflow-hidden (merge {:slides-per-view 1 :direction :vertical} props)
    children])
 
-(defn view-feed-index-panel [input]
+(defn view-feed [input]
   (let [movies (app.movie.db.core/find-movies! movie-db {})]
     [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
      (view-swiper-container {:initial-slide (-> input :request/route :feed/slide-index)}
@@ -40,12 +40,12 @@
         (view-swiper-slide
           (view-feed-item movie))))]))
 
-(defn view-feed-index [input]
-  (app.view/view-app-tabs-layout {:route/name :feed/index}  (view-feed-index-panel input)))
+(defn view-home [input]
+  (app.view/view-app-tabs-layout {:route/name :home/home}  (view-feed input)))
 
-(defmethod app.requests/route :noop [_request]
+(defmethod app.requests/route-hx :noop [_request]
   {:status 200})
 
-(defmethod app.requests/route :feed/index [request]
-  (app.requests/html (view-feed-index request)))
+(defmethod app.requests/route-hx :home/home [request]
+  (app.requests/html (view-home request)))
 
