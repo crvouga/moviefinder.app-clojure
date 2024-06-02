@@ -35,17 +35,10 @@
 (defn view-feed-index-panel [input]
   (let [movies (app.movie.db.core/find-movies! movie-db {})]
     [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
-     (-> input :request/route :feed/slide-index)
      (view-swiper-container {:initial-slide (-> input :request/route :feed/slide-index)}
-      (for [[slide-index movie] (map-indexed vector (-> movies :results))]
+      (for [movie (-> movies :results)]
         (view-swiper-slide
-         [:div.w-full.h-full.flex-1
-          {:hx-post (-> input :request/route (assoc :feed/slide-index slide-index) app.route/encode)
-           :hx-swap "none"
-           :hx-push-url (-> input :request/route (assoc :feed/slide-index slide-index) app.route/encode)
-           :hx-trigger "intersect"}
-          slide-index
-          (view-feed-item movie)])))]))
+          (view-feed-item movie))))]))
 
 (defn view-feed-index [input]
   (app.view/view-app-tabs-layout {:route/name :feed/index}  (view-feed-index-panel input)))
