@@ -33,7 +33,9 @@
       (-> req app.res/handle :view)]]]])
 
   (defmethod app.res/handle :default [req]
-    (-> req (assoc app.res/route-key app.routes/route-feed) app.res/handle))
+    (-> req 
+        (assoc app.res/route-key app.routes/route-feed) 
+        app.res/handle))
 
 
 ;; 

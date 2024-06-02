@@ -170,7 +170,7 @@
 
 (defrecord MoveDbTmdb [] 
   app.movie.db.core/MovieDb
-  (find-movies [_this _query]
+  (find-movies! [_this _query]
     (let [paginated-movies (get-discover!) 
           paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos!)]
       paginated-movies-with-videos)))

@@ -8,14 +8,15 @@
 (defn tab-container [& children]
   [:div.w-full.h-full.flex.flex-col.overflow-hidden {:id "tabs"} children])
 
-(defn tab [route label active-route]
-  [:a.flex-1.p-4.flex.items-center.justify-center
+(defn tab [{:keys [route label active-route icon]}]
+  [:a.flex-1.p-2.flex.items-center.justify-center.flex-col.gap-1.text-xs
    {:hx-get (app.res/keyword->url route)
     :class (if (= route active-route) "bg-neutral-800" "hover:bg-neutral-800")
     :hx-target "#tabs"
     :hx-swap "innerHTML"
     :hx-push-url (app.res/keyword->url route)
-    :href (app.res/keyword->url route)}  
+    :href (app.res/keyword->url route)}
+   icon
    label])
 
 (defn tabs [& children]

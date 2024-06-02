@@ -1,5 +1,6 @@
 (ns app.routes
-  (:require [app.view]))
+  (:require [app.view]
+            [app.icon]))
 
 
 (def route-feed ::feed)
@@ -10,5 +11,11 @@
   (app.view/tab-container
    (app.view/tab-panel view-tab-panel)
    (app.view/tabs
-    (app.view/tab route-counter "Counter" active-route)
-    (app.view/tab route-feed "Feed" active-route))))
+    (app.view/tab {:label "Feed" 
+                   :active-route active-route 
+                   :route route-feed 
+                   :icon (app.icon/home)})
+    (app.view/tab {:label "Account" 
+                   :active-route active-route 
+                   :route route-counter 
+                   :icon (app.icon/user-circle)}))))
