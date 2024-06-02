@@ -26,9 +26,15 @@
 (defn view-feed-item [movie]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover {:src (-> movie :movie/poster-url)}]
-   [:a.w-full.flex-1.flex-col.justify-center.items-center.flex {:href (movie-details-href movie)}
+   [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
+    {:hx-get (movie-details-href movie)
+     :hx-target "#app"
+     :href (movie-details-href movie)
+     :hx-swap "innerHTML"
+     :hx-push-url (movie-details-href movie)}
+
     #_(let [youtube-video-url (-> movie :movie/videos first :video/youtube-embed-url)]
-        (view-youtube-video {:src youtube-video-url}))] 
+        (view-youtube-video {:src youtube-video-url}))]
    #_(view-feed-item-title movie)])
 
 (defn view-swiper-slide [children]

@@ -28,17 +28,17 @@
   [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll {} children])
 
 (defn view-app-tabs-layout [active-route view-tab-panel]
-  (moviefinder.app.view/tab-container
-   (moviefinder.app.view/tab-panel view-tab-panel)
-   (moviefinder.app.view/tabs
-    (moviefinder.app.view/tab {:tab/label "Feed"
-                   :tab/active? (= (active-route :route/name) :home/home)
-                   :tab/route {:route/name :home/home}
-                   :tab/icon (moviefinder.app.view.icon/home)})
-    (moviefinder.app.view/tab {:tab/label "Account"
-                   :tab/active? (= (active-route :route/name) :account/index)
-                   :tab/route {:route/name :account/index}
-                   :tab/icon (moviefinder.app.view.icon/user-circle)}))))
+  (tab-container
+   (tab-panel view-tab-panel)
+   (tabs
+    (tab {:tab/label "Feed"
+          :tab/active? (= (active-route :route/name) :home/home)
+          :tab/route {:route/name :home/home}
+          :tab/icon (moviefinder.app.view.icon/home)})
+    (tab {:tab/label "Account"
+          :tab/active? (= (active-route :route/name) :account/index)
+          :tab/route {:route/name :account/index}
+          :tab/icon (moviefinder.app.view.icon/user-circle)}))))
 
 (defn icon-button [input]
   [:button.bg-transparent.text-white.p-2.rounded-full
