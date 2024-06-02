@@ -29,16 +29,32 @@
 
 (def view-gutter [:div.w-full.p-8])
 
+(defn view-section-title [title]
+  [:h2.text-xl.text-left.font-bold title])
+
+(defn view-videos [movie]
+  [:div 
+   (view-section-title "Videos")
+   [:ul.flex.flex-col.gap-2
+    (for [video (-> movie :movie/videos)]
+      [:li
+       [:a.text-sm.text-neutral-300.underline {:href (-> video :video/youtube-watch-url)
+                                                :target "_blank"
+                                                :rel "noopener noreferrer"
+                                                }
+        (video :video/name)]])]])
+
 (defn view-movie-details [movie]
   [:div.w-full.flex.flex-col.h-full.flex-1
-     (app.view/top-bar {:top-bar/title (-> movie :movie/title)})
-     [:div.w-full.flex.flex-col.h-full.flex-1.relative.pt-14.overflow-y-scroll.p-4.gap-4
-      (view-backdrop movie)
-      (view-poster movie)
-      (view-title movie)
-      (view-year movie)
-      (view-overview movie)
-      view-gutter]])
+   (app.view/top-bar {:top-bar/title (-> movie :movie/title)})
+   [:div.w-full.flex.flex-col.h-full.flex-1.relative.pt-14.overflow-y-scroll.p-4.gap-4
+    (view-backdrop movie)
+    (view-poster movie)
+    (view-title movie)
+    (view-year movie)
+    (view-overview movie)
+    (view-videos movie)
+    view-gutter]])
   
 (defn view-movie-details! [request]
   (let [movie-id (-> request :request/route :movie/id)

@@ -70,19 +70,24 @@
    :vote_average :movie/vote-average
    :vote_count :movie/vote-count})
 
-(defn youtube-video-url [key]
+(defn youtube-embed-url [key]
   (str "https://www.youtube.com/embed/" key))
+
+(defn youtube-watch-url [key]
+  (str "https://www.youtube.com/watch?v=" key))
 
 (defn assoc-youtube-video-url [video]
   (-> video
-      (assoc :youtube-video-url (youtube-video-url (video :key)))))
+      (assoc :youtube-watch-url (youtube-watch-url (video :key)))
+      (assoc :youtube-embed-url (youtube-embed-url (video :key)))))
 
 (defn tmdb-video->video [tmdb-video]
   (rename-keys tmdb-video 
                {:id :video/tmdb-id
                 :key :video/key
                 :name :video/name
-                :youtube-video-url :video/:youtube-video-url}))
+                :youtube-embed-url :video/youtube-embed-url
+                :youtube-watch-url :video/youtube-watch-url}))
 
 (defn tmdb->video [tmdb-video]
   (-> tmdb-video
@@ -178,8 +183,9 @@
 (defn get-movie-details! [movie-id]
   (let [details-url (movie-details-url movie-id)
         details (client/get details-url movie-details-params)
-        movie (-> details :body tmdb->movie!)]
-    movie))
+        movie (-> details :body tmdb->movie!)
+        movie-with-videos (assoc-movie-videos! movie)]
+    movie-with-videos))
 
 ;; 
 ;; 

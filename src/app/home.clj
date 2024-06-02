@@ -17,7 +17,7 @@
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover {:src (-> movie :movie/poster-url)}]
    [:div.w-full.flex-1.flex-col.justify-center.items-center.flex
-    (let [youtube-video-url (-> movie :movie/videos first :video/:youtube-video-url)]
+    (let [youtube-video-url (-> movie :movie/videos first :video/youtube-embed-url)]
         (view-youtube-video {:src youtube-video-url}))] 
    [:div.w-full.p-4.pb-6
     [:a.text-2xl.font-bold.underline
