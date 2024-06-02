@@ -9,10 +9,10 @@
 (defn tab-container [& children]
   [:div.w-full.h-full.flex.flex-col.overflow-hidden {:id "tabs"} children])
 
-(defn tab [{:keys [route label active-route icon]}]
-  [:a.flex-1.p-2.flex.items-center.justify-center.flex-col.gap-1.text-xs
+(defn tab [{:keys [route label active? icon]}]
+  [:a.flex-1.p-2.flex.items-center.justify-center.flex-col.gap-1.text-xs.active:opacity-60
    {:hx-get (app.res/encode-route route)
-    :class (if (= (route :route/name) (active-route :route/name)) "bg-neutral-800" "hover:bg-neutral-800")
+    :class (if active? "text-blue-500" "hover:bg-neutral-800")
     :hx-target "#tabs"
     :hx-swap "innerHTML"
     :hx-push-url (app.res/encode-route route)
@@ -31,10 +31,10 @@
    (app.view/tab-panel view-tab-panel)
    (app.view/tabs
     (app.view/tab {:label "Feed"
-                   :active-route active-route
+                   :active? (= (active-route :route/name) :feed/index)
                    :route {:route/name :feed/index}
                    :icon (app.icon/home)})
     (app.view/tab {:label "Account"
-                   :active-route active-route
+                   :active? (= (active-route :route/name) :account/index)
                    :route {:route/name :account/index}
                    :icon (app.icon/user-circle)}))))
