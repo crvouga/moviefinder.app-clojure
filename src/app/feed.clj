@@ -43,9 +43,9 @@
 (defn view-feed-index [input]
   (app.view/view-app-tabs-layout {:route/name :feed/index}  (view-feed-index-panel input)))
 
-(defmethod app.requests/handle :noop [_request]
+(defmethod app.requests/route :noop [_request]
   {:status 200})
 
-(defmethod app.requests/handle :feed/index [request]
+(defmethod app.requests/route :feed/index [request]
   (app.requests/html (view-feed-index request)))
 

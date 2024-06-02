@@ -11,10 +11,24 @@
   {:request/route (-> ring-request :uri remove-leading-backslash app.route/decode)
    :request/hx-request? (boolean (get-in ring-request [:headers "hx-request"]))})
 
-(defmulti handle (fn [request] (-> request :request/route :route/name)))
+(defmulti route (fn [request] (-> request :request/route :route/name)))
+
+(defn response->ring-response [response]
+  (let [view (get response :view)]
+    (if view
+      (let [body (get response :body)]
+        {:status (get response :status 200)
+         :headers (get response :headers {})
+         :body (if body body (str (hiccup2.core/html view)))})
+      {:status 404
+       :headers {}
+       :body "Not Found"})))
+
 
 (defn html [view]
-  {:status 200
+  {:response/ok? true
+   :response/view view
+   :status 200
    :headers {"Content-Type" "text/html"}
    :view view
    :body (str (hiccup2.core/html view))})

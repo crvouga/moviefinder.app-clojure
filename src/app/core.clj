@@ -30,12 +30,12 @@
     [:div
      {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center justify-center overflow-hidden rounded border border-neutral-700"}
-      (-> request app.requests/handle :view)]]]])
+      (-> request app.requests/route :view)]]]])
 
-  (defmethod app.requests/handle :default [request]
+  (defmethod app.requests/route :default [request]
     (-> request 
         (assoc :request/route {:route/name :feed/index}) 
-        app.requests/handle))
+        app.requests/route))
 
 
 ;; 
@@ -51,7 +51,7 @@
   (defn handle-ring-request [ring-request]
     (let [request (app.requests/ring-request->request ring-request)
           response (if (:request/hx-request? request) 
-                (app.requests/handle request) 
+                (app.requests/route request) 
                 (app.requests/html-document (view request)))]
       (println request) 
       response))
