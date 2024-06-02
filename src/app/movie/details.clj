@@ -12,18 +12,38 @@
         (Integer/parseInt (first match))
         nil))))
 
+(defn view-backdrop [movie]
+  [:img.w-full.aspect-video.bg-neutral-900.absolute.top-0.left-0.-z-10.blur-sm {:src (-> movie :movie/backdrop-url)}])
+
+(defn view-poster [movie]
+  [:img.aspect-auto.bg-neutral-900.rounded.shadow-xl.mx-auto {:class "w-1/2" :src (-> movie :movie/poster-url)}])
+
+(defn view-title [movie]
+  [:h1.font-bold.text-3xl.text-center (-> movie :movie/title)])
+
+(defn view-year [movie]
+  [:h2.text-lg.text-center.text-neutral-300 (-> movie :movie/release-date year)])
+
+(defn view-overview [movie]
+  [:p.text-neutral-300.text-sm (-> movie :movie/overview)])
+
+(def view-gutter [:div.w-full.p-8])
+
+(defn view-movie-details [movie]
+  [:div.w-full.flex.flex-col.h-full.flex-1
+     (app.view/top-bar {:top-bar/title (-> movie :movie/title)})
+     [:div.w-full.flex.flex-col.h-full.flex-1.relative.pt-14.overflow-y-scroll.p-4.gap-4
+      (view-backdrop movie)
+      (view-poster movie)
+      (view-title movie)
+      (view-year movie)
+      (view-overview movie)
+      view-gutter]])
+  
 (defn view-movie-details! [request]
   (let [movie-id (-> request :request/route :movie/id)
         movie (app.movie.db/get! movie-db movie-id)]
-    [:div.w-full.flex.flex-col.h-full.flex-1
-     #_(-> movie pr-str)
-     #_(app.view/top-bar {:top-bar/title (-> movie :movie/title)})
-     [:div.w-full.flex.flex-col.h-full.flex-1.relative.pt-14.overflow-y-scroll.p-4.gap-6
-      [:img.w-full.aspect-video.bg-neutral-900.absolute.top-0.left-0.-z-10.blur-sm {:src (-> movie :movie/backdrop-url)}]
-      [:img.aspect-auto.bg-neutral-900.rounded.shadow-xl.mx-auto {:class "w-1/2" :src (-> movie :movie/poster-url)}]
-      [:h1.font-bold.text-3xl.text-center (-> movie :movie/title)]
-      [:h2.text-lg.text-center.text-neutral-300 (-> movie :movie/release-date year)]
-      [:p.text-neutral-300.text-sm (-> movie :movie/overview)]]]))
+    (view-movie-details movie)))
 
 (defmethod app.requests/route-hx :movie/detail [request]
   (app.requests/html (view-movie-details! request)))
