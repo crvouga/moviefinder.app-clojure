@@ -3,7 +3,7 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [app.view]
             [app.account]
-            [app.feed]
+            [app.home]
             [app.counter]
             [app.requests]))
 ;; 

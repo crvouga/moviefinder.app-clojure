@@ -1,4 +1,4 @@
-(ns app.feed
+(ns app.home
   (:require [app.requests]
             [app.view]
             [app.movie.movie]
