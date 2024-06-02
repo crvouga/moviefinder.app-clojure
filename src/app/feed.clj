@@ -1,5 +1,5 @@
 (ns app.feed
-  (:require [app.res]
+  (:require [app.requests]
             [app.view]
             [app.movie.movie]
             [app.movie.db.core]
@@ -45,6 +45,6 @@
 (defn view-feed-route [input]
   (app.view/view-app-tabs-layout {:route/name :feed/index}  (view-feed-panel input)))
 
-(defmethod app.res/handle :feed/index [_]
-  (app.res/html (view-feed-route {:movie-db movie-db})))
+(defmethod app.requests/handle :feed/index [_]
+  (app.requests/html (view-feed-route {:movie-db movie-db})))
 

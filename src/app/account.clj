@@ -1,5 +1,5 @@
 (ns app.account
-  (:require [app.res]
+  (:require [app.requests]
             [app.view]
             [app.icon]))
 
@@ -12,5 +12,5 @@
     [:h1 "Account"]
     [:p "This is the account page."]]))
 
-(defmethod app.res/handle :account/index [request]
-  (app.res/html (view-account-index request)))
+(defmethod app.requests/handle :account/index [request]
+  (app.requests/html (view-account-index request)))

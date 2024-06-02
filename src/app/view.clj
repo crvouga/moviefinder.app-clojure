@@ -1,5 +1,6 @@
 (ns app.view
-  (:require [app.res]
+  (:require [app.requests]
+            [app.route]
             [app.icon]))
 
 (defn button
@@ -11,12 +12,12 @@
 
 (defn tab [{:keys [route label active? icon]}]
   [:a.flex-1.p-2.flex.items-center.justify-center.flex-col.gap-1.text-xs.active:opacity-60
-   {:hx-get (app.res/encode-route route)
+   {:hx-get (app.route/encode route)
     :class (if active? "text-blue-500" "hover:bg-neutral-800")
     :hx-target "#tabs"
     :hx-swap "innerHTML"
-    :hx-push-url (app.res/encode-route route)
-    :href (app.res/encode-route route)}
+    :hx-push-url (app.route/encode route)
+    :href (app.route/encode route)}
    icon
    label])
 
