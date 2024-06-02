@@ -11,6 +11,15 @@
 ;; 
 ;; 
 ;; 
+
+(def cache! (atom {}))
+
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
 ;; 
 
 (def api-read-access-token (moviefinder.app.env/get-env-var! "TMDB_API_READ_ACCESS_TOKEN"))
@@ -33,13 +42,13 @@
 (def configuration-params {:headers base-headers
                            :as :json-strict})
 
-(def configuration! (atom nil))
+(def cofiguration-cache-key :configuration)
 (defn get-confguration! [] 
-  (if-let [configuration @configuration!]
+  (if-let [configuration (get @cache! cofiguration-cache-key)]
       configuration
     (let [response (client/get configuration-url configuration-params)
           configuration (-> response :body)]
-      (reset! configuration! configuration)
+      (swap! cache! assoc cofiguration-cache-key configuration)
       configuration)))
 ;; 
 ;; 
@@ -133,7 +142,8 @@
                       :query-params discover-query-params
                       :as :json-strict})
 
-(def discover-by-page! (atom {}))
+(defn discover-cache-key [page]
+  [:discover page])
 
 (defn get-discover-from-source! []
   (let [response (client/get discover-url discover-params)
@@ -141,10 +151,10 @@
     results))
 
 (defn get-discover! []
-  (if-let [discover (get @discover-by-page! 1)]
+  (if-let [discover (get @cache! (discover-cache-key 1))]
       discover
     (let [discover (get-discover-from-source!)]
-      (swap! discover-by-page! assoc 1 discover)
+      (swap! cache! assoc (discover-cache-key 1) discover)
       discover)))
 
 ;; 
@@ -158,15 +168,17 @@
 (defn movie-video-url [movie-id]
   (str base-url "/movie/" movie-id "/videos"))
 
-(def movie-videos-by-movie-id! (atom {}))
+(defn movie-videos-cache-key [movie-id]
+  [:movie-videos movie-id])
+
+
 (defn get-movie-videos! [movie-id]
-  (if-let [videos (get @movie-videos-by-movie-id! movie-id)]
+  (if-let [videos (get @cache! (movie-videos-cache-key movie-id))]
       videos
     (let [response (client/get (movie-video-url movie-id) base-params)
           tmdb-videos (-> response :body :results)
           videos (map tmdb->video tmdb-videos)]
-      []
-      (swap! movie-videos-by-movie-id! assoc movie-id videos)
+      (swap! cache! assoc (movie-videos-cache-key movie-id) videos)
       videos)))
 
 (defn assoc-movie-videos! [movie] 
@@ -189,7 +201,9 @@
 (def movie-details-params 
   (merge-with merge base-params {:query-params {:language "en-US"}}))
 
-(def movie-details-by-movie-id! (atom {}))
+(defn movie-details-cache-key [movie-id]
+  [:movie-details movie-id])
+
 
 (defn get-movie-details-from-source! [movie-id]
   (let [details-url (movie-details-url movie-id)
@@ -199,10 +213,10 @@
     movie-with-videos))
 
 (defn get-movie-details! [movie-id]
-  (if-let [movie (get @movie-details-by-movie-id! movie-id)]
+  (if-let [movie (get @cache! (movie-details-cache-key movie-id))]
       movie
     (let [movie (get-movie-details-from-source! movie-id)]
-      (swap! movie-details-by-movie-id! assoc movie-id movie)
+      (swap! cache! assoc (movie-details-cache-key movie-id) movie)
       movie)))
 
 ;; 
