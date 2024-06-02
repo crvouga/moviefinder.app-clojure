@@ -1,4 +1,4 @@
-(ns app.env 
+(ns moviefinder.env 
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 

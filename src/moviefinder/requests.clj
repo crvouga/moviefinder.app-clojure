@@ -1,14 +1,14 @@
-(ns app.requests
+(ns moviefinder.requests
   (:require [clojure.string]
             [hiccup2.core]
-            [app.route]
-            [app.base64]))
+            [moviefinder.route]
+            [moviefinder.base64]))
 
 (defn- remove-leading-backslash [uri]
   (if (clojure.string/starts-with? uri "/") (subs uri 1) uri))
 
 (defn ring-request->request [ring-request]
-  {:request/route (-> ring-request :uri remove-leading-backslash app.route/decode)
+  {:request/route (-> ring-request :uri remove-leading-backslash moviefinder.route/decode)
    :request/hx-request? (boolean (get-in ring-request [:headers "hx-request"]))
    :request/session-id (ring-request :session/key)})
 

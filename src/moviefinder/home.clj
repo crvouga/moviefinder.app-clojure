@@ -1,9 +1,9 @@
-(ns app.home
-  (:require [app.requests]
-            [app.view]
-            [app.route]
-            [app.movie.db]
-            [app.movie.db-impl :refer [movie-db]]))
+(ns moviefinder.home
+  (:require [moviefinder.requests]
+            [moviefinder.view]
+            [moviefinder.route]
+            [moviefinder.movie.db]
+            [moviefinder.movie.db-impl :refer [movie-db]]))
 
 (defn view-youtube-video [props]
   [:iframe.w-full.h-64 
@@ -14,7 +14,7 @@
 
 
 (defn movie-details-href [movie]
-  (app.route/encode {:movie/id (-> movie :movie/id)
+  (moviefinder.route/encode {:movie/id (-> movie :movie/id)
                      :route/name :movie/detail}))
 
 (defn view-feed-item-title [movie]
@@ -41,7 +41,7 @@
    children])
 
 (defn view-feed [input]
-  (let [movies (app.movie.db/find! movie-db {})]
+  (let [movies (moviefinder.movie.db/find! movie-db {})]
     [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
      (view-swiper-container {:initial-slide (-> input :request/route :feed/slide-index)}
       (for [movie (-> movies :paginated/results)]
@@ -49,11 +49,11 @@
           (view-feed-item movie))))]))
 
 (defn view-home [input]
-  (app.view/view-app-tabs-layout {:route/name :home/home}  (view-feed input)))
+  (moviefinder.view/view-app-tabs-layout {:route/name :home/home}  (view-feed input)))
 
-(defmethod app.requests/route-hx :noop [_request]
+(defmethod moviefinder.requests/route-hx :noop [_request]
   {:status 200})
 
-(defmethod app.requests/route-hx :home/home [request]
-  (app.requests/html (view-home request)))
+(defmethod moviefinder.requests/route-hx :home/home [request]
+  (moviefinder.requests/html (view-home request)))
 

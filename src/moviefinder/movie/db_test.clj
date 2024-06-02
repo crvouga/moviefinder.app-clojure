@@ -1,4 +1,4 @@
-(ns app.movie.db-test
+(ns moviefinder.movie.db-test
   (:require [clojure.test :refer [deftest testing is]]))
 
 (deftest movie-db-test

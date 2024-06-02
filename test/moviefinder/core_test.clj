@@ -1,6 +1,6 @@
-(ns app.core-test 
+(ns moviefinder.core-test 
   (:require [clojure.test :refer [deftest testing is]]
-            [app.core]))
+            [moviefinder.core]))
 
 (deftest a-test
   (testing "FIXME, I fail."

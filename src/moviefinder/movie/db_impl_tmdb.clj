@@ -1,9 +1,9 @@
-(ns app.movie.db-impl-tmdb
+(ns moviefinder.movie.db-impl-tmdb
   (:require
    [clj-http.client :as client]
    [clojure.set :refer [rename-keys]]
-   [app.movie.db]
-   [app.env]))
+   [moviefinder.movie.db]
+   [moviefinder.env]))
 
 ;; 
 ;; 
@@ -13,7 +13,7 @@
 ;; 
 ;; 
 
-(def api-read-access-token (app.env/get-env-var! "TMDB_API_READ_ACCESS_TOKEN"))
+(def api-read-access-token (moviefinder.env/get-env-var! "TMDB_API_READ_ACCESS_TOKEN"))
 (def base-url "https://api.themoviedb.org/3")
 (def base-headers
   {:Authorization (str "Bearer " api-read-access-token)})
@@ -196,7 +196,7 @@
 ;; 
 
 (defrecord MoveDbTmdb [] 
-  app.movie.db/MovieDb
+  moviefinder.movie.db/MovieDb
   (get! [_this movie-id]
     (get-movie-details! movie-id))
   (find! [_this _query]
