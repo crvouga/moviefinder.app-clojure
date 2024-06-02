@@ -14,8 +14,9 @@
 
 
 (defn movie-details-href [movie]
-  (moviefinder.app.route/encode {:movie/id (-> movie :movie/id)
-                     :route/name :movie/detail}))
+  (moviefinder.app.route/encode 
+   {:route/name :movie/detail
+    :movie/id (-> movie :movie/id)}))
 
 (defn view-feed-item-title [movie]
   [:div.w-full.p-4.pb-6
@@ -45,12 +46,37 @@
       [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
        {:hx-post (moviefinder.app.route/encode {:route/name :noop})
         :hx-target "none"
-        :hx-trigger "slideChange"
+        :hx-trigger "htmx:swiperSlideChange"
         :hx-push-url (-> input :request/route (assoc :feed/slide-index slide-index) moviefinder.app.route/encode)}
        (view-feed-slide movie)])))
 
+(def swiper-event-script
+   "document.addEventListener('DOMContentLoaded', function () {
+           const swiper = new Swiper('.swiper-container', {
+              pagination: {
+                el: '.swiper-pagination',
+              },
+              navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+              },
+            });
+    
+            swiper.on('slideChange', function () {
+              const event = new CustomEvent('htmx:swiperSlideChange', {
+                detail: { index: swiper.activeIndex },
+              });
+              console.log('slideChange', swiper.activeIndex)
+              window.dispatchEvent(event);
+            });
+          });")
+
+(def view-swiper-event-script
+  (moviefinder.app.view/view-raw-script swiper-event-script))
+
 (defn view-feed! [input]
   [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
+   view-swiper-event-script
    [:swiper-container.w-full.flex-1.max-h-full.overflow-hidden
     {:slides-per-view 1
      :direction :vertical

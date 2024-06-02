@@ -1,7 +1,8 @@
 (ns moviefinder.app.view
   (:require [moviefinder.app.requests]
             [moviefinder.app.route]
-            [moviefinder.app.view.icon]))
+            [moviefinder.app.view.icon]
+            [hiccup2.core]))
 
 (defn button
   [props & children]
@@ -52,3 +53,10 @@
    [:h1.flex-4.text-center.font-bold.text-lg 
     (-> input :top-bar/title)]
    [:div.flex-1]])
+
+
+
+(defn view-raw-script [raw-javascript]
+  [:script
+   {:type "text/javascript"}
+   (hiccup2.core/raw raw-javascript)])
