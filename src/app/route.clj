@@ -14,10 +14,3 @@
     (catch Exception _
       nil)))
 
-(defn- remove-leading-backslash [uri]
-  (if (clojure.string/starts-with? uri "/") (subs uri 1) uri))
-
-(defn url->route [uri]
-  (-> uri remove-leading-backslash decode))
-
-

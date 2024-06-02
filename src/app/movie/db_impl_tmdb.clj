@@ -1,8 +1,8 @@
-(ns app.movie.db.impl-tmdb
+(ns app.movie.db-impl-tmdb
   (:require
    [clj-http.client :as client]
    [clojure.set :refer [rename-keys]]
-   [app.movie.db.core]
+   [app.movie.db]
    [app.env]))
 
 ;; 
@@ -93,21 +93,22 @@
 (defn tmdb->movie [tmdb-configration tmdb-movie]
   (-> tmdb-movie
       (assoc-image-urls tmdb-configration)
-      (rename-keys tmdb-movie-keys->movie-keys)))
+      (rename-keys tmdb-movie-keys->movie-keys)
+      (assoc :movie/id (:id tmdb-movie))))
 
 (defn tmdb->movie! [tmdb-movie]
    (tmdb->movie (get-confguration!) tmdb-movie))
 
 (defn tmdb->paginated-results [tmdb-paginated-results]
   (rename-keys tmdb-paginated-results 
-               {:total_results :total-results
-                :total_pages :total-pages
-                :page :page
-                :results :results}))
+               {:total_results :paginated/total-results
+                :total_pages :paginated/total-pages
+                :page :paginated/page
+                :results :paginated/results}))
 
 (defn map-paginated-results [paginated-result map-result]
-  (let [results-new (map map-result (:results paginated-result))]
-    (assoc paginated-result :results results-new)))
+  (let [results-new (map map-result (:paginated/results paginated-result))]
+    (assoc paginated-result :paginated/results results-new)))
 
 ;; 
 ;; 
@@ -168,9 +169,31 @@
 ;; 
 ;; 
 
+(defn movie-details-url [movie-id]
+  (str base-url "/movie/" movie-id))
+
+(def movie-details-params 
+  (merge-with merge base-params {:query-params {:language "en-US"}}))
+
+(defn get-movie-details! [movie-id]
+  (let [details-url (movie-details-url movie-id)
+        details (client/get details-url movie-details-params)
+        movie (-> details :body tmdb->movie!)]
+    movie))
+
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+
 (defrecord MoveDbTmdb [] 
-  app.movie.db.core/MovieDb
-  (find-movies! [_this _query]
+  app.movie.db/MovieDb
+  (get! [_this movie-id]
+    (get-movie-details! movie-id))
+  (find! [_this _query]
     (let [paginated-movies (get-discover!) 
           paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos!)]
       paginated-movies-with-videos)))

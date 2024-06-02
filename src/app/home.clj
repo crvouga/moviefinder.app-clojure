@@ -1,10 +1,9 @@
 (ns app.home
   (:require [app.requests]
             [app.view]
-            [app.movie.movie]
             [app.route]
-            [app.movie.db.core]
-            [app.movie.db.impl :refer [movie-db]]))
+            [app.movie.db]
+            [app.movie.db-impl :refer [movie-db]]))
 
 (defn view-youtube-video [props]
   [:iframe.w-full.h-64 
@@ -18,10 +17,13 @@
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover {:src (-> movie :movie/poster-url)}]
    [:div.w-full.flex-1.flex-col.justify-center.items-center.flex
-    #_(let [youtube-video-url (-> movie :movie/videos first :video/:youtube-video-url)]
+    (let [youtube-video-url (-> movie :movie/videos first :video/:youtube-video-url)]
         (view-youtube-video {:src youtube-video-url}))] 
    [:div.w-full.p-4.pb-6
-    [:p.text-2xl.font-bold (-> movie :movie/title)]]])
+    [:a.text-2xl.font-bold.underline
+     {:href (app.route/encode {:movie/id (-> movie :movie/id) 
+                               :route/name :movie/detail})}
+     (-> movie :movie/title)]]])
 
 (defn view-swiper-slide [children]
   [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
@@ -33,10 +35,10 @@
    children])
 
 (defn view-feed [input]
-  (let [movies (app.movie.db.core/find-movies! movie-db {})]
+  (let [movies (app.movie.db/find! movie-db {})]
     [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
      (view-swiper-container {:initial-slide (-> input :request/route :feed/slide-index)}
-      (for [movie (-> movies :results)]
+      (for [movie (-> movies :paginated/results)]
         (view-swiper-slide
           (view-feed-item movie))))]))
 

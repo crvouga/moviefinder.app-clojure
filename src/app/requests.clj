@@ -32,7 +32,7 @@
    :headers {"Content-Type" "text/html"}
    :view view
    :body (str (hiccup2.core/html view))})
-  
+
 (defn html-document [view]
   {:status 200
    :headers {"Content-Type" "text/html"}
