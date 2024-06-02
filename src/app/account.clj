@@ -1,7 +1,7 @@
 (ns app.account
   (:require [app.requests]
             [app.view]
-            [app.view-icon]))
+            [app.view.view-icon]))
 
 
 

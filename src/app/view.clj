@@ -1,7 +1,7 @@
 (ns app.view
   (:require [app.requests]
             [app.route]
-            [app.view-icon]))
+            [app.view.icon]))
 
 (defn button
   [props & children]
@@ -34,11 +34,11 @@
     (app.view/tab {:tab/label "Feed"
                    :tab/active? (= (active-route :route/name) :home/home)
                    :tab/route {:route/name :home/home}
-                   :tab/icon (app.view-icon/home)})
+                   :tab/icon (app.view.icon/home)})
     (app.view/tab {:tab/label "Account"
                    :tab/active? (= (active-route :route/name) :account/index)
                    :tab/route {:route/name :account/index}
-                   :tab/icon (app.view-icon/user-circle)}))))
+                   :tab/icon (app.view.icon/user-circle)}))))
 
 (defn icon-button [input]
   [:button.bg-transparent.text-white.p-2.rounded-full
@@ -48,7 +48,7 @@
   [:div.w-full.flex.items-center.justify-center.border-b.border-neutral-700.h-16.px-2
    [:div.flex-1
     #_(icon-button
-     {:icon-button/icon (app.view-icon/arrow-left)})]
+     {:icon-button/icon (app.view.icon/arrow-left)})]
    [:h1.flex-4.text-center.font-bold.text-lg 
     (-> input :top-bar/title)]
    [:div.flex-1]])
