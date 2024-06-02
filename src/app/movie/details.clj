@@ -32,17 +32,20 @@
 (defn view-section-title [title]
   [:h2.text-xl.text-left.font-bold title])
 
+(defn view-video-link [video]
+  [:a.text-sm.text-neutral-300.underline
+   {:href (-> video :video/youtube-watch-url)
+    :target "_blank"
+    :rel "noopener noreferrer"}
+   (-> video :video/name)])
+
 (defn view-videos [movie]
   [:div 
    (view-section-title "Videos")
    [:ul.flex.flex-col.gap-2
     (for [video (-> movie :movie/videos)]
       [:li
-       [:a.text-sm.text-neutral-300.underline
-        {:href (-> video :video/youtube-watch-url)
-         :target "_blank"
-         :rel "noopener noreferrer"}
-        (video :video/name)]])]])
+       (view-video-link video)])]])
 
 (defn view-movie-details [movie]
   [:div.w-full.flex.flex-col.h-full.flex-1
