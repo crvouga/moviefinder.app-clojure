@@ -2,7 +2,7 @@
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
             [app.view]
-            [app.routes]
+            [app.account]
             [app.feed]
             [app.counter]
             [app.res]))
@@ -15,7 +15,7 @@
 ;; 
 ;; 
 
-(defn view [req]
+(defn view [request]
   [:html {:lang "en" :doctype :html5}
    [:head
     [:title "moviefinder.app"]
@@ -30,11 +30,11 @@
     [:div
      {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center justify-center overflow-hidden rounded border border-neutral-700"}
-      (-> req app.res/handle :view)]]]])
+      (-> request app.res/handle :view)]]]])
 
-  (defmethod app.res/handle :default [req]
-    (-> req 
-        (assoc app.res/route-key app.routes/route-feed) 
+  (defmethod app.res/handle :default [request]
+    (-> request 
+        (assoc :request/route {:route/name :feed/index}) 
         app.res/handle))
 
 
@@ -48,21 +48,20 @@
 ;; 
 ;; 
 
-  (defn ring-req->res [ring-req]
-    (let [req (app.res/ring-req->req ring-req)
-          res (if (:hx-request? req) (app.res/handle req) (app.res/html-document (view req)))]
-      (println req)
-      res))
+  (defn handle-ring-request [ring-request]
+    (let [request (app.res/ring-request->request ring-request)
+          response (if (:request/hx-request? request) 
+                (app.res/handle request) 
+                (app.res/html-document (view request)))]
+      (println request) 
+      response))
 
-  (defn handler [ring-req]
-    (let [res (ring-req->res ring-req)]
-      res))
 
-  (defn port! [] 
+  (defn get-port! [] 
     (when-let [port (System/getenv "PORT")]
       (Integer. port)))
   
   (defn -main []
-    (let [port (or (port!) 3000)]
-      (run-jetty (wrap-reload #'handler) {:port port :join? false})
+    (let [port (or (get-port!) 3000)]
+      (run-jetty (wrap-reload #'handle-ring-request) {:port port :join? false})
       (println (str "Server listening on port " port "..."))))

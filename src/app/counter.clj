@@ -1,7 +1,6 @@
 (ns app.counter
   (:require [app.view] 
-            [app.res]
-            [app.routes]))
+            [app.res]))
 
 (def clicks! (atom 0))
 
@@ -19,13 +18,13 @@
    [:h1 "Counter"]
 
    (app.view/button
-    {:hx-get (app.res/keyword->url ::clicked-clear) 
+    {:hx-get (app.res/encode-route {:route/name ::clicked-clear}) 
      :hx-swap "innerHTML" 
      :hx-target (str "#" "counter-clicks")}
     "Clear")
 
    (app.view/button
-    {:hx-post (app.res/keyword->url ::clicked-append) 
+    {:hx-post (app.res/encode-route {:route/name ::clicked-append}) 
      :hx-swap "beforeend" 
      :hx-target (str "#" "counter-clicks")}
     "Append")
@@ -34,8 +33,8 @@
     (for [_ (range @clicks!)]
       [:p "Clicked!"])]])
 
-(defn view-couter-route []
-  (app.routes/view-app-tabs-layout app.routes/route-counter (view-counter-panel)))
+(defn view-couter-index []
+  (app.view/view-app-tabs-layout :counter/index (view-counter-panel)))
 
-(defmethod app.res/handle app.routes/route-counter [_]
-  (app.res/html (view-couter-route)))
+(defmethod app.res/handle :counter/index [_]
+  (app.res/html (view-couter-index)))
