@@ -38,10 +38,10 @@
    [:ul.flex.flex-col.gap-2
     (for [video (-> movie :movie/videos)]
       [:li
-       [:a.text-sm.text-neutral-300.underline {:href (-> video :video/youtube-watch-url)
-                                                :target "_blank"
-                                                :rel "noopener noreferrer"
-                                                }
+       [:a.text-sm.text-neutral-300.underline
+        {:href (-> video :video/youtube-watch-url)
+         :target "_blank"
+         :rel "noopener noreferrer"}
         (video :video/name)]])]])
 
 (defn view-movie-details [movie]
