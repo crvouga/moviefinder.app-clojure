@@ -1,7 +1,7 @@
-(ns moviefinder.app.user-session.db-test
+(ns moviefinder-app.user-session.db-test
   (:require [clojure.test :refer [deftest testing is]]
-            [moviefinder.app.user-session.db :as user-session-db]
-            [moviefinder.app.user-session.db-impl]))
+            [moviefinder-app.user-session.db :as user-session-db]
+            [moviefinder-app.user-session.db-impl]))
 
 (def db
   (user-session-db/->UserSessionDb

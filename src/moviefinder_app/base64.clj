@@ -1,4 +1,4 @@
-(ns moviefinder.app.base64
+(ns moviefinder-app.base64
   (:import (java.util Base64)))
 
 (defn encode [s]

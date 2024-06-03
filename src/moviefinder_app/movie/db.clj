@@ -1,4 +1,4 @@
-(ns moviefinder.app.movie.db)
+(ns moviefinder-app.movie.db)
 
 (defprotocol MovieDb
   (find! [this query])
