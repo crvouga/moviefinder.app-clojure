@@ -130,6 +130,35 @@
 ;; 
 ;; 
 ;; 
+
+
+(defn movie-video-url [movie-id]
+  (str base-url "/movie/" movie-id "/videos"))
+
+(defn movie-videos-cache-key [movie-id]
+  [:movie-videos movie-id])
+
+
+(defn get-movie-videos! [movie-id]
+  (if-let [videos (get @cache! (movie-videos-cache-key movie-id))]
+      videos
+    (let [response (client/get (movie-video-url movie-id) base-params)
+          tmdb-videos (-> response :body :results)
+          videos (map tmdb->video tmdb-videos)]
+      (swap! cache! assoc (movie-videos-cache-key movie-id) videos)
+      videos)))
+
+(defn assoc-movie-videos! [movie] 
+  (let [videos (get-movie-videos! (movie :movie/tmdb-id))]
+      (assoc movie :movie/videos videos)))
+
+
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
 ;; 
 
 (def discover-url (str base-url "/discover/movie"))
@@ -157,33 +186,11 @@
       (swap! cache! assoc (discover-cache-key 1) discover)
       discover)))
 
-;; 
-;; 
-;; 
-;; 
-;; 
-;; 
+(defn get-discover-with-videos! []
+  (let [paginated-movies (get-discover!)
+        paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos!)]
+    paginated-movies-with-videos))
 
-
-(defn movie-video-url [movie-id]
-  (str base-url "/movie/" movie-id "/videos"))
-
-(defn movie-videos-cache-key [movie-id]
-  [:movie-videos movie-id])
-
-
-(defn get-movie-videos! [movie-id]
-  (if-let [videos (get @cache! (movie-videos-cache-key movie-id))]
-      videos
-    (let [response (client/get (movie-video-url movie-id) base-params)
-          tmdb-videos (-> response :body :results)
-          videos (map tmdb->video tmdb-videos)]
-      (swap! cache! assoc (movie-videos-cache-key movie-id) videos)
-      videos)))
-
-(defn assoc-movie-videos! [movie] 
-  (let [videos (get-movie-videos! (movie :movie/tmdb-id))]
-      (assoc movie :movie/videos videos)))
 
 
 ;; 
@@ -228,10 +235,8 @@
 ;; 
 
 (defrecord MoveDbTmdb [] 
-  moviefinder.app.movie.db/MovieDb
+  moviefinder.app.movie.db/MovieDb 
   (get! [_this movie-id]
-    (get-movie-details! movie-id))
+    (get-movie-details! movie-id)) 
   (find! [_this _query]
-    (let [paginated-movies (get-discover!) 
-          paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos!)]
-      paginated-movies-with-videos)))
+    (get-discover-with-videos!)))
