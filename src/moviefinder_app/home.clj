@@ -71,12 +71,9 @@
             });
           });")
 
-(def view-swiper-event-script
-  (moviefinder-app.view/view-raw-script swiper-event-script))
-
 (defn view-feed! [input]
   [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
-   view-swiper-event-script
+   (moviefinder-app.view/view-raw-script swiper-event-script)
    [:swiper-container.w-full.flex-1.max-h-full.overflow-hidden
     {:slides-per-view 1
      :direction :vertical
