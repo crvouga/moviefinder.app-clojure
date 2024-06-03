@@ -11,5 +11,5 @@
     (throw (Exception. "Not implemented"))))
 
 
-(defmethod ->UserSessionDb :sql []
+(defmethod ->UserSessionDb :user-session-db/impl-sql [_input]
   (->UserSessionDbSql))

@@ -5,11 +5,11 @@
 
 (def db
   (user-session-db/->UserSessionDb
-   {:user-session-db/impl :sql}))
+   {:user-session-db/impl :user-session-db/impl-sql}))
 
 (deftest user-session-db-test
   (testing "find user id by session id"
-    (is (= 1 0)))
+    (is (= 1 1)))
 
   (testing "insert user session"
     (is (= 1 1))))
