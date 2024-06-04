@@ -5,13 +5,15 @@
 
 (defn fixture []
   (let [db (user-session-db/->UserSessionDb {:user-session-db/impl 
-                                             :user-session-db/impl-in-memory})]
+                                             :user-session-db/impl-in-memory})] 
     {:fixture/db db}))
 
 (deftest user-session-db-test
   (testing "find user id by session id"
-    (let [f (fixture)]
-      (user-session-db/insert! (f :fixture/db) {:session/id 1 :user/id 2})
+    (let [f (fixture)
+          session {:session/id 1 :user/id 2}]
+      (user-session-db/insert! (f :fixture/db) session)
+      (is (= 2 (user-session-db/find-user-id-by-session-id! (f :fixture/db) 1)))
       (is (= 1 1))))
 
   (testing "insert user session"
