@@ -5,12 +5,12 @@
 
 
 
-(defn view-account-index [_]
+(defn view-account [_]
   (moviefinder-app.view/view-app-tabs-layout 
-   {:route/name :account/index}
+   {:route/name :account/acount}
    [:div
     [:h1 "Account"]
     [:p "This is the account page."]]))
 
-(defmethod moviefinder-app.requests/route-hx :account/index [request]
-  (moviefinder-app.requests/html (view-account-index request)))
+(defmethod moviefinder-app.requests/handle-hx :account/acount [request]
+  (moviefinder-app.requests/html (view-account request)))

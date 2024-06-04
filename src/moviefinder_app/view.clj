@@ -37,8 +37,8 @@
           :tab/route {:route/name :home/home}
           :tab/icon (moviefinder-app.view.icon/home)})
     (tab {:tab/label "Account"
-          :tab/active? (= (active-route :route/name) :account/index)
-          :tab/route {:route/name :account/index}
+          :tab/active? (= (active-route :route/name) :account/acount)
+          :tab/route {:route/name :account/acount}
           :tab/icon (moviefinder-app.view.icon/user-circle)}))))
 
 (defn icon-button [input]

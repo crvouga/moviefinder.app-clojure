@@ -83,9 +83,9 @@
 (defn view-home [input]
   (moviefinder-app.view/view-app-tabs-layout {:route/name :home/home}  (view-feed! input)))
 
-(defmethod moviefinder-app.requests/route-hx :noop [_request]
+(defmethod moviefinder-app.requests/handle-hx :noop [_request]
   {:status 200})
 
-(defmethod moviefinder-app.requests/route-hx :home/home [request]
+(defmethod moviefinder-app.requests/handle-hx :home/home [request]
   (moviefinder-app.requests/html (view-home request)))
 

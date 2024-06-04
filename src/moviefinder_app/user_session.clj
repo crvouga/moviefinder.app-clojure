@@ -11,10 +11,10 @@
     view-logged-in
     view-logged-out))
 
-(defmethod moviefinder-app.requests/route-hx :user-session/clicked-send-login-link [_request]
+(defmethod moviefinder-app.requests/handle-hx :user-session/clicked-send-login-link [_request]
   nil)
 
-(defmethod moviefinder-app.requests/route-hx :user-session/login [_request]
+(defmethod moviefinder-app.requests/handle-hx :user-session/login [_request]
   (moviefinder-app.requests/html
    [:div
     [:h1 "Login"]

@@ -4,26 +4,86 @@
             [moviefinder-app.route]
             [moviefinder-app.base64]))
 
+
+;; 
+;; 
+;; 
+;; Routing
+;; 
+;; 
+;; 
+
+(def request-route (comp :route/name :request/route))
+
+(defmulti handle-hx request-route)
+
+(defmulti handle request-route)
+
+;; 
+;; 
+;; 
+;; Request
+;; 
+;; 
+;; 
+
 (defn- remove-leading-backslash [uri]
   (if (clojure.string/starts-with? uri "/") (subs uri 1) uri))
 
-(defn ring-request->request [ring-request]
-  {:request/route (-> ring-request :uri remove-leading-backslash moviefinder-app.route/decode)
-   :request/hx-request? (boolean (get-in ring-request [:headers "hx-request"]))
-   :request/session-id (ring-request :session/key)})
+(defn- route [ring-request]
+  (-> ring-request :uri remove-leading-backslash moviefinder-app.route/decode))
 
-(defmulti route-hx (fn [request] (-> request :request/route :route/name)))
+(defn- hx-request? [ring-request]
+  (boolean (get-in ring-request [:headers "hx-request"])))
+
+(defn- session-id [ring-request]
+  (ring-request :session/key))
+
+(defn ring-request->request [ring-request]
+  {:request/route (route ring-request)
+   :request/hx-request? (hx-request? ring-request)
+   :request/session-id (session-id ring-request)})
+
+;; 
+;; 
+;; 
+;; Response
+;; 
+;; 
+;; 
+
+(defmulti response->ring-response :response/type)
+
+(defn- status [response]
+  (if (:response/ok? response) 200 500))
+
+(defn- html-body [response]
+  (-> response :response/view hiccup2.core/html str))
+
+(def html-headers
+  {"Content-Type" "text/html"})
+
+(defmethod response->ring-response :response-type/html [response]
+  {:status (status response)
+   :headers html-headers
+   :body (html-body response)})
+
+(defn- append-doc-type [html]
+  (str "<!doctype html>" html))
+
+(def html-document-body (comp append-doc-type html-body))
+
+(defmethod response->ring-response :response-type/html-document [response]
+  {:status (status response)
+   :headers html-headers
+   :body (html-document-body response)})
 
 (defn html [view]
   {:response/ok? true
    :response/view view
-   :status 200
-   :headers {"Content-Type" "text/html"}
-   :view view
-   :body (str (hiccup2.core/html view))})
+   :response/type :response-type/html})
 
 (defn html-document [view]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :view view
-   :body (str "<!doctype html>" (hiccup2.core/html view))})
+  {:response/ok? true
+   :response/view view
+   :response/type :response-type/html-document})
