@@ -4,8 +4,9 @@
             [moviefinder-app.user-session.db-impl]))
 
 (defn fixture []
-  (let [db (user-session-db/->UserSessionDb {:user-session-db/impl 
-                                             :user-session-db/impl-in-memory})] 
+  (let [db (user-session-db/->UserSessionDb
+            {:user-session-db/impl
+             :user-session-db/impl-in-memory})] 
     {:fixture/db db}))
 
 (deftest user-session-db-test
