@@ -14,10 +14,17 @@
 (defmethod moviefinder-app.requests/handle-hx :user-session/clicked-send-login-link [_request]
   nil)
 
-(defmethod moviefinder-app.requests/handle-hx :user-session/login [_request]
-  (moviefinder-app.requests/html
-   [:div
-    [:h1 "Login"]
-    [:form {:hx-post (moviefinder-app.route/encode {:route/name :user-session/clicked-send-login-link})}
-     [:input {:type "email" :name "email" :placeholder "Email"}]
-     (moviefinder-app.view/button {:type "submit"} "Send login link")]]))
+(defn view-login [_request]
+  [:div
+   [:h1 "Login"]
+   [:form {:hx-post (-> {:route/name :user-session/clicked-send-login-link}
+                        moviefinder-app.route/encode)}
+    [:input {:type "email"
+             :name "email"
+             :placeholder "Email"}]
+    (moviefinder-app.view/button {:type "submit"} "Send login link")]])
+
+(defmethod moviefinder-app.requests/handle-hx :user-session/login [request]
+  (-> request 
+      view-login 
+      moviefinder-app.requests/html))

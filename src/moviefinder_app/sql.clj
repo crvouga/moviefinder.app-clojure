@@ -4,7 +4,7 @@
 (def db
   {:classname   "org.sqlite.JDBC"
    :subprotocol "sqlite"
-   :subname     "db/database.db"})
+   :subname     "data/database.db"})
 
 (defn print-result-set
   "prints the result set in tabular form"
