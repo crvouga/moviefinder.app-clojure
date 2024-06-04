@@ -5,7 +5,7 @@
 
 (def db
   (user-session-db/->UserSessionDb
-   {:user-session-db/impl :user-session-db/impl-sql}))
+   {:user-session-db/impl :user-session-db/impl-in-memory}))
 
 (deftest user-session-db-test
   (testing "find user id by session id"
