@@ -3,13 +3,16 @@
             [moviefinder-app.user-session.db :as user-session-db]
             [moviefinder-app.user-session.db-impl]))
 
-(def db
-  (user-session-db/->UserSessionDb
-   {:user-session-db/impl :user-session-db/impl-in-memory}))
+(defn fixture []
+  (let [db (user-session-db/->UserSessionDb {:user-session-db/impl 
+                                             :user-session-db/impl-in-memory})]
+    {:fixture/db db}))
 
 (deftest user-session-db-test
   (testing "find user id by session id"
-    (is (= 1 1)))
+    (let [f (fixture)]
+      (user-session-db/insert! (f :fixture/db) {:session/id 1 :user/id 2})
+      (is (= 1 1))))
 
   (testing "insert user session"
     (is (= 1 1))))
