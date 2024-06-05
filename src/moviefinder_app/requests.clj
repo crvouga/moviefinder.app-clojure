@@ -1,8 +1,8 @@
 (ns moviefinder-app.requests
   (:require [clojure.string]
             [hiccup2.core]
-            [moviefinder-app.route]
-            [moviefinder-app.base64]))
+            [moviefinder-app.base64]
+            [moviefinder-app.route]))
 
 
 ;; 

@@ -1,13 +1,13 @@
 (ns moviefinder-app.main
-  (:require [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.reload :refer [wrap-reload]]
-            [ring.middleware.session :refer [wrap-session]]
-            [moviefinder-app.view]
-            [moviefinder-app.account]
-            [moviefinder-app.movie.details]
-            [moviefinder-app.home]
+  (:require [moviefinder-app.account]
             [moviefinder-app.counter]
-            [moviefinder-app.requests]))
+            [moviefinder-app.home]
+            [moviefinder-app.movie.details]
+            [moviefinder-app.requests]
+            [moviefinder-app.view]
+            [ring.adapter.jetty :refer [run-jetty]]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.session :refer [wrap-session]]))
 ;; 
 ;; 
 ;; 
@@ -20,7 +20,7 @@
 (defn view [request]
   [:html {:lang "en" :doctype :html5}
    [:head
-    [:title "moviefinder-app"]
+    [:title "moviefinder.app"]
     [:meta {:name :description :content "Find movies to watch"}]
     [:meta {:charset "utf-8"}]
     [:link {:rel "icon" :href "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><text y='32' font-size='32'>🍿</text></svg>"}]
@@ -81,7 +81,11 @@
       (wrap-session)
       (run-jetty {:port (input :server/port) :join? false})))
 
+(defn localhost-url [port]
+    (str "http://localhost:" port))
+
 (defn -main []
-  (let [port (or (get-port!) 3000)]
+  (let [port (or (get-port!) 8888)]
     (run-server! {:server/port port})
-    (println (str "Server listening on port " port "..."))))
+    (println (str "Server listening on port " port "..."))
+    (println (localhost-url port))))
