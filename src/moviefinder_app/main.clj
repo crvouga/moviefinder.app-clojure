@@ -77,15 +77,12 @@
 
 (defn run-server! [input]
   (-> #'handle-ring-request
-      (wrap-reload)
       (wrap-session)
+      (wrap-reload)
       (run-jetty {:port (input :server/port) :join? false})))
-
-(defn localhost-url [port]
-    (str "http://localhost:" port))
 
 (defn -main []
   (let [port (or (get-port!) 8888)]
     (run-server! {:server/port port})
     (println (str "Server listening on port " port "..."))
-    (println (localhost-url port))))
+    (println (str "http://localhost:" port))))
