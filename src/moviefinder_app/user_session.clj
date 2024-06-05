@@ -22,18 +22,24 @@
       (view-logged-in user-session)
       (view-logged-out))))
 
-(defmethod moviefinder-app.requests/handle-hx :user-session/clicked-send-login-link [_request]
+
+(defn send-login-with-email-link! [input]
+  (let [email-address (-> input :email-address)]
+    (println "Sending login link to" email-address)))
+
+(defmethod moviefinder-app.requests/handle-hx :user-session/submitted-send-login-link [_request]
+  (send-login-with-email-link! _request)
   (moviefinder-app.requests/html [:div "Login link sent"]))
 
 (defn view-login-with-email-form [_request]
   [:form.flex.flex-col.gap-4.w-full
-   {:hx-post (-> {:route/name :user-session/clicked-send-login-link}
+   {:hx-post (-> {:route/name :user-session/submitted-send-login-link}
                  moviefinder-app.route/encode)
     :hx-target "none"
     :hx-indicator "#login-with-email-indicator"}
    [:input.bg-black {:type "email"
-                     :name "email"
-                     :placeholder "Email"}]
+                     :name "email-address"
+                     :placeholder "Email Address"}]
    (moviefinder-app.view/button
     {:type "submit"
      :button/indicator "#login-with-email-indicator"}
