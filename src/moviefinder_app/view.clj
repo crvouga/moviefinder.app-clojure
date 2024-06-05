@@ -7,7 +7,7 @@
 (defn button
   [props & children]
   (let [element (-> props :button/element (or :button))
-        indicator (-> props :button/indicator)
+        _hx-indicator-id (-> props :button/hx-indicator-id)
         props (merge {:class "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded active:opacity-50"} props)]
     [element
      props

@@ -42,7 +42,7 @@
                      :placeholder "Email Address"}]
    (moviefinder-app.view/button
     {:type "submit"
-     :button/indicator "#login-with-email-indicator"}
+     :button/hx-indicator-id "#login-with-email-indicator"}
     "Send login link")])
 
 (defn view-login [request]
