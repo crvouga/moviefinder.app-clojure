@@ -6,9 +6,12 @@
 
 (defn button
   [props & children]
-  (let [element (-> props :button/element (or :button))]
+  (let [element (-> props :button/element (or :button))
+        indicator (-> props :button/indicator)
+        props (merge {:class "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded active:opacity-50"} props)]
     [element
-     (merge {:class "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded active:opacity-50"} props) children]))
+     props
+     children]))
 
 (defn tab-container [& children]
   [:div.w-full.h-full.flex.flex-col.overflow-hidden {:id "tabs"} children])

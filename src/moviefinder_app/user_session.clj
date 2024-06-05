@@ -29,11 +29,15 @@
   [:form.flex.flex-col.gap-4.w-full
    {:hx-post (-> {:route/name :user-session/clicked-send-login-link}
                  moviefinder-app.route/encode)
-    :hx-target "none"}
+    :hx-target "none"
+    :hx-indicator "#login-with-email-indicator"}
    [:input.bg-black {:type "email"
                      :name "email"
                      :placeholder "Email"}]
-   (moviefinder-app.view/button {:type "submit"} "Send login link")])
+   (moviefinder-app.view/button
+    {:type "submit"
+     :button/indicator "#login-with-email-indicator"}
+    "Send login link")])
 
 (defn view-login [request]
   [:div.w-full.h-full.flex.flex-1.flex-col
