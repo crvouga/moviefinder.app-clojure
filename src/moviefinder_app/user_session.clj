@@ -1,30 +1,47 @@
 (ns moviefinder-app.user-session
   (:require [moviefinder-app.requests]
             [moviefinder-app.route]
-            [moviefinder-app.view]))
+            [moviefinder-app.view]
+            [moviefinder-app.user-session.db]
+            [moviefinder-app.user-session.db-impl]))
+
+(def user-session-db
+  (moviefinder-app.user-session.db/->UserSessionDb
+   {:user-session-db/impl :user-session-db/impl-in-memory}))
 
 (defn assoc-user-session! [request] 
-  (-> request :user-session/session-id))
+  (let [user-session (->> request
+                          :user-session/session-id
+                          (moviefinder-app.user-session.db/find-user-id-by-session-id! user-session-db))]
+    (-> request
+        (assoc :user-session/user-session user-session))))
 
 (defn guard-auth! [request view-logged-out view-logged-in]
-  (if (-> request :request/session-id)
-    view-logged-in
-    view-logged-out))
+  (let [user-session (-> request :user-session/user-session)]
+    (if user-session
+      (view-logged-in user-session)
+      (view-logged-out))))
 
 (defmethod moviefinder-app.requests/handle-hx :user-session/clicked-send-login-link [_request]
-  nil)
+  (moviefinder-app.requests/html [:div "Login link sent"]))
 
-(defn view-login [_request]
-  [:div
-   [:h1 "Login"]
-   [:form {:hx-post (-> {:route/name :user-session/clicked-send-login-link}
-                        moviefinder-app.route/encode)}
-    [:input {:type "email"
-             :name "email"
-             :placeholder "Email"}]
-    (moviefinder-app.view/button {:type "submit"} "Send login link")]])
+(defn view-login-with-email-form [_request]
+  [:form.flex.flex-col.gap-4.w-full
+   {:hx-post (-> {:route/name :user-session/clicked-send-login-link}
+                 moviefinder-app.route/encode)
+    :hx-target "none"}
+   [:input.bg-black {:type "email"
+                     :name "email"
+                     :placeholder "Email"}]
+   (moviefinder-app.view/button {:type "submit"} "Send login link")])
+
+(defn view-login [request]
+  [:div.w-full.h-full.flex.flex-1.flex-col
+   (moviefinder-app.view/top-bar {:top-bar/title "Login"})
+   [:div.flex-1.w-full.p-6.flex.flex-col.items-center.justify-center
+    (view-login-with-email-form request)]])
 
 (defmethod moviefinder-app.requests/handle-hx :user-session/login [request]
-  (-> request 
-      view-login 
+  (-> request
+      view-login
       moviefinder-app.requests/html))

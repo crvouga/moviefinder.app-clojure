@@ -78,6 +78,11 @@
    :headers html-headers
    :body (html-document-body response)})
 
+(defmethod response->ring-response :default [_response]
+  {:status 500
+   :headers {}
+   :body "Internal Server Error"})
+
 (defn html [view]
   {:response/ok? true
    :response/view view
