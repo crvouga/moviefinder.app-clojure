@@ -1,9 +1,9 @@
 (ns moviefinder-app.user-session
   (:require [moviefinder-app.requests]
             [moviefinder-app.route]
-            [moviefinder-app.view]
             [moviefinder-app.user-session.db]
-            [moviefinder-app.user-session.db-impl]))
+            [moviefinder-app.user-session.db-impl]
+            [moviefinder-app.view]))
 
 (def user-session-db
   (moviefinder-app.user-session.db/->UserSessionDb
