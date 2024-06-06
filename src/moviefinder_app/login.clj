@@ -9,14 +9,17 @@
             [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.view.icon]))
 
+(defn ->login-link-email [to]
+  {:email/to to
+   :email/subject "Login to moviefinder.app"
+   :email/body-view [:div "Hello"]})
 
 (defn send-login-with-email-link! [input]
-  (let [email (-> input :login/email)
-        login-link-db (-> input :login-link-db/login-link-db)
+  (let [login-link-db (-> input :login-link-db/login-link-db)
         send-email (-> input :send-email/send-email)
+        email (-> input :login/email)
         login-link (moviefinder-app.login.login-link/new! email)
-        login-link-email {:email/to email
-                          :email/subject "Login to moviefinder.app"}
+        login-link-email (->login-link-email email)
         _ (send-email/send-email! send-email login-link-email)
         _ (login-link-db/put! login-link-db #{login-link})]))
 
