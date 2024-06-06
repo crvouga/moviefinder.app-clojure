@@ -4,6 +4,7 @@
             [moviefinder-app.home]
             [moviefinder-app.movie.details]
             [moviefinder-app.requests]
+            [moviefinder-app.login]
             [moviefinder-app.user-session]
             [moviefinder-app.view]
             [ring.adapter.jetty :refer [run-jetty]]
