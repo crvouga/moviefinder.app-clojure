@@ -38,13 +38,12 @@
                       (map #(login-link-db/find-by-email! db %))
                       (apply set/union))
 
-          _ (doseq [_ login-links]
-              (login-link-db/put! db _))
+          _ (login-link-db/put! db login-links)
 
           after (->> login-links
                      (map :login-link/email)
                      (map #(login-link-db/find-by-email! db %))
-                     (apply set/union))]
+                     (apply set/union))] 
       
       (is (= before #{}))
       (is (= login-links after)))))
