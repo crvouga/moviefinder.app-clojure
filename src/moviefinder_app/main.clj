@@ -67,8 +67,8 @@
 (def send-email (moviefinder-app.email.send-email/->SendEmail
                  {:send-email/impl :send-email/impl-mock}))
 
-(defn assoc-deps [input]
-  (assoc input
+(defn assoc-deps [request]
+  (assoc request
          :login-link-db/login-link-db login-link-db
          :send-email/send-email send-email))
 
