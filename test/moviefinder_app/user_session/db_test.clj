@@ -7,14 +7,14 @@
   (let [db (user-session-db/->UserSessionDb
             {:user-session-db/impl
              :user-session-db/impl-in-memory})] 
-    {:fixture/db db}))
+    {:f/db db}))
 
 (deftest user-session-db-test
   (testing "find user id by session id"
     (let [f (fixture)
           session {:session/id 1 :user/id 2}]
-      (user-session-db/insert! (f :fixture/db) session)
-      (is (= 2 (user-session-db/find-user-id-by-session-id! (f :fixture/db) 1)))
+      (user-session-db/insert! (f :f/db) session)
+      (is (= 2 (user-session-db/find-user-id-by-session-id! (f :f/db) 1)))
       (is (= 1 1))))
 
   (testing "insert user session"
