@@ -7,7 +7,6 @@
             [moviefinder-app.view.icon]))
 
 
-
 (defn send-login-with-email-link! [input]
   (let [email-address (-> input :email-address)]
     (println "Sending login link to" email-address)))
