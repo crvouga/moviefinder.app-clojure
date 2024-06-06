@@ -7,6 +7,10 @@
             [moviefinder-app.login]
             [moviefinder-app.user-session]
             [moviefinder-app.view]
+            [moviefinder-app.login.login-link-db]
+            [moviefinder-app.login.login-link-db-impl]
+            [moviefinder-app.email.send-email]
+            [moviefinder-app.email.send-email-impl]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.session :refer [wrap-session]]))
@@ -57,6 +61,25 @@
 ;; 
 
 
+(def login-link-db (moviefinder-app.login.login-link-db/->LoginLinkDb
+                     {:login-link-db/impl :login-link-db/impl-in-memory}))
+
+(def send-email (moviefinder-app.email.send-email/->SendEmail
+                 {:send-email/impl :send-email/impl-mock}))
+
+(defn assoc-deps [input]
+  (assoc input
+         :login-link-db/login-link-db login-link-db
+         :send-email/send-email send-email))
+
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+
 (defn handle [request]
   (if (:request/hx-request? request)
     (moviefinder-app.requests/handle-hx request)
@@ -70,6 +93,7 @@
   (-> ring-request
       moviefinder-app.requests/ring-request->request
       tap
+      assoc-deps
       handle
       moviefinder-app.requests/response->ring-response))
 

@@ -34,9 +34,10 @@
     "Back to login"]])
 
 (defmethod moviefinder-app.requests/handle-hx :login/submitted-send-login-link [request]
-  (send-login-with-email-link!
-   {:login/email (-> request :request/form :login/email)
-    :login/session-id (-> request :request/session-id)})
+  (-> request
+      (assoc :login/email (-> request :request/form :login/email)
+             :login/session-id (-> request :request/session-id))
+      send-login-with-email-link!)
   (moviefinder-app.requests/html (view-login-email-sent request)))
 
 (defn view-login-with-email-form [_request]
