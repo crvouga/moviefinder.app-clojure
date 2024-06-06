@@ -1,9 +1,9 @@
-(ns moviefinder-app.login-test
+(ns moviefinder-app.login.login-test
   (:require [clojure.string :refer [includes?]]
             [clojure.test :refer [deftest is testing]]
             [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.email.send-email-impl]
-            [moviefinder-app.login :as login]
+            [moviefinder-app.login.login :as login]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.login.login-link-db-impl]
             [moviefinder-app.route]))

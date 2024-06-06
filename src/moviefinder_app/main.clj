@@ -5,7 +5,7 @@
             [moviefinder-app.email.send-email-impl]
             [moviefinder-app.env]
             [moviefinder-app.home]
-            [moviefinder-app.login]
+            [moviefinder-app.login.login]
             [moviefinder-app.login.login-link-db]
             [moviefinder-app.login.login-link-db-impl]
             [moviefinder-app.movie.details]

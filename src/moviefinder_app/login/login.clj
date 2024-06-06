@@ -1,4 +1,4 @@
-(ns moviefinder-app.login
+(ns moviefinder-app.login.login
   (:require [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.env]
             [moviefinder-app.login.login-link]
