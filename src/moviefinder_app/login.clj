@@ -23,6 +23,9 @@
     (send-email/send-email! send-email login-link-email)
     (login-link-db/put! login-link-db #{login-link})))
 
+(defn clicked-login-link! [input]
+  input)
+
 (defn view-login-email-sent [_request]
   [:div.flex.gap-3.flex-col.w-full
    (moviefinder-app.view.icon/checkmark-circle {:class "size-20 text-green-500 -ml-2"})
