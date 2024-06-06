@@ -1,16 +1,19 @@
 (ns moviefinder-app.login-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.string :refer [includes?]]
+            [clojure.test :refer [deftest is testing]]
+            [moviefinder-app.email.send-email :as send-email]
+            [moviefinder-app.email.send-email-impl]
             [moviefinder-app.login :as login]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.login.login-link-db-impl]
-            [moviefinder-app.email.send-email :as send-email]
-            [moviefinder-app.email.send-email-impl]))
+            [moviefinder-app.route]))
 
 (defn fixture []
   (let [login-link-db (login-link-db/->LoginLinkDb
             {:login-link-db/impl :login-link-db/impl-in-memory})
         send-email (send-email/->SendEmail
-                     {:send-email/impl :send-email/impl-mock})]
+                     {:send-email/impl :send-email/impl-mock
+                      :send-email/log? false})]
     {:login/email "test@test.com"
      :login/session-id "1234"
      :login-link-db/login-link-db login-link-db
@@ -35,4 +38,12 @@
           _ (login/send-login-with-email-link! f)
           after (send-email/get-sent-emails! send-email)]
       (is (= before #{}))
-      (is (= (count after) 1)))))
+      (is (= (count after) 1))))
+  
+  (testing "login email should include login link"
+    (let [f (fixture)
+          _ (login/send-login-with-email-link! f)
+          login-link (first (login-link-db/find-by-email! (f :login-link-db/login-link-db) (:login/email f)))
+          sent (first (send-email/get-sent-emails! (:send-email/send-email f)))
+          login-link-url (-> login-link login/->login-link-route moviefinder-app.route/encode)]
+      (is (includes? (sent :email/body-html) login-link-url)))))

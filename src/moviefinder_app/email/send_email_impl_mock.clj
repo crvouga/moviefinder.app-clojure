@@ -1,5 +1,6 @@
 (ns moviefinder-app.email.send-email-impl-mock
-  (:require [moviefinder-app.email.send-email]))
+  (:require [moviefinder-app.email.email :refer [assoc-body-html]]
+            [moviefinder-app.email.send-email]))
 
 
 (defn- conj-email [state email]
@@ -8,12 +9,14 @@
         state-new (assoc state ::sent-emails sent-emails-new)]
     state-new))
 
-(defrecord SendEmailImplMock [state!]
+(defrecord SendEmailImplMock [state! input]
   moviefinder-app.email.send-email/SendEmail
   (send-email!
     [_this email]
-    (swap! state! conj-email email)
-    (println ::send-email! email))
+    (let [email-with-html (assoc-body-html email)]
+      (swap! state! conj-email email-with-html)
+      (when (:send-email/log? input)
+       (println ::send-email! email-with-html))))
 
   (get-sent-emails!
    [_this]
@@ -21,5 +24,5 @@
 
 
 (defmethod moviefinder-app.email.send-email/->SendEmail :send-email/impl-mock
-  [_this]
-  (->SendEmailImplMock (atom {})))
+  [input]
+  (->SendEmailImplMock (atom {}) input))

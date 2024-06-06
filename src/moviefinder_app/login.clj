@@ -1,30 +1,37 @@
 (ns moviefinder-app.login
-  (:require [moviefinder-app.requests]
+  (:require [moviefinder-app.email.send-email :as send-email]
+            [moviefinder-app.login.login-link]
+            [moviefinder-app.login.login-link-db :as login-link-db]
+            [moviefinder-app.requests]
             [moviefinder-app.route]
             [moviefinder-app.user-session.db]
             [moviefinder-app.user-session.db-impl]
             [moviefinder-app.view]
-            [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link]
-            [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.view.icon]))
 
-(defn ->login-link-email [to]
-  {:email/to to
+(defn ->login-link-route [login-link]
+  {:route/name :clicked-login-link
+   :login-link/id (login-link :login-link/id)})
+
+(defn view-login-link-email-body [login-link]
+  (moviefinder-app.view/button
+   {:href (-> login-link ->login-link-route moviefinder-app.route/encode)
+    :button/element :a
+    :button/label "Login"}))
+
+(defn ->login-link-email [login-link]
+  {:email/to (-> login-link :login-link/email)
    :email/subject "Login to moviefinder.app"
-   :email/body-view [:div "Hello"]})
+   :email/body-view (view-login-link-email-body login-link)})
 
 (defn send-login-with-email-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
         send-email (-> input :send-email/send-email)
         email (-> input :login/email)
         login-link (moviefinder-app.login.login-link/new! email)
-        login-link-email (->login-link-email email)] 
+        login-link-email (->login-link-email login-link)] 
     (send-email/send-email! send-email login-link-email)
     (login-link-db/put! login-link-db #{login-link})))
-
-(defn clicked-login-link! [input]
-  input)
 
 (defn view-login-email-sent [_request]
   [:div.flex.gap-3.flex-col.w-full
