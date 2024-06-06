@@ -42,8 +42,7 @@
   
   (testing "login email should include login link"
     (let [f (fixture)
-          _ (login/send-login-with-email-link! f)
-          login-link (first (login-link-db/find-by-email! (f :login-link-db/login-link-db) (:login/email f)))
+          login-link (login/send-login-with-email-link! f)
           sent (first (send-email/get-sent-emails! (:send-email/send-email f)))
           login-link-url (-> login-link login/->login-link-route moviefinder-app.route/encode)]
       (is (includes? (sent :email/body-html) login-link-url))))
@@ -51,9 +50,7 @@
   
   (testing "use login link"
     (let [f (fixture)
-          _ (login/send-login-with-email-link! f)
-          login-link (first (login-link-db/find-by-email! (f :login-link-db/login-link-db) (:login/email f)))
-          input (merge f login-link)
-          _ (login/use-login-link! input)
+          login-link (login/send-login-with-email-link! f)
+          _ (login/use-login-link! (merge f login-link))
           after (first (login-link-db/find-by-email! (f :login-link-db/login-link-db) (:login/email f)))]
       (is (not (nil? (after :login-link/used-at-posix)))))))

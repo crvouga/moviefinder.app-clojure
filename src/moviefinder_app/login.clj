@@ -9,7 +9,6 @@
             [moviefinder-app.view]
             [moviefinder-app.view.icon]))
 
-
 (defn use-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
         login-link-id (-> input :login-link/id)
@@ -51,7 +50,8 @@
         login-link (moviefinder-app.login.login-link/new! email)
         login-link-email (->login-link-email login-link)] 
     (send-email/send-email! send-email login-link-email)
-    (login-link-db/put! login-link-db #{login-link})))
+    (login-link-db/put! login-link-db #{login-link})
+    login-link))
 
 (defn view-login-email-sent [_request]
   [:div.flex.gap-3.flex-col.w-full
