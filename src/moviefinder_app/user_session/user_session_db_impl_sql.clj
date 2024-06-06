@@ -1,5 +1,6 @@
 (ns moviefinder-app.user-session.db-impl-sql
-  (:require [moviefinder-app.user-session.db :refer [UserSessionDb ->UserSessionDb]]))
+  (:require [moviefinder-app.user-session.db :refer [->UserSessionDb
+                                                     UserSessionDb]]))SessionDb]]))
 
 
 (defrecord UserSessionDbSql []

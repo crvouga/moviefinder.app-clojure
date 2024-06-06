@@ -5,9 +5,19 @@
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests]
             [moviefinder-app.route]
-            [moviefinder-app.user-session.db-impl]
+            [moviefinder-app.user-session.user-session-db-impl]
             [moviefinder-app.view]
             [moviefinder-app.view.icon]))
+
+;; 
+;; 
+;; 
+;; 
+;; Use login link
+;; 
+;; 
+;; 
+;; 
 
 (defn use-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
@@ -26,6 +36,14 @@
 (defn ->login-link-route [login-link]
   {:route/name :login/clicked-login-link
    :login-link/id (login-link :login-link/id)})
+
+;; 
+;; 
+;; 
+;; Send login link
+;; 
+;; 
+;; 
 
 (def base-url (moviefinder-app.env/get-env-var! "BASE_URL"))
 
@@ -89,6 +107,17 @@
     {:type "submit"
      :button/label "Send login link"
      :button/hx-indicator-id "#login-with-email-indicator"})])
+
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+
 
 (defn view-login-screen [request]
   [:div.w-full.h-full.flex.flex-1.flex-col
