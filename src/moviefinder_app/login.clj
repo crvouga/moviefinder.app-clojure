@@ -1,5 +1,6 @@
 (ns moviefinder-app.login
   (:require [moviefinder-app.email.send-email :as send-email]
+            [moviefinder-app.env]
             [moviefinder-app.login.login-link]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests]
@@ -9,13 +10,25 @@
             [moviefinder-app.view]
             [moviefinder-app.view.icon]))
 
+
+(defn view-clicked-login-link [_request]
+  [:div "Clicked login link"])
+
+(defmethod moviefinder-app.requests/handle-hx :login/clicked-login-link [request]
+  (moviefinder-app.requests/html (view-clicked-login-link request)))
+
 (defn ->login-link-route [login-link]
-  {:route/name :clicked-login-link
+  {:route/name :login/clicked-login-link
    :login-link/id (login-link :login-link/id)})
+
+(def base-url (moviefinder-app.env/get-env-var! "BASE_URL"))
+
+(defn prepend-base-url [pathname]
+  (str base-url pathname))
 
 (defn view-login-link-email-body [login-link]
   (moviefinder-app.view/button
-   {:href (-> login-link ->login-link-route moviefinder-app.route/encode)
+   {:href (-> login-link ->login-link-route moviefinder-app.route/encode prepend-base-url)
     :button/element :a
     :button/label "Login"}))
 

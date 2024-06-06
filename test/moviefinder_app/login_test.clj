@@ -13,7 +13,7 @@
             {:login-link-db/impl :login-link-db/impl-in-memory})
         send-email (send-email/->SendEmail
                      {:send-email/impl :send-email/impl-mock
-                      :send-email/log? false})]
+                      :send-email/log? true})]
     {:login/email "test@test.com"
      :login/session-id "1234"
      :login-link-db/login-link-db login-link-db

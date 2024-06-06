@@ -1,16 +1,17 @@
 (ns moviefinder-app.main
   (:require [moviefinder-app.account]
             [moviefinder-app.counter]
-            [moviefinder-app.home]
-            [moviefinder-app.movie.details]
-            [moviefinder-app.requests]
-            [moviefinder-app.login]
-            [moviefinder-app.user-session]
-            [moviefinder-app.view]
-            [moviefinder-app.login.login-link-db]
-            [moviefinder-app.login.login-link-db-impl]
             [moviefinder-app.email.send-email]
             [moviefinder-app.email.send-email-impl]
+            [moviefinder-app.env]
+            [moviefinder-app.home]
+            [moviefinder-app.login]
+            [moviefinder-app.login.login-link-db]
+            [moviefinder-app.login.login-link-db-impl]
+            [moviefinder-app.movie.details]
+            [moviefinder-app.requests]
+            [moviefinder-app.user-session]
+            [moviefinder-app.view]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.session :refer [wrap-session]]))
@@ -65,7 +66,8 @@
                      {:login-link-db/impl :login-link-db/impl-in-memory}))
 
 (def send-email (moviefinder-app.email.send-email/->SendEmail
-                 {:send-email/impl :send-email/impl-mock}))
+                 {:send-email/impl :send-email/impl-mock
+                  :send-email/log? true}))
 
 (defn assoc-deps [request]
   (assoc request
@@ -97,18 +99,15 @@
       handle
       moviefinder-app.requests/response->ring-response))
 
-(defn get-port! []
-  (when-let [port (System/getenv "PORT")]
-    (Integer. port)))
-
 (defn run-server! [input]
   (-> #'handle-ring-request
       (wrap-session)
       (wrap-reload)
       (run-jetty {:port (input :server/port) :join? false})))
 
+
+(def port (-> (moviefinder-app.env/get-env-var! "PORT") Integer/parseInt))
+(def base-url (moviefinder-app.env/get-env-var! "BASE_URL"))
 (defn -main []
-  (let [port (or (get-port!) 8888)]
-    (run-server! {:server/port port})
-    (println (str "Server listening on port " port "..."))
-    (println (str "http://localhost:" port))))
+  (run-server! {:server/port port})
+  (println (str "Server running at " base-url)))

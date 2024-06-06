@@ -1,5 +1,6 @@
 (ns moviefinder-app.email.send-email-impl-mock
-  (:require [moviefinder-app.email.email :refer [assoc-body-html]]
+  (:require [clojure.pprint :as pprint]
+            [moviefinder-app.email.email :refer [assoc-body-html]]
             [moviefinder-app.email.send-email]))
 
 
@@ -16,7 +17,8 @@
     (let [email-with-html (assoc-body-html email)]
       (swap! state! conj-email email-with-html)
       (when (:send-email/log? input)
-       (println ::send-email! email-with-html))))
+        (println ::send-email!)
+        (pprint/pprint (select-keys email-with-html [:email/to :email/subject :email/body-view])))))
 
   (get-sent-emails!
    [_this]
