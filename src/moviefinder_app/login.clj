@@ -30,7 +30,8 @@
    [:p.opacity-80 "We've sent you an email with a link to login with."]
    [:div.w-full.py-2]
    [:a.text-underline.opacity-80.underline
-    {:href (-> {:route/name :login/login} moviefinder-app.route/encode)}
+    {:href (-> {:route/name :login/login} moviefinder-app.route/encode)
+     :hx-get (-> {:route/name :login/login} moviefinder-app.route/encode)}
     "Back to login"]])
 
 (defmethod moviefinder-app.requests/handle-hx :login/submitted-send-login-link [request]
