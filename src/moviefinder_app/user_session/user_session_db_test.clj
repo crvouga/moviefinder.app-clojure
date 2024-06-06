@@ -1,4 +1,4 @@
-(ns moviefinder-app.user-session.db-test
+(ns moviefinder-app.user-session.user-session-db-test
   (:require [clojure.test :refer [deftest is testing]]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user-session.user-session-db-impl]))
