@@ -9,15 +9,16 @@
   (let [element (-> props :button/element (or :button))
         _hx-indicator-id (-> props :button/hx-indicator-id)
         label (-> props :button/label)
-        props (merge {:class "bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 text-lg rounded active:opacity-50"} props)]
+        props (merge {:class "text-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 text-lg rounded active:opacity-50"} props)]
     [element props label]))
 
 (defn text-field [input]
-  [:div
-   [:label
+  [:div.w-full.flex.flex-col.gap-2
+   [:label.font-bold.text-base
     {:for (-> input :text-field/id)}
     (-> input :text-field/label)]
-   [:input.bg-transparent
+
+   [:input.border.border-neutral-600.text-white.p-4.rounded.focus:outline.bg-neutral-900
     {:id (-> input :text-field/id)
      :type (-> input :text-field/type)
      :name (-> input :text-field/name)

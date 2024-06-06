@@ -13,8 +13,10 @@
     {:button/element :button
      :button/label "Login"
      :hx-target "#app"
-     :hx-get (-> {:route/name :user-session/login}
-               moviefinder-app.route/encode)})])
+     :hx-push-url (-> {:route/name :login/login}
+                      moviefinder-app.route/encode)
+     :hx-get (-> {:route/name :login/login}
+                 moviefinder-app.route/encode)})])
 
 (defn view-account [request]
   (moviefinder-app.view/view-app-tabs-layout 

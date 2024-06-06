@@ -92,3 +92,32 @@
   {:response/ok? true
    :response/view view
    :response/type :response-type/html-document})
+
+
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+
+(defn redirect [route]
+  {:response/ok? true
+   :response/route route
+   :response/type :response-type/redirect})
+
+(def redirect-headers
+  {"Content-Type" "text/html"
+   "Location" ""})
+
+(defn response->location [response]
+  (-> response :response/route moviefinder-app.route/encode str))
+
+(defn response->redirect-headers [response]
+  (let [location (response->location response)]
+    (assoc redirect-headers "Location" location)))
+
+(defmethod response->ring-response :response-type/redirect [response]
+  {:status 301
+   :headers (response->redirect-headers response)
+   :body ""})
