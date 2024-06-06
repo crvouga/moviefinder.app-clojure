@@ -5,13 +5,23 @@
             [hiccup2.core]))
 
 (defn button
-  [props & children]
+  [props]
   (let [element (-> props :button/element (or :button))
         _hx-indicator-id (-> props :button/hx-indicator-id)
-        props (merge {:class "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded active:opacity-50"} props)]
-    [element
-     props
-     children]))
+        label (-> props :button/label)
+        props (merge {:class "bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 text-lg rounded active:opacity-50"} props)]
+    [element props label]))
+
+(defn text-field [input]
+  [:div
+   [:label
+    {:for (-> input :text-field/id)}
+    (-> input :text-field/label)]
+   [:input.bg-transparent
+    {:id (-> input :text-field/id)
+     :type (-> input :text-field/type)
+     :name (-> input :text-field/name)
+     :placeholder (-> input :text-field/placeholder)}]])
 
 (defn tab-container [& children]
   [:div.w-full.h-full.flex.flex-col.overflow-hidden {:id "tabs"} children])

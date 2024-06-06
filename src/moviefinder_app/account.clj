@@ -5,20 +5,21 @@
             [moviefinder-app.view.icon]))
 
 
-(defn view-account-logged-out [_request]
+(defn view-login-cta [_request]
   [:div.w-full.h-full.flex.items-center.justify-center.flex-col.gap-4.p-12.text-center
    (moviefinder-app.view.icon/door {:class "size-20"})
    [:h1.text-xl.font-bold "Login to access your account."]
    (moviefinder-app.view/button
-    {:button/element :a
-     :href (-> {:route/name :user-session/login}
-                 moviefinder-app.route/encode)}
-    "Login")])
+    {:button/element :button
+     :button/label "Login"
+     :hx-target "#app"
+     :hx-get (-> {:route/name :user-session/login}
+               moviefinder-app.route/encode)})])
 
 (defn view-account [request]
   (moviefinder-app.view/view-app-tabs-layout 
    {:route/name :account/account}
-   (view-account-logged-out request)))
+   (view-login-cta request)))
 
 (defmethod moviefinder-app.requests/handle-hx :account/account [request]
   (moviefinder-app.requests/html (view-account request)))

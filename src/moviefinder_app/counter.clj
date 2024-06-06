@@ -19,16 +19,16 @@
    [:h1 "Counter"]
 
    (moviefinder-app.view/button
-    {:hx-get (moviefinder-app.route/encode {:route/name ::clicked-clear}) 
-     :hx-swap "innerHTML" 
-     :hx-target (str "#" "counter-clicks")}
-    "Clear")
+    {:hx-get (moviefinder-app.route/encode {:route/name ::clicked-clear})
+     :hx-swap "innerHTML"
+     :hx-target (str "#" "counter-clicks")
+     :button/label "Clear"})
 
    (moviefinder-app.view/button
     {:hx-post (moviefinder-app.route/encode {:route/name ::clicked-append}) 
      :hx-swap "beforeend" 
-     :hx-target (str "#" "counter-clicks")}
-    "Append")
+     :hx-target (str "#" "counter-clicks")
+     :button/label "Append"})
 
    [:div {:id "counter-clicks"}
     (for [_ (range @clicks!)]
