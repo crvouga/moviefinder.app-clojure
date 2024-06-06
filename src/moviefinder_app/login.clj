@@ -28,11 +28,16 @@
      :button/hx-indicator-id "#login-with-email-indicator"}
     "Send login link")])
 
-(defn view-login [request]
+(defn view-login-screen [request]
   [:div.w-full.h-full.flex.flex-1.flex-col
    (moviefinder-app.view/top-bar {:top-bar/title "Login"})
    [:div.flex-1.w-full.p-6.flex.flex-col.items-center.justify-center
     (view-login-with-email-form request)]])
+
+(defn view-login [request]
+  (moviefinder-app.view/view-app-tabs-layout
+   {:route/name :account/account}
+   (view-login-screen request)))
 
 (defmethod moviefinder-app.requests/handle-hx :user-session/login [request]
   (-> request

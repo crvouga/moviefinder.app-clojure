@@ -17,8 +17,8 @@
 
 (defn view-account [request]
   (moviefinder-app.view/view-app-tabs-layout 
-   {:route/name :account/acount}
+   {:route/name :account/account}
    (view-account-logged-out request)))
 
-(defmethod moviefinder-app.requests/handle-hx :account/acount [request]
+(defmethod moviefinder-app.requests/handle-hx :account/account [request]
   (moviefinder-app.requests/html (view-account request)))
