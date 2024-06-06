@@ -19,9 +19,9 @@
         send-email (-> input :send-email/send-email)
         email (-> input :login/email)
         login-link (moviefinder-app.login.login-link/new! email)
-        login-link-email (->login-link-email email)
-        _ (send-email/send-email! send-email login-link-email)
-        _ (login-link-db/put! login-link-db #{login-link})]))
+        login-link-email (->login-link-email email)] 
+    (send-email/send-email! send-email login-link-email)
+    (login-link-db/put! login-link-db #{login-link})))
 
 (defn view-login-email-sent [_request]
   [:div.flex.gap-3.flex-col.w-full
