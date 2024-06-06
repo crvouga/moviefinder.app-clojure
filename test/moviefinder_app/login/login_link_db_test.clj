@@ -1,9 +1,9 @@
 (ns moviefinder-app.login.login-link-db-test
-  (:require [clojure.test :refer [deftest testing is]]
-            [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link-db-impl]
+  (:require [clojure.set :as set]
+            [clojure.test :refer [deftest is testing]]
             [moviefinder-app.login.login-link :as login-link]
-            [clojure.set :as set]))
+            [moviefinder-app.login.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-link-db-impl]))
 
 
 (defn fixture []
@@ -23,6 +23,43 @@
           after (login-link-db/find-by-email! db email)]
       (is (= before #{}))
       (is (= after #{login-link}))))
+  
+
+  (testing "find by id"
+    (let [f (fixture)
+          db (f :f/db)
+          login-link (login-link/random!)
+          id (-> login-link :login-link/id)
+          before (login-link-db/find-by-id! db id)
+          _ (login-link-db/put! db #{login-link})
+          after (login-link-db/find-by-id! db id)]
+      (is (= before #{}))
+      (is (= after #{login-link}))))
+  
+  (testing "it should be unique by id"
+    (let [f (fixture)
+           db (f :f/db)
+           login-link (login-link/random!)
+           id (-> login-link :login-link/id)
+           before (login-link-db/find-by-id! db id)
+            _ (doseq [_ (range 3)]
+                (login-link-db/put! db #{login-link}))
+           after (login-link-db/find-by-id! db id)]
+       (is (= before #{}))
+       (is (= after #{login-link}))))
+  
+
+  (testing "it should always keep the last one put"
+    (let [f (fixture)
+          db (f :f/db)
+          login-link (login-link/random!)
+          _ (login-link-db/put! db #{login-link})
+          before (login-link-db/find-by-id! db (-> login-link :login-link/id))
+          used-login-link (login-link/mark-as-used login-link)
+          _ (login-link-db/put! db #{used-login-link})
+          after (login-link-db/find-by-id! db (-> login-link :login-link/id))]
+      (is (= before #{login-link}))
+      (is (= after #{used-login-link}))))
 
   (testing "find and insert with many"
     (let [f (fixture)

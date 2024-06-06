@@ -12,3 +12,6 @@
   {:login-link/id (uuid-v4!)
    :login-link/email email
    :login-link/created-at-posix (System/currentTimeMillis)})
+
+(defn mark-as-used [login-link]
+  (assoc login-link :login-link/used-at-posix (System/currentTimeMillis)))

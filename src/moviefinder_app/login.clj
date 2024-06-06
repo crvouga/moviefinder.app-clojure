@@ -5,16 +5,23 @@
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests]
             [moviefinder-app.route]
-            [moviefinder-app.user-session.db]
             [moviefinder-app.user-session.db-impl]
             [moviefinder-app.view]
             [moviefinder-app.view.icon]))
 
 
+(defn use-login-link! [input]
+  (let [login-link-db (-> input :login-link-db/login-link-db)
+        login-link-id (-> input :login-link/id)
+        login-link (first (login-link-db/find-by-id! login-link-db login-link-id))
+        login-link-used (moviefinder-app.login.login-link/mark-as-used login-link)
+        _ (login-link-db/put! login-link-db #{login-link-used})]))
+
 (defn view-clicked-login-link [_request]
   [:div "Clicked login link"])
 
 (defmethod moviefinder-app.requests/handle-hx :login/clicked-login-link [request]
+  (use-login-link! request)
   (moviefinder-app.requests/html (view-clicked-login-link request)))
 
 (defn ->login-link-route [login-link]

@@ -16,7 +16,14 @@
     (let [input (into {} (map (juxt :login-link/id identity) input-login-links))
           next (merge @login-links-by-id! input)]
       (reset! login-links-by-id! next)
-      next)))
+      next))
+  
+  (find-by-id!
+    [_this id]
+    (->> @login-links-by-id!
+         vals
+         (filter #(= id (:login-link/id %)))
+         set)))
 
 (defmethod moviefinder-app.login.login-link-db/->LoginLinkDb :login-link-db/impl-in-memory
   [_]
