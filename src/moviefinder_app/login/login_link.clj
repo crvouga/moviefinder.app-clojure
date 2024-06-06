@@ -7,3 +7,8 @@
   {:login-link/id (uuid-v4!)
    :login-link/email "test@test.com"
    :login-link/created-at-posix (System/currentTimeMillis)})
+
+(defn new! [email]
+  {:login-link/id (uuid-v4!)
+   :login-link/email email
+   :login-link/created-at-posix (System/currentTimeMillis)})

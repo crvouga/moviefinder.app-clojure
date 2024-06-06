@@ -4,12 +4,21 @@
             [moviefinder-app.user-session.db]
             [moviefinder-app.user-session.db-impl]
             [moviefinder-app.view]
+            [moviefinder-app.login.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-link]
+            [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.view.icon]))
 
 
 (defn send-login-with-email-link! [input]
-  (let [email (-> input ::email)]
-    (println "Sending login link to" email)))
+  (let [email (-> input :login/email)
+        login-link-db (-> input :login-link-db/login-link-db)
+        send-email (-> input :send-email/send-email)
+        login-link (moviefinder-app.login.login-link/new! email)
+        login-link-email {:email/to email
+                          :email/subject "Login to moviefinder.app"}
+        _ (send-email/send-email! send-email login-link-email)
+        _ (login-link-db/put! login-link-db #{login-link})]))
 
 (defn view-login-email-sent [_request]
   [:div.flex.gap-3.flex-col.w-full
@@ -22,9 +31,9 @@
     "Back to login"]])
 
 (defmethod moviefinder-app.requests/handle-hx :login/submitted-send-login-link [request]
-  (send-login-with-email-link! 
-   {::email (-> request :request/form ::email)
-    ::session-id (-> request :request/session-id)})
+  (send-login-with-email-link!
+   {:login/email (-> request :request/form :login/email)
+    :login/session-id (-> request :request/session-id)})
   (moviefinder-app.requests/html (view-login-email-sent request)))
 
 (defn view-login-with-email-form [_request]
@@ -38,7 +47,7 @@
     {:text-field/id "email"
      :text-field/label "Email Address"
      :text-field/type "email"
-     :text-field/name ::email
+     :text-field/name :login/email
      :required true})
 
    (moviefinder-app.view/button
