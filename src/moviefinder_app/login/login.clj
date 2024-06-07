@@ -1,17 +1,17 @@
 (ns moviefinder-app.login.login
   (:require [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.env]
+            [moviefinder-app.error :refer [err ex->err-type]]
             [moviefinder-app.login.login-link :as login-link]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests]
             [moviefinder-app.route]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user-session.user-session-db-impl]
-            [moviefinder-app.view]
-            [moviefinder-app.view.icon]
-            [moviefinder-app.error :refer [err err->msg]]
+            [moviefinder-app.user.user :as user]
             [moviefinder-app.user.user-db :as user-db]
-            [moviefinder-app.user.user :as user]))
+            [moviefinder-app.view]
+            [moviefinder-app.view.icon]))
 
 ;; 
 ;; 
@@ -52,22 +52,29 @@
     (login-link-db/put! login-link-db #{login-link-used})))
 
 
-(defmethod err->msg :err/login-link-not-found [_]
-  "Login link was not found")
-
-(defmethod err->msg :err/login-link-already-used [_]
-  "Login link has already used")
-
-(defmethod err->msg :err/login-link-expired [_]
-  "Login link has expired. Please request a new one")
-
-
 (defn view-clicked-login-link [_request]
   [:div "Clicked login link"])
 
+(defmulti view-use-link-error (fn [ex _request] (ex->err-type ex)))
+
+(defmethod view-use-link-error :err/login-link-not-found [_request]
+  [:div "Login link was not found"])
+
+(defmethod view-use-link-error :err/login-link-already-used [_request]
+  [:div "Login link has already been used"])
+
+(defmethod view-use-link-error :err/login-link-expired [_request]
+  [:div "Login link has expired. Please request a new one"])
+
+(defmethod view-use-link-error :default [_request]
+  [:div "An error occurred"])
+
 (defmethod moviefinder-app.requests/handle-hx :login/clicked-login-link [request]
-  (use-login-link! request)
-  (moviefinder-app.requests/html (view-clicked-login-link request)))
+  (try 
+    (use-login-link! request)
+    (moviefinder-app.requests/html (view-clicked-login-link request))
+    (catch Exception ex
+      (moviefinder-app.requests/html (view-use-link-error ex request)))))
 
 (defn ->login-link-route [login-link]
   {:route/name :login/clicked-login-link
