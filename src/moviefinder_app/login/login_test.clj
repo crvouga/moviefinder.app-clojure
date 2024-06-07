@@ -65,15 +65,15 @@
   (testing "user should be logged in after using login link"
     (let [f (fixture)
           login-link (login/send-login-with-email-link! f)
-          before (user-session-db/find-user-id-by-session-id!
+          before (user-session-db/find-by-session-id!
                   (f :user-session-db/user-session-db) 
                   (f :user-session/id))
           _ (login/use-login-link! (merge f login-link))
-          after (user-session-db/find-user-id-by-session-id!
+          after (user-session-db/find-by-session-id!
                   (f :user-session-db/user-session-db)
                   (f :user-session/id))]
-      (is (nil? before))
-      (is (not (nil? after)))))
+      (is (= before #{}))
+      (is (= (count after) 1))))
   
   (testing "it should create a new user if the email is not found"
     (let [f (fixture)

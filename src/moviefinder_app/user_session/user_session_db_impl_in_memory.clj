@@ -6,12 +6,16 @@
 
 (defrecord UserSessionDbInMemory [sessions-by-session-id!]
   UserSessionDb
-  (find-user-id-by-session-id! [_this _session-id]
-    (when-let [session (get @sessions-by-session-id! _session-id)]
-      (:user/id session)))
+  (find-by-session-id! [_this session-id]
+    (->> @sessions-by-session-id!
+         vals
+         (filter #(= session-id (:user-session/id %)))
+         set))
 
-  (put! [_this user-session]
-    (swap! sessions-by-session-id! assoc (:user-session/id user-session) user-session)))
+  (put! [_this user-sessions]
+    (let [by-id (->> user-sessions (map (juxt :user-session/id identity)) (into {}))
+          by-id-new (merge by-id @sessions-by-session-id!)]
+      (reset! sessions-by-session-id! by-id-new))))
 
 
 (defmethod ->UserSessionDb :user-session-db/impl-in-memory [_input]

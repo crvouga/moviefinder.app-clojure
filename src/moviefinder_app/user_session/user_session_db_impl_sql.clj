@@ -4,10 +4,10 @@
 
 (defrecord UserSessionDbSql []
   moviefinder-app.user-session.user-session-db/UserSessionDb
-  (find-user-id-by-session-id! [_this _session-id]
+  (find-by-session-id! [_this _session-id]
     (throw (Exception. "Not implemented")))
 
-  (put! [_this _user-session]
+  (put! [_this _user-sessions]
     (throw (Exception. "Not implemented"))))
 
 

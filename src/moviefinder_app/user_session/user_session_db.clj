@@ -1,7 +1,7 @@
 (ns moviefinder-app.user-session.user-session-db)
 
 (defprotocol UserSessionDb
-  (find-user-id-by-session-id! [this session-id])
-  (put! [this user-session]))
+  (find-by-session-id! [this session-id])
+  (put! [this user-sessions]))
 
 (defmulti ->UserSessionDb :user-session-db/impl)

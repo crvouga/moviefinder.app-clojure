@@ -13,9 +13,8 @@
   (testing "find user id by session id"
     (let [f (fixture)
           session {:user-session/id 1 :user/id 2}]
-      (user-session-db/put! (f :f/db) session)
-      (is (= 2 (user-session-db/find-user-id-by-session-id! (f :f/db) 1)))
-      (is (= 1 1))))
+      (user-session-db/put! (f :f/db) #{session})
+      (is (= #{session} (user-session-db/find-by-session-id! (f :f/db) (session :user-session/id))))))
 
   (testing "insert user session"
     (is (= 1 1))))
