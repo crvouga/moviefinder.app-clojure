@@ -41,7 +41,7 @@
         user-session {:user-session/id user-session-id
                       :user/id user-id}
         ;; 
-        _ (user-session-db/insert! user-session-db user-session)
+        _ (user-session-db/put! user-session-db user-session)
         _ (user-db/put! user-db #{user})
         _ (login-link-db/put! login-link-db #{login-link-used})]))
 

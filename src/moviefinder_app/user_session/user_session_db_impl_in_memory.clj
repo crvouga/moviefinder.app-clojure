@@ -10,7 +10,7 @@
     (when-let [session (get @sessions-by-session-id! _session-id)]
       (:user/id session)))
 
-  (insert! [_this user-session]
+  (put! [_this user-session]
     (swap! sessions-by-session-id! assoc (:user-session/id user-session) user-session)))
 
 

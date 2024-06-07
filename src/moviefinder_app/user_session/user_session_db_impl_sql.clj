@@ -7,7 +7,7 @@
   (find-user-id-by-session-id! [_this _session-id]
     (throw (Exception. "Not implemented")))
 
-  (insert! [_this _user-session]
+  (put! [_this _user-session]
     (throw (Exception. "Not implemented"))))
 
 
