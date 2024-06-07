@@ -108,7 +108,7 @@
     (let [f (fixture)
           login-link-new (login-link/new! (user/random!))
           input (merge f login-link-new)
-          _ (thrown-err? :err/login-link-not-found (login/use-login-link! input))]))
+          _ (thrown-err? :err/login-link/not-found (login/use-login-link! input))]))
 
   (testing "it should error if login link is expired"
     (let [f (fixture)

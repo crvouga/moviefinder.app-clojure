@@ -9,7 +9,7 @@
 (defn ex->err [ex]
   (ex-data ex))
 
-(defn ex->err-type [ex]
+(defn ex->err-type [ex & _args]
   (-> ex ex->err :err/err))
 
 (defmacro thrown-err? [expected-error-type & body]
