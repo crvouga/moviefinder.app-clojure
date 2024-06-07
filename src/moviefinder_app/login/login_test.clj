@@ -1,3 +1,4 @@
+
 (ns moviefinder-app.login.login-test
   (:require [clojure.string :refer [includes?]]
             [clojure.test :refer [deftest is testing]]
@@ -6,18 +7,23 @@
             [moviefinder-app.login.login :as login]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.login.login-link-db-impl]
-            [moviefinder-app.route]))
+            [moviefinder-app.route]
+            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.user-session.user-session-db-impl]
+            [moviefinder-app.user.user-db :as user-db]
+            [moviefinder-app.user.user :as user]))
 
 (defn fixture []
-  (let [login-link-db (login-link-db/->LoginLinkDb
-            {:login-link-db/impl :login-link-db/impl-in-memory})
-        send-email (send-email/->SendEmail
-                     {:send-email/impl :send-email/impl-mock
-                      :send-email/log? false})]
+  (let [login-link-db (login-link-db/->LoginLinkDb {:login-link-db/impl :login-link-db/impl-in-memory})
+        user-session-db (user-session-db/->UserSessionDb {:user-session-db/impl :user-session-db/impl-in-memory})
+        send-email (send-email/->SendEmail {:send-email/impl :send-email/impl-mock :send-email/log? false})
+        user-db (user-db/->UserDb {:user-db/impl :user-db/impl-in-memory})]
     {:login/email "test@test.com"
-     :login/session-id "1234"
+     :user-session/id "test-user-session-id"
      :login-link-db/login-link-db login-link-db
-     :send-email/send-email send-email}))
+     :send-email/send-email send-email
+     :user-session-db/user-session-db user-session-db
+     :user-db/user-db user-db}))
 
 (deftest login-test
   (testing "send login link"
@@ -53,4 +59,39 @@
           login-link (login/send-login-with-email-link! f)
           _ (login/use-login-link! (merge f login-link))
           after (first (login-link-db/find-by-email! (f :login-link-db/login-link-db) (:login/email f)))]
-      (is (not (nil? (after :login-link/used-at-posix)))))))
+      (is (not (nil? (after :login-link/used-at-posix))))))
+  
+  
+  (testing "user should be logged in after using login link"
+    (let [f (fixture)
+          login-link (login/send-login-with-email-link! f)
+          before (user-session-db/find-user-id-by-session-id!
+                  (f :user-session-db/user-session-db) 
+                  (f :user-session/id))
+          _ (login/use-login-link! (merge f login-link))
+          after (user-session-db/find-user-id-by-session-id!
+                  (f :user-session-db/user-session-db)
+                  (f :user-session/id))]
+      (is (nil? before))
+      (is (not (nil? after)))))
+  
+  (testing "it should create a new user if the email is not found"
+    (let [f (fixture)
+          login-link (login/send-login-with-email-link! f)
+          before (first (user-db/find-by-email! (f :user-db/user-db) (:login/email f)))
+          _ (login/use-login-link! (merge f login-link))
+          after (first (user-db/find-by-email! (f :user-db/user-db) (:login/email f)))]
+      (is (nil? before))
+      (is (not (nil? after)))))
+  
+  (testing "it should NOT create a new user if already exists"
+     (let [f (fixture)
+           login-link (login/send-login-with-email-link! f)
+           user (user/new! (f :login/email))
+            _ (user-db/put! (f :user-db/user-db) #{user})
+           before (user-db/find-by-email! (f :user-db/user-db) (:login/email f))
+           _ (login/use-login-link! (merge f login-link))
+           after (user-db/find-by-email! (f :user-db/user-db) (:login/email f))]
+       (is (= before after))
+       (is (= after #{user})))))
+      

@@ -5,9 +5,12 @@
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests]
             [moviefinder-app.route]
+            [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user-session.user-session-db-impl]
             [moviefinder-app.view]
-            [moviefinder-app.view.icon]))
+            [moviefinder-app.view.icon]
+            [moviefinder-app.user.user-db :as user-db]
+            [moviefinder-app.user.user :as user]))
 
 ;; 
 ;; 
@@ -19,11 +22,27 @@
 ;; 
 ;; 
 
+
 (defn use-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
+        user-session-db (-> input :user-session-db/user-session-db)
+        user-db (-> input :user-db/user-db)
+        ;; 
         login-link-id (-> input :login-link/id)
         login-link (first (login-link-db/find-by-id! login-link-db login-link-id))
         login-link-used (moviefinder-app.login.login-link/mark-as-used login-link)
+        ;; 
+        user-email (-> login-link-used :login-link/email)
+        maybe-user (first (user-db/find-by-email! user-db user-email))
+        user (if maybe-user maybe-user (user/new! user-email))
+        ;; 
+        user-id (:user/id user)
+        user-session-id (-> input :user-session/id)
+        user-session {:user-session/id user-session-id
+                      :user/id user-id}
+        ;; 
+        _ (user-session-db/insert! user-session-db user-session)
+        _ (user-db/put! user-db #{user})
         _ (login-link-db/put! login-link-db #{login-link-used})]))
 
 (defn view-clicked-login-link [_request]
@@ -85,7 +104,7 @@
 (defmethod moviefinder-app.requests/handle-hx :login/submitted-send-login-link [request]
   (-> request
       (assoc :login/email (-> request :request/form :login/email)
-             :login/session-id (-> request :request/session-id))
+             :user-session/id (-> request :request/session-id))
       send-login-with-email-link!)
   (moviefinder-app.requests/html (view-login-email-sent request)))
 
