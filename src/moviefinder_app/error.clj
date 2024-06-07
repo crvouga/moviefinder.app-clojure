@@ -18,7 +18,7 @@
      (is false (str "Expected exception with error type: " ~expected-error-type ", but no exception was thrown."))
      false
      (catch Exception e#
-       (let [actual-error-type# (ex->err e#)]
+       (let [actual-error-type# (ex->err-type e#)]
          (is (= ~expected-error-type actual-error-type#)
              (str "Expected exception with error type: " ~expected-error-type ", but got: " actual-error-type#))
          (= ~expected-error-type actual-error-type#)))))
