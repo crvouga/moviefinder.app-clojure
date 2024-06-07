@@ -1,7 +1,7 @@
 (ns moviefinder-app.login.login
   (:require [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.env]
-            [moviefinder-app.login.login-link]
+            [moviefinder-app.login.login-link :as login-link]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests]
             [moviefinder-app.route]
@@ -22,6 +22,9 @@
 ;; 
 ;; 
 
+(defrecord LoginLinkNotFoundError [login-link-id])
+(defrecord LoginLinkAlreadyUsedError [login-link])
+(defrecord LoginLinkExpiredError [login-link])
 
 (defn use-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
@@ -30,7 +33,17 @@
         ;; 
         login-link-id (-> input :login-link/id)
         login-link (first (login-link-db/find-by-id! login-link-db login-link-id))
-        login-link-used (moviefinder-app.login.login-link/mark-as-used login-link)
+
+        _ (when-not login-link
+            (throw (->LoginLinkNotFoundError login-link-id)))
+
+        _ (when (login-link/used? login-link)
+            (throw (->LoginLinkAlreadyUsedError login-link)))
+
+        _ (when (login-link/expired? login-link)
+            (throw (->LoginLinkExpiredError login-link)))
+
+        login-link-used (login-link/mark-as-used login-link)
         ;; 
         user-email (-> login-link-used :login-link/email)
         maybe-user (first (user-db/find-by-email! user-db user-email))
@@ -39,11 +52,11 @@
         user-id (:user/id user)
         user-session-id (-> input :user-session/id)
         user-session {:user-session/id user-session-id
-                      :user/id user-id}
-        ;; 
-        _ (user-session-db/put! user-session-db #{user-session})
-        _ (user-db/put! user-db #{user})
-        _ (login-link-db/put! login-link-db #{login-link-used})]))
+                      :user/id user-id}]
+    
+    (user-session-db/put! user-session-db #{user-session})
+    (user-db/put! user-db #{user})
+    (login-link-db/put! login-link-db #{login-link-used})))
 
 (defn view-clicked-login-link [_request]
   [:div "Clicked login link"])
@@ -84,7 +97,7 @@
   (let [login-link-db (-> input :login-link-db/login-link-db)
         send-email (-> input :send-email/send-email)
         email (-> input :login/email)
-        login-link (moviefinder-app.login.login-link/new! email)
+        login-link (login-link/new! email)
         login-link-email (->login-link-email login-link)] 
     (send-email/send-email! send-email login-link-email)
     (login-link-db/put! login-link-db #{login-link})

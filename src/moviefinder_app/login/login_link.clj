@@ -1,17 +1,34 @@
 (ns moviefinder-app.login.login-link)
 
-(defn uuid-v4! []
-  (java.util.UUID/randomUUID))
+(def twenty-four-hours-in-millis
+  (* 24 60 60 1000))
+
+(defn expired-at []
+  (+ (System/currentTimeMillis) twenty-four-hours-in-millis))
 
 (defn random! []
-  {:login-link/id (uuid-v4!)
+  {:login-link/id (java.util.UUID/randomUUID)
    :login-link/email "test@test.com"
-   :login-link/created-at-posix (System/currentTimeMillis)})
+   :login-link/created-at-posix (System/currentTimeMillis)
+   :login-link/expired-at-posix (expired-at)})
 
 (defn new! [email]
-  {:login-link/id (uuid-v4!)
+  {:login-link/id (java.util.UUID/randomUUID)
    :login-link/email email
-   :login-link/created-at-posix (System/currentTimeMillis)})
+   :login-link/created-at-posix (System/currentTimeMillis)
+   :login-link/expired-at-posix (expired-at)})
 
 (defn mark-as-used [login-link]
   (assoc login-link :login-link/used-at-posix (System/currentTimeMillis)))
+
+(defn used? [login-link]
+  (not (nil? (:login-link/used-at-posix login-link))))
+
+(defn mark-as-expired [login-link]
+  (assoc login-link :login-link/expired-at-posix (System/currentTimeMillis)))
+
+(defn expired? [login-link]
+  (let [now-posix (System/currentTimeMillis)
+        expired-posix (:login-link/expired-at-posix login-link)]
+    (and (not (nil? expired-posix))
+         (<= expired-posix now-posix))))
