@@ -9,6 +9,7 @@
             [moviefinder-app.user-session.user-session-db-impl]
             [moviefinder-app.view]
             [moviefinder-app.view.icon]
+            [moviefinder-app.error :refer [throw-error error->message]]
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.user.user :as user]))
 
@@ -22,41 +23,44 @@
 ;; 
 ;; 
 
-(defrecord LoginLinkNotFoundError [login-link-id])
-(defrecord LoginLinkAlreadyUsedError [login-link])
-(defrecord LoginLinkExpiredError [login-link])
-
 (defn use-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
         user-session-db (-> input :user-session-db/user-session-db)
         user-db (-> input :user-db/user-db)
-        ;; 
         login-link-id (-> input :login-link/id)
         login-link (first (login-link-db/find-by-id! login-link-db login-link-id))
 
         _ (when-not login-link
-            (throw (->LoginLinkNotFoundError login-link-id)))
+            (throw-error :error/login-link-not-found {:login-link/id login-link-id}))            
 
         _ (when (login-link/used? login-link)
-            (throw (->LoginLinkAlreadyUsedError login-link)))
+            (throw-error :error/login-link-already-used {:login-link/id login-link-id}))
 
         _ (when (login-link/expired? login-link)
-            (throw (->LoginLinkExpiredError login-link)))
+            (throw-error :error/login-link-expired {:login-link/id login-link-id}))
 
         login-link-used (login-link/mark-as-used login-link)
-        ;; 
         user-email (-> login-link-used :login-link/email)
         maybe-user (first (user-db/find-by-email! user-db user-email))
         user (if maybe-user maybe-user (user/new! user-email))
-        ;; 
         user-id (:user/id user)
         user-session-id (-> input :user-session/id)
         user-session {:user-session/id user-session-id
                       :user/id user-id}]
-    
     (user-session-db/put! user-session-db #{user-session})
     (user-db/put! user-db #{user})
     (login-link-db/put! login-link-db #{login-link-used})))
+
+
+(defmethod error->message :error/login-link-not-found [_]
+  "Login link was not found")
+
+(defmethod error->message :error/login-link-already-used [_]
+  "Login link has already used")
+
+(defmethod error->message :error/login-link-expired [_]
+  "Login link has expired. Please request a new one")
+
 
 (defn view-clicked-login-link [_request]
   [:div "Clicked login link"])
