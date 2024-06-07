@@ -1,6 +1,7 @@
 (ns moviefinder-app.login.login-test
   (:require [clojure.string :refer [includes?]]
             [clojure.test :refer [deftest is testing]]
+            [moviefinder-app.error :refer [thrown-err?]]
             [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.email.send-email-impl]
             [moviefinder-app.login.login-link-db :as login-link-db]
@@ -101,21 +102,19 @@
           login-link (login/send-login-with-email-link! f)
           input (merge f login-link)
           _ (login/use-login-link! input)
-          _ (is (thrown? Exception (login/use-login-link! input)))
-          _ (try
-              (login/use-login-link! input)
-              (catch Exception e
-                (is (= :error/login-link-already-used (-> e ex-data :error/error)))))]))
+          _ (thrown-err? :err/login-link-already-used (login/use-login-link! input))]))
 
   (testing "it should error if the login link does not exist"
     (let [f (fixture)
           login-link-new (login-link/new! (user/random!))
-          _ (is (thrown? Exception (login/use-login-link! (merge f login-link-new))))]))
+          input (merge f login-link-new)
+          _ (thrown-err? :err/login-link-not-found (login/use-login-link! input))]))
 
   (testing "it should error if login link is expired"
     (let [f (fixture)
           login-link (login/send-login-with-email-link! f)
           login-link-expired (login-link/mark-as-expired login-link)
           _ (login-link-db/put! (f :login-link-db/login-link-db) #{login-link-expired})
-          _ (is (thrown? Exception (login/use-login-link! (merge f login-link-expired))))])))
+          input (merge f login-link-expired)
+          _ (thrown-err? :err/login-link-expired (login/use-login-link! input))])))
       

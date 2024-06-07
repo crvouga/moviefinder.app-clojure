@@ -9,7 +9,7 @@
             [moviefinder-app.user-session.user-session-db-impl]
             [moviefinder-app.view]
             [moviefinder-app.view.icon]
-            [moviefinder-app.error :refer [throw-error error->message]]
+            [moviefinder-app.error :refer [err err->msg]]
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.user.user :as user]))
 
@@ -31,13 +31,13 @@
         login-link (first (login-link-db/find-by-id! login-link-db login-link-id))
 
         _ (when-not login-link
-            (throw-error :error/login-link-not-found {:login-link/id login-link-id}))            
+            (throw (err :err/login-link-not-found {:login-link/id login-link-id})))            
 
         _ (when (login-link/used? login-link)
-            (throw-error :error/login-link-already-used {:login-link/id login-link-id}))
+            (throw (err :err/login-link-already-used {:login-link/id login-link-id})))
 
         _ (when (login-link/expired? login-link)
-            (throw-error :error/login-link-expired {:login-link/id login-link-id}))
+            (throw (err :err/login-link-expired {:login-link/id login-link-id})))
 
         login-link-used (login-link/mark-as-used login-link)
         user-email (-> login-link-used :login-link/email)
@@ -52,13 +52,13 @@
     (login-link-db/put! login-link-db #{login-link-used})))
 
 
-(defmethod error->message :error/login-link-not-found [_]
+(defmethod err->msg :err/login-link-not-found [_]
   "Login link was not found")
 
-(defmethod error->message :error/login-link-already-used [_]
+(defmethod err->msg :err/login-link-already-used [_]
   "Login link has already used")
 
-(defmethod error->message :error/login-link-expired [_]
+(defmethod err->msg :err/login-link-expired [_]
   "Login link has expired. Please request a new one")
 
 

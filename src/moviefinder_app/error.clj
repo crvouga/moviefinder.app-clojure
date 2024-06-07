@@ -1,17 +1,21 @@
-(ns moviefinder-app.error)
+(ns moviefinder-app.error
+  (:require [clojure.test :refer [is]]))
 
+(defn err [error-type error-payload]
+  (ex-info "" (merge error-payload {:err/err error-type})))
 
-(defn error [error-type error-payload]
-  (ex-info "" (merge error-payload {:error/error error-type})))
-
-(defn throw-error [error-type error-payload]
-  (throw (error error-type error-payload)))
-
-(defmulti error->message (comp :error/error ex-data))
+(defmulti err->msg (comp :err/err ex-data))
 
 (defn ex->error-type [ex]
-  (:error/error (ex-data ex)))
+  (:err/err (ex-data ex)))
 
-
-(defn error-thrown? [error-type & expr]
-  )
+(defmacro thrown-err? [expected-error-type & body]
+  `(try
+     ~@body
+     (is false (str "Expected exception with error type: " ~expected-error-type ", but no exception was thrown."))
+     false
+     (catch Exception e#
+       (let [actual-error-type# (ex->error-type e#)]
+         (is (= ~expected-error-type actual-error-type#)
+             (str "Expected exception with error type: " ~expected-error-type ", but got: " actual-error-type#))
+         (= ~expected-error-type actual-error-type#)))))
