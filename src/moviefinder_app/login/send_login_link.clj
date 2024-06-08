@@ -1,9 +1,8 @@
 (ns moviefinder-app.login.send-login-link
   (:require [moviefinder-app.email.send-email :as send-email]
-            [moviefinder-app.env :as env :as env]
+            [moviefinder-app.env :as env]
             [moviefinder-app.login.login-link :as login-link]
             [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link-db-impl]
             [moviefinder-app.requests :as requests]
             [moviefinder-app.route :as route]
             [moviefinder-app.view :as view]

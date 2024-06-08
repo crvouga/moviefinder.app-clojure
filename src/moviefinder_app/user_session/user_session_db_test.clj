@@ -6,7 +6,7 @@
 (defn fixture []
   (let [db (user-session-db/->UserSessionDb
             {:user-session-db/impl
-             :user-session-db/impl-in-memory})] 
+             :user-session-db-impl/in-memory})] 
     {:f/db db}))
 
 (deftest user-session-db-test

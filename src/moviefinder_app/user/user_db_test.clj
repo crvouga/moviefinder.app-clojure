@@ -5,7 +5,7 @@
             [moviefinder-app.user.user-db-impl]))
 
 (defn fixture []
-  (let [user-db (user-db/->UserDb {:user-db/impl :user-db/impl-in-memory})]
+  (let [user-db (user-db/->UserDb {:user-db/impl :user-db-impl/in-memory})]
     {:user-db/user-db user-db}))
 
 

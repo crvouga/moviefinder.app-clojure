@@ -24,7 +24,7 @@
          users-by-id-new (merge @user-by-id! users-by-id)]
       (reset! user-by-id! users-by-id-new))))
 
-(defmethod user-db/->UserDb :user-db/impl-in-memory
+(defmethod user-db/->UserDb :user-db-impl/in-memory
   [_]
   (->UserDbImplInMemory
    (atom {})))

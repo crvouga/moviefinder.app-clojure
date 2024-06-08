@@ -1,11 +1,9 @@
 (ns moviefinder-app.login.use-login-link
   (:require [moviefinder-app.error :refer [err ex->err-type]]
             [moviefinder-app.login.login-link :as login-link]
-            [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link-db-impl]
+            [moviefinder-app.login.login-link-db :as login-link-db] 
             [moviefinder-app.requests :as requests]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
-            [moviefinder-app.user-session.user-session-db-impl]
             [moviefinder-app.user.user :as user]
             [moviefinder-app.user.user-db :as user-db]))
 

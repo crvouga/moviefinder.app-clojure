@@ -1,9 +1,8 @@
-(ns moviefinder-app.movie.db-impl-tmdb
-  (:require
-   [clj-http.client :as client]
-   [clojure.set :refer [rename-keys]]
-   [moviefinder-app.movie.db :as movie-db]
-   [moviefinder-app.env :as env]))
+(ns moviefinder-app.movie.movie-db-impl-tmdb
+  (:require [clj-http.client :as client]
+            [clojure.set :refer [rename-keys]]
+            [moviefinder-app.movie.movie-db :as movie-db]
+            [moviefinder-app.env :as env]))
 
 ;; 
 ;; 
@@ -235,8 +234,12 @@
 ;; 
 
 (defrecord MoveDbTmdb [] 
-  moviefinder-app.movie.db/MovieDb 
+  movie-db/MovieDb 
   (get! [_this movie-id]
     (get-movie-details! movie-id)) 
   (find! [_this _query]
     (get-discover-with-videos!)))
+
+(defmethod movie-db/->MovieDb :movie-db-impl/tmdb
+  [_]
+  (->MoveDbTmdb))

@@ -9,10 +9,10 @@
             [moviefinder-app.user.user-db-impl]))
 
 (defn fixture []
-  (let [login-link-db (login-link-db/->LoginLinkDb {:login-link-db/impl :login-link-db/impl-in-memory})
-        user-session-db (user-session-db/->UserSessionDb {:user-session-db/impl :user-session-db/impl-in-memory})
-        send-email (send-email/->SendEmail {:send-email/impl :send-email/impl-mock :send-email/log? false})
-        user-db (user-db/->UserDb {:user-db/impl :user-db/impl-in-memory})]
+  (let [login-link-db (login-link-db/->LoginLinkDb {:login-link-db/impl :login-link-db-impl/in-memory})
+        user-session-db (user-session-db/->UserSessionDb {:user-session-db/impl :user-session-db-impl/in-memory})
+        send-email (send-email/->SendEmail {:send-email/impl :send-email-impl/mock :send-email/log? false})
+        user-db (user-db/->UserDb {:user-db/impl :user-db-impl/in-memory})]
     {:login/email "test@test.com"
      :user-session/id "test-user-session-id"
      :login-link-db/login-link-db login-link-db

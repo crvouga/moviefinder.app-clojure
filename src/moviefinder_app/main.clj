@@ -1,18 +1,23 @@
 (ns moviefinder-app.main
-  (:require [moviefinder-app.account]
+  (:require [moviefinder-app.env :as env]
+            [moviefinder-app.account]
             [moviefinder-app.counter]
-            [moviefinder-app.email.send-email]
+            [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.email.send-email-impl]
-            [moviefinder-app.env :as env]
+            [moviefinder-app.login.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-link-db-impl]
+            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.user-session.user-session-db-impl]
+            [moviefinder-app.user.user-db :as user-db]
+            [moviefinder-app.user.user-db-impl]
+            [moviefinder-app.movie.movie-db :as movie-db]
+            [moviefinder-app.movie.movie-db-impl]
             [moviefinder-app.home]
             [moviefinder-app.login.send-login-link]
             [moviefinder-app.login.use-login-link]
-            [moviefinder-app.login.login-link-db]
-            [moviefinder-app.login.login-link-db-impl]
             [moviefinder-app.movie.details]
-            [moviefinder-app.requests]
+            [moviefinder-app.requests :as requests]
             [moviefinder-app.user-session]
-            [moviefinder-app.view]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.params :refer [wrap-params]]
@@ -42,17 +47,17 @@
     [:div
      {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center justify-center overflow-hidden rounded border border-neutral-700"}
-      (-> request moviefinder-app.requests/handle-hx :response/view)]]]])
+      (-> request requests/handle-hx :response/view)]]]])
 
-(defmethod moviefinder-app.requests/handle-hx :default [request]
+(defmethod requests/handle-hx :default [request]
   (-> request
       (assoc :request/route {:route/name :route/home})
-      moviefinder-app.requests/handle-hx))
+      requests/handle-hx))
 
 
-(defmethod moviefinder-app.requests/handle :default [request]
-  (moviefinder-app.requests/html-document (view request)))
-  
+(defmethod requests/handle :default [request]
+  (requests/html-document (view request)))
+
 ;; 
 ;; 
 ;; 
@@ -64,15 +69,27 @@
 ;; 
 
 
-(def login-link-db (moviefinder-app.login.login-link-db/->LoginLinkDb
-                     {:login-link-db/impl :login-link-db/impl-in-memory}))
+(def login-link-db (login-link-db/->LoginLinkDb
+                    {:login-link-db/impl :login-link-db-impl/in-memory}))
 
-(def send-email (moviefinder-app.email.send-email/->SendEmail
-                 {:send-email/impl :send-email/impl-mock
+(def send-email (send-email/->SendEmail
+                 {:send-email/impl :send-email-impl/mock
                   :send-email/log? true}))
+
+(def user-session-db (user-session-db/->UserSessionDb
+                      {:user-session-db/impl :user-session-db-impl/in-memory}))
+
+(def user-db (user-db/->UserDb
+              {:user-db/impl :user-db-impl/in-memory}))
+
+(def movie-db (movie-db/->MovieDb
+               {:movie-db/impl :movie-db-impl/tmdb}))
 
 (defn assoc-deps [request]
   (assoc request
+         :movie-db/movie-db movie-db
+         :user-db/user-db user-db
+         :user-session-db/user-session-db user-session-db
          :login-link-db/login-link-db login-link-db
          :send-email/send-email send-email))
 
@@ -85,9 +102,9 @@
 ;; 
 
 (defn handle [request]
-  (if (:request/hx-request? request)
-    (moviefinder-app.requests/handle-hx request)
-    (moviefinder-app.requests/handle request)))
+  (if (:request/hx? request)
+    (requests/handle-hx request)
+    (requests/handle request)))
 
 (defn tap [x]
   (println x)
@@ -95,11 +112,11 @@
 
 (defn handle-ring-request [ring-request]
   (-> ring-request
-      moviefinder-app.requests/ring-request->request
+      requests/ring-request->request
       tap
       assoc-deps
       handle
-      moviefinder-app.requests/response->ring-response))
+      requests/response->ring-response))
 
 (defn run-server! [input]
   (-> #'handle-ring-request

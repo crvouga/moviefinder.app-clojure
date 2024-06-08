@@ -25,6 +25,6 @@
    (get @state! ::sent-emails #{})))
 
 
-(defmethod moviefinder-app.email.send-email/->SendEmail :send-email/impl-mock
+(defmethod moviefinder-app.email.send-email/->SendEmail :send-email-impl/mock
   [input]
   (->SendEmailImplMock (atom {}) input))

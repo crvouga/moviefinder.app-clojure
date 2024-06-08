@@ -33,7 +33,7 @@
 (defn- route [ring-request]
   (-> ring-request :uri remove-leading-backslash moviefinder-app.route/decode))
 
-(defn- hx-request? [ring-request]
+(defn- hx? [ring-request]
   (boolean (get-in ring-request [:headers "hx-request"])))
 
 (defn- session-id [ring-request]
@@ -56,7 +56,7 @@
 
 (defn ring-request->request [ring-request]
   {:request/route (route ring-request)
-   :request/hx-request? (hx-request? ring-request)
+   :request/hx? (hx? ring-request)
    :request/session-id (session-id ring-request)
    :request/form-data (-> ring-request :form-params str-keys->keywords)})
 

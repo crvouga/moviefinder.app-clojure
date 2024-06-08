@@ -1,9 +1,7 @@
 (ns moviefinder-app.movie.details
-  (:require [moviefinder-app.requests]
-            [moviefinder-app.view]
-            [moviefinder-app.route]
-            [moviefinder-app.movie.db :as movie-db]
-            [moviefinder-app.movie.db-impl :refer [movie-db]]))
+  (:require [moviefinder-app.requests :as requests]
+            [moviefinder-app.view :as view] 
+            [moviefinder-app.movie.movie-db :as movie-db]))
 
 (defn year [maybe-date-string]
   (when maybe-date-string
@@ -61,6 +59,7 @@
   
 (defn view-movie-details! [request]
   (let [movie-id (-> request :request/route :movie/id)
+        movie-db (-> request :movie-db/movie-db)
         movie (movie-db/get! movie-db movie-id)]
     (view-movie-details movie)))
 

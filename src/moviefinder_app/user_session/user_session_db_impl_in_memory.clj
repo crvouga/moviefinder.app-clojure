@@ -18,5 +18,5 @@
       (reset! sessions-by-session-id! by-id-new))))
 
 
-(defmethod ->UserSessionDb :user-session-db/impl-in-memory [_input]
+(defmethod ->UserSessionDb :user-session-db-impl/in-memory [_input]
   (->UserSessionDbInMemory (atom {})))

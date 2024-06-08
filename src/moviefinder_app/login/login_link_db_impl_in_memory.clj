@@ -30,6 +30,6 @@
          (filter #(= id (:login-link/id %)))
          set)))
 
-(defmethod login-link-db/->LoginLinkDb :login-link-db/impl-in-memory
+(defmethod login-link-db/->LoginLinkDb :login-link-db-impl/in-memory
   [_]
   (->LoginLinkDbInMemory (atom {})))

@@ -2,8 +2,7 @@
   (:require [moviefinder-app.requests :as requests]
             [moviefinder-app.view :as view]
             [moviefinder-app.route :as route]
-            [moviefinder-app.movie.db :as movie-db]
-            [moviefinder-app.movie.db-impl :refer [movie-db]]))
+            [moviefinder-app.movie.movie-db :as movie-db]))
 
 (defn view-youtube-video [props]
   [:iframe.w-full.h-64 
@@ -41,7 +40,8 @@
 ;; https://swiperjs.com/element
 
 (defn view-feed-slides! [input]
-  (let [movies (movie-db/find! movie-db {})]
+  (let [movie-db (-> input :movie-db/movie-db)
+        movies (movie-db/find! movie-db {})]
     (for [[slide-index movie] (map-indexed vector (-> movies :paginated/results))]
       [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
        {:hx-post (route/encode {:route/name :noop})
