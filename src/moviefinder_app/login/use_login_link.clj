@@ -15,7 +15,7 @@
 (defn- assoc-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
         login-link-id (-> input :login-link/id)
-        login-link (first (login-link-db/find-by-id! login-link-db login-link-id))]
+        login-link (->> login-link-id (login-link-db/find-by-id! login-link-db) first)]
     (assoc input ::login-link login-link)))
 
 (defn validate-link-found [input]
