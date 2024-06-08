@@ -5,8 +5,7 @@
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests :as requests]
             [moviefinder-app.route :as route]
-            [moviefinder-app.view :as view]
-            [moviefinder-app.view.icon :as icon]))
+            [moviefinder-app.view :as view]))
 
 
 (def base-url (env/get! "BASE_URL"))
@@ -60,21 +59,16 @@
       ::login-link))
 
 (defn view-send-login-link-ok [_request]
-  [:div.flex.gap-3.flex-col.w-full
-   (icon/checkmark-circle {:class "size-20 text-green-500 -ml-2"})
-   [:h1.text-3xl.font-bold. "Email sent"]
-   [:p.opacity-80 "We've sent you an email with a link to login with."]
+  [:div.flex.flex-col.w-full
+   (view/success {:success/title "Email sent"
+                  :success/body "We've sent you an email with a link to login with."})
    [:div.w-full.py-2]
    [:a.text-underline.opacity-80.underline
     {:href (-> {:route/name :route/login} route/encode)
      :hx-get (-> {:route/name :route/login} route/encode)}
     "Back to login"]])
 
-(defn sleep []
-  (Thread/sleep 2000))
-
 (defmethod requests/handle-hx :route/send-login-link [request]
-  (sleep)
   (-> request
       (assoc :send-login-link/email (-> request :request/form-data :email))
       send-login-link!)
@@ -107,7 +101,7 @@
     (view-send-login-link-form request)]])
 
 (defn view-login [request]
-  (view/view-app-tabs-layout
+  (view/app-tabs-layout
    {:route/name :route/account}
    (view-login-screen request)))
 

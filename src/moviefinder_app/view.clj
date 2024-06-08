@@ -3,8 +3,29 @@
             [moviefinder-app.view.icon :as icon]
             [hiccup2.core :as hiccup]))
 
-(defn spinner [props]
-  (icon/spinner (merge {:class "animate-spin size-8"} props)))
+(defn html-doc [children]
+  [:html {:lang "en" :doctype :html5}
+   [:head
+    [:title "moviefinder.app"]
+    [:meta {:name :description :content "Find movies to watch"}]
+    [:meta {:charset "utf-8"}]
+    [:link {:rel "icon" :href "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><text y='32' font-size='32'>🍿</text></svg>"}]
+    [:meta {:name :viewport :content "width=device-width, initial-scale=1.0"}]
+    [:script {:src "https://cdn.tailwindcss.com"}]
+    [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
+    [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]]
+
+   [:body.bg-neutral-950.text-white {:hx-boost true :hx-target "#app" :hx-swap "innerHTML"}
+    [:div
+     {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
+     [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center overflow-hidden rounded border border-neutral-700"}
+      children]]]])
+
+(defn spinner 
+  ([]
+   (spinner {}))
+  ([props]
+   (icon/spinner (merge {:class "animate-spin size-8"} props))))
 
 (defn button
   [props]
@@ -15,7 +36,9 @@
         props (merge props-base props)]
     [element
      props
-     (spinner {:id hx-indicator-id})
+     (-> props :button/start)
+     (when hx-indicator-id
+       (spinner {:id hx-indicator-id}))
      label]))
 
 (defn text-field [input]
@@ -51,7 +74,8 @@
 (defn tab-panel [children]
   [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll {} children])
 
-(defn view-app-tabs-layout [active-route view-tab-panel]
+
+(defn app-tabs-layout [active-route view-tab-panel]
   (tab-container
    (tab-panel view-tab-panel)
    (tabs
@@ -68,6 +92,7 @@
   [:button.bg-transparent.text-white.p-2.rounded-full
    (input :icon-button/icon)])
 
+
 (defn top-bar [input]
   [:div.w-full.flex.items-center.justify-center.border-b.border-neutral-700.h-16.px-2
    [:div.flex-1
@@ -77,9 +102,13 @@
     (-> input :top-bar/title)]
    [:div.flex-1]])
 
-
-
 (defn view-raw-script [raw-javascript]
   [:script
    {:type "text/javascript"}
    (hiccup/raw raw-javascript)])
+
+(defn success [input]
+  [:div.flex.gap-3.flex-col.w-full
+   (icon/checkmark-circle {:class "size-20 text-green-500 -ml-2"})
+   [:h1.text-3xl.font-bold (-> input :success/title)]
+   [:p.opacity-80 (-> input :success/body)]])

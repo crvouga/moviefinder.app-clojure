@@ -1,8 +1,8 @@
 (ns moviefinder-app.requests
-  (:require [clojure.string]
-            [hiccup2.core]
-            [moviefinder-app.base64]
-            [moviefinder-app.route]))
+  (:require [clojure.string :as string]
+            [hiccup2.core :as hiccup]
+            [ring.util.response :as ring-response]
+            [moviefinder-app.route :as route]))
 
 
 ;; 
@@ -28,10 +28,10 @@
 ;; 
 
 (defn- remove-leading-backslash [uri]
-  (if (clojure.string/starts-with? uri "/") (subs uri 1) uri))
+  (if (string/starts-with? uri "/") (subs uri 1) uri))
 
 (defn- route [ring-request]
-  (-> ring-request :uri remove-leading-backslash moviefinder-app.route/decode))
+  (-> ring-request :uri remove-leading-backslash route/decode))
 
 (defn- hx? [ring-request]
   (boolean (get-in ring-request [:headers "hx-request"])))
@@ -54,11 +54,34 @@
 (defn- str-keys->keywords [m]
   (update-keys m str->keyword))
 
+(defn assoc-route [request ring-request]
+  (assoc request :request/route (route ring-request)))
+
+(defn assoc-hx? [request ring-request]
+  (let [hx? (hx? ring-request)]
+    (if hx?
+      (assoc request :request/hx? hx?)
+      request)))
+
+(defn assoc-user-session-id [request ring-request]
+  (let [user-session-id (session-id ring-request)]
+    (if user-session-id
+      (assoc request :request/user-session-id user-session-id)
+      request)))
+
+
+(defn assoc-form-data [request ring-request]
+  (let [form-data (-> ring-request :form-params str-keys->keywords)]
+    (if-not (empty? form-data)
+      (assoc request :request/form-data form-data)
+      request)))
+
 (defn ring-request->request [ring-request]
-  {:request/route (route ring-request)
-   :request/hx? (hx? ring-request)
-   :request/user-session-id (session-id ring-request)
-   :request/form-data (-> ring-request :form-params str-keys->keywords)})
+  (-> {}
+      (assoc-route ring-request)
+      (assoc-hx? ring-request)
+      (assoc-user-session-id ring-request)
+      (assoc-form-data ring-request)))
 
 ;; 
 ;; 
@@ -74,7 +97,7 @@
   (if (:response/ok? response) 200 500))
 
 (defn- html-body [response]
-  (-> response :response/view hiccup2.core/html str))
+  (-> response :response/view hiccup/html str))
 
 (def html-headers
   {"Content-Type" "text/html"})
@@ -104,7 +127,7 @@
    :response/view view
    :response/type :response-type/html})
 
-(defn html-document [view]
+(defn html-doc [view]
   {:response/ok? true
    :response/view view
    :response/type :response-type/html-document})
@@ -122,18 +145,10 @@
    :response/route route
    :response/type :response-type/redirect})
 
-(def redirect-headers
-  {"Content-Type" "text/html"
-   "Location" ""})
-
 (defn response->location [response]
-  (-> response :response/route moviefinder-app.route/encode str))
-
-(defn response->redirect-headers [response]
-  (let [location (response->location response)]
-    (assoc redirect-headers "Location" location)))
+  (-> response :response/route route/encode str))
 
 (defmethod response->ring-response :response-type/redirect [response]
-  {:status 301
-   :headers (response->redirect-headers response)
-   :body ""})
+  (-> response
+      response->location
+      ring-response/redirect))

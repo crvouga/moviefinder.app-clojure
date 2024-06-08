@@ -35,7 +35,7 @@
       [:p "Clicked!"])]])
 
 (defn view-couter-index []
-  (moviefinder-app.view/view-app-tabs-layout :counter/index (view-counter-panel)))
+  (moviefinder-app.view/app-tabs-layout :counter/index (view-counter-panel)))
 
 (defmethod moviefinder-app.requests/handle-hx :counter/index [_]
   (moviefinder-app.requests/html (view-couter-index)))

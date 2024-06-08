@@ -5,7 +5,10 @@
             [moviefinder-app.requests :as requests]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user.user :as user]
-            [moviefinder-app.user.user-db :as user-db]))
+            [moviefinder-app.user.user-db :as user-db]
+            [moviefinder-app.view :as view]
+            [moviefinder-app.route :as route]
+            [moviefinder-app.view.icon :as icon]))
 
 (defn- assoc-login-link! [input]
   (let [login-link-db (input :login-link-db/login-link-db)
@@ -82,7 +85,22 @@
       put-login-link!))
 
 (defn- view-use-login-link-ok [_request]
-  [:div "Clicked login link"])
+  [:div.w-full.flex.flex-col
+   (view/top-bar {:top-bar/title "Login with email"})
+   [:div.flex-1.w-full.p-6.flex.flex-col
+    (view/success {:success/title "Logged in"
+                   :success/body "You have successfully logged in."})
+    [:div.pt-6.w-fit
+     (view/button {:button/label "Back to app"
+                   :button/start (icon/arrow-left)
+                   :button/element :a
+                   :href (-> {:route/name :route/home} route/encode)})]]])
+
+(defmethod requests/handle-hx :route/use-login-link-ok [request]
+  (-> request
+      view-use-login-link-ok
+      view/html-doc
+      requests/html-doc))
 
 (defmulti view-use-login-link-err ex->err-type)
 
@@ -98,10 +116,14 @@
 (defmethod view-use-login-link-err :default [_ex _request]
   [:div "An error occurred"])
 
-(defmethod requests/handle-hx :route/use-login-link [request]
-  (try 
+(defn handle-use-login-link  [request]
+  (try
     (let [input (merge request (:request/route request))]
       (use-login-link! input))
-    (requests/html (view-use-login-link-ok request))
+    (requests/redirect {:route/name :route/use-login-link-ok})
     (catch Exception ex
       (requests/html (view-use-login-link-err ex request)))))
+
+
+(defmethod requests/handle :route/use-login-link [request]
+  (handle-use-login-link request))

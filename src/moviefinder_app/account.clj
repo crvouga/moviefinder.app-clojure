@@ -19,7 +19,7 @@
                  moviefinder-app.route/encode)})])
 
 (defn view-account [request]
-  (moviefinder-app.view/view-app-tabs-layout 
+  (moviefinder-app.view/app-tabs-layout 
    {:route/name :route/account}
    (view-login-cta request)))
 

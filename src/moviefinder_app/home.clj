@@ -81,7 +81,7 @@
     (view-feed-slides! input)]])
 
 (defn view-home [input]
-  (view/view-app-tabs-layout {:route/name :route/home}  (view-feed! input)))
+  (view/app-tabs-layout {:route/name :route/home}  (view-feed! input)))
 
 (defmethod requests/handle-hx :noop [_request]
   {:status 200})
