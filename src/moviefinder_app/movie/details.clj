@@ -2,7 +2,7 @@
   (:require [moviefinder-app.requests]
             [moviefinder-app.view]
             [moviefinder-app.route]
-            [moviefinder-app.movie.db]
+            [moviefinder-app.movie.db :as movie-db]
             [moviefinder-app.movie.db-impl :refer [movie-db]]))
 
 (defn year [maybe-date-string]
@@ -61,7 +61,7 @@
   
 (defn view-movie-details! [request]
   (let [movie-id (-> request :request/route :movie/id)
-        movie (moviefinder-app.movie.db/get! movie-db movie-id)]
+        movie (movie-db/get! movie-db movie-id)]
     (view-movie-details movie)))
 
 (defmethod moviefinder-app.requests/handle-hx :route/movie-details [request]

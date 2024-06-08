@@ -1,4 +1,4 @@
-(ns moviefinder-app.env 
+(ns moviefinder-app.env
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 
@@ -24,7 +24,7 @@
         :when (not (nil? val))]
   (System/setProperty key val))
 
-(defn get-env-var! [key]
+(defn get! [key]
   (let [env-var (or (System/getenv key) (System/getProperty key))]
     (if (nil? env-var)
       (throw (Exception. (str key " not set")))

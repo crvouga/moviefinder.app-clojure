@@ -3,7 +3,7 @@
             [moviefinder-app.counter]
             [moviefinder-app.email.send-email]
             [moviefinder-app.email.send-email-impl]
-            [moviefinder-app.env]
+            [moviefinder-app.env :as env]
             [moviefinder-app.home]
             [moviefinder-app.login.send-login-link]
             [moviefinder-app.login.use-login-link]
@@ -109,8 +109,8 @@
       (run-jetty {:port (input :server/port) :join? false})))
 
 
-(def port (-> (moviefinder-app.env/get-env-var! "PORT") Integer/parseInt))
-(def base-url (moviefinder-app.env/get-env-var! "BASE_URL"))
+(def port (-> (moviefinder-app.env/get! "PORT") Integer/parseInt))
+(def base-url (moviefinder-app.env/get! "BASE_URL"))
 (defn -main []
   (run-server! {:server/port port})
   (println (str "Server running at " base-url)))

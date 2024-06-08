@@ -1,8 +1,8 @@
 (ns moviefinder-app.home
-  (:require [moviefinder-app.requests]
-            [moviefinder-app.view]
-            [moviefinder-app.route]
-            [moviefinder-app.movie.db]
+  (:require [moviefinder-app.requests :as requests]
+            [moviefinder-app.view :as view]
+            [moviefinder-app.route :as route]
+            [moviefinder-app.movie.db :as movie-db]
             [moviefinder-app.movie.db-impl :refer [movie-db]]))
 
 (defn view-youtube-video [props]
@@ -14,7 +14,7 @@
 
 
 (defn movie-details-href [movie]
-  (moviefinder-app.route/encode 
+  (route/encode 
    {:route/name :route/movie-details
     :movie/id (-> movie :movie/id)}))
 
@@ -41,13 +41,13 @@
 ;; https://swiperjs.com/element
 
 (defn view-feed-slides! [input]
-  (let [movies (moviefinder-app.movie.db/find! movie-db {})]
+  (let [movies (movie-db/find! movie-db {})]
     (for [[slide-index movie] (map-indexed vector (-> movies :paginated/results))]
       [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
-       {:hx-post (moviefinder-app.route/encode {:route/name :noop})
+       {:hx-post (route/encode {:route/name :noop})
         :hx-target "none"
         :hx-trigger "htmx:swiperSlideChange"
-        :hx-push-url (-> input :request/route (assoc :feed/slide-index slide-index) moviefinder-app.route/encode)}
+        :hx-push-url (-> input :request/route (assoc :feed/slide-index slide-index) route/encode)}
        (view-feed-slide movie)])))
 
 (def swiper-event-script
@@ -73,7 +73,7 @@
 
 (defn view-feed! [input]
   [:div.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
-   (moviefinder-app.view/view-raw-script swiper-event-script)
+   (view/view-raw-script swiper-event-script)
    [:swiper-container.w-full.flex-1.max-h-full.overflow-hidden
     {:slides-per-view 1
      :direction :vertical
@@ -81,11 +81,11 @@
     (view-feed-slides! input)]])
 
 (defn view-home [input]
-  (moviefinder-app.view/view-app-tabs-layout {:route/name :route/home}  (view-feed! input)))
+  (view/view-app-tabs-layout {:route/name :route/home}  (view-feed! input)))
 
-(defmethod moviefinder-app.requests/handle-hx :noop [_request]
+(defmethod requests/handle-hx :noop [_request]
   {:status 200})
 
-(defmethod moviefinder-app.requests/handle-hx :route/home [request]
-  (moviefinder-app.requests/html (view-home request)))
+(defmethod requests/handle-hx :route/home [request]
+  (requests/html (view-home request)))
 

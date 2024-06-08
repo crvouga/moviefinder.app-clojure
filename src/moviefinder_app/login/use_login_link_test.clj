@@ -58,13 +58,13 @@
           login-link (send-login-link! f)
           input (merge f login-link)
           _ (use-login-link! input)
-          _ (thrown-err? :use-login-link/login-link-already-used (use-login-link! input))]))
+          _ (thrown-err? :use-login-link-err/login-link-already-used (use-login-link! input))]))
 
   (testing "it should error if the login link does not exist"
     (let [f (fixture)
           login-link-new (login-link/new! (user/random!))
           input (merge f login-link-new)
-          _ (thrown-err? :use-login-link/login-link-not-found (use-login-link! input))]))
+          _ (thrown-err? :use-login-link-err/login-link-not-found (use-login-link! input))]))
 
   (testing "it should error if login link is expired"
     (let [f (fixture)
@@ -72,5 +72,5 @@
           login-link-expired (login-link/mark-as-expired login-link)
           _ (login-link-db/put! (f :login-link-db/login-link-db) #{login-link-expired})
           input (merge f login-link-expired)
-          _ (thrown-err? :use-login-link/login-link-expired (use-login-link! input))])))
+          _ (thrown-err? :use-login-link-err/login-link-expired (use-login-link! input))])))
       
