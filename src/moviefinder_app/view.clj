@@ -4,7 +4,7 @@
             [hiccup2.core :as hiccup]))
 
 (defn spinner [props]
-  (icon/spinner (merge {:class "animate-spin size-10"} props)))
+  (icon/spinner (merge {:class "animate-spin size-8"} props)))
 
 (defn button
   [props]
