@@ -21,7 +21,7 @@
 
 (defn- view-login-link-email-body [login-link]
   (view/button
-   {:href (-> login-link ->login-link-route moviefinder-app.route/encode prepend-base-url)
+   {:href (-> login-link ->login-link-route route/encode prepend-base-url)
     :button/element :a
     :button/label "Login"}))
 
@@ -60,16 +60,6 @@
       put-login-link!
       ::login-link))
 
-#_(defn send-login-link! [input]
-  (let [login-link-db (-> input :login-link-db/login-link-db)
-        send-email (-> input :send-email/send-email)
-        email (-> input :login/email)
-        login-link (login-link/new! email)
-        login-link-email (->login-link-email login-link)]
-    (send-email/send-email! send-email login-link-email)
-    (login-link-db/put! login-link-db #{login-link})
-    login-link))
-
 (defn view-login-email-sent [_request]
   [:div.flex.gap-3.flex-col.w-full
    (icon/checkmark-circle {:class "size-20 text-green-500 -ml-2"})
@@ -77,8 +67,8 @@
    [:p.opacity-80 "We've sent you an email with a link to login with."]
    [:div.w-full.py-2]
    [:a.text-underline.opacity-80.underline
-    {:href (-> {:route/name :route/login} moviefinder-app.route/encode)
-     :hx-get (-> {:route/name :route/login} moviefinder-app.route/encode)}
+    {:href (-> {:route/name :route/login} route/encode)
+     :hx-get (-> {:route/name :route/login} route/encode)}
     "Back to login"]])
 
 (defn sleep []
@@ -95,7 +85,7 @@
 (defn view-login-with-email-form [_request]
   [:form.flex.flex-col.gap-4.w-full
    {:method "POST"
-    :hx-post (-> {:route/name :route/submitted-send-login-link} moviefinder-app.route/encode)
+    :hx-post (-> {:route/name :route/submitted-send-login-link} route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
     :hx-indicator "#login-with-email-indicator"}
