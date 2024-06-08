@@ -16,19 +16,19 @@
 (defn- validate-link-found [input]
   (let [login-link (-> input ::login-link)]
     (when-not login-link
-      (throw (err :use-login-link-err/login-link-not-found input)))
+      (throw (err :err/login-link-not-found input)))
     input))
 
 (defn- validate-link-not-used [input]
   (let [login-link (-> input ::login-link)]
     (when (login-link/used? login-link)
-      (throw (err :use-login-link-err/login-link-already-used input)))
+      (throw (err :err/login-link-already-used input)))
     input))
 
 (defn- validate-link-not-expired [input]
   (let [login-link (-> input ::login-link)]
     (when (login-link/expired? login-link)
-      (throw (err :use-login-link-err/login-link-expired input)))
+      (throw (err :err/login-link-expired input)))
     input))
 
 (defn- mark-login-link-as-used [input]
@@ -86,19 +86,19 @@
 
 (defmulti view-use-login-link-err ex->err-type)
 
-(defmethod view-use-login-link-err :use-login-link-err/login-link-not-found [_ex _request] 
+(defmethod view-use-login-link-err :err/login-link-not-found [_ex _request] 
   [:div "Login link was not found"])
 
-(defmethod view-use-login-link-err :use-login-link-err/login-link-already-used [_ex _request]
+(defmethod view-use-login-link-err :err/login-link-already-used [_ex _request]
   [:div "Login link has already been used"])
 
-(defmethod view-use-login-link-err :use-login-link-err/login-link-expired [_ex _request]
+(defmethod view-use-login-link-err :err/login-link-expired [_ex _request]
   [:div "Login link has expired. Please request a new one"])
 
 (defmethod view-use-login-link-err :default [_ex _request]
   [:div "An error occurred"])
 
-(defmethod requests/handle-hx :login/clicked-login-link [request]
+(defmethod requests/handle-hx :route/use-login-link [request]
   (try 
     (let [input (merge request (:request/route request))]
       (use-login-link! input))

@@ -15,7 +15,7 @@
   (str base-url pathname))
 
 (defn ->login-link-route [login-link]
-  {:route/name :login/clicked-login-link
+  {:route/name :route/use-login-link
    :login-link/id (login-link :login-link/id)})
 
 (defn- view-login-link-email-body [login-link]
@@ -73,7 +73,7 @@
 (defn sleep []
   (Thread/sleep 2000))
 
-(defmethod requests/handle-hx :route/submitted-send-login-link [request]
+(defmethod requests/handle-hx :route/send-login-link [request]
   (sleep)
   (-> request
       (assoc :send-login-link/email (-> request :request/form-data :email))
@@ -83,7 +83,7 @@
 (defn view-send-login-link-form [_request]
   [:form.flex.flex-col.gap-4.w-full
    {:method "POST"
-    :hx-post (-> {:route/name :route/submitted-send-login-link} route/encode)
+    :hx-post (-> {:route/name :route/send-login-link} route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
     :hx-indicator "#login-with-email-indicator"}
