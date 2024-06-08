@@ -2,18 +2,20 @@
   (:require [clojure.string :refer [includes?]]
             [clojure.test :refer [deftest is testing]]
             [moviefinder-app.email.send-email :as send-email]
-            [moviefinder-app.email.send-email-impl]
             [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link-db-impl]
             [moviefinder-app.route :as route]
-            [moviefinder-app.login.fixture :refer [fixture]]
+            [moviefinder-app.deps :as deps]
             [moviefinder-app.login.send-login-link :refer [send-login-link! ->login-link-route]]))
+
+(defn fixture []
+  (merge (deps/deps-test)
+         {:send-login-link/email "test@test.com"}))
 
 (deftest send-login-link-test
   (testing "send login link"
     (let [f (fixture)
           login-link-db (f :login-link-db/login-link-db)
-          email (:login/email f)
+          email (f :send-login-link/email)
           before (login-link-db/find-by-email! login-link-db email)
           _ (send-login-link! f)
           after (login-link-db/find-by-email! login-link-db email)]

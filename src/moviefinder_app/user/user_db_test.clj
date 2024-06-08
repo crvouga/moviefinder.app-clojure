@@ -2,12 +2,10 @@
   (:require [clojure.test :refer [deftest is testing]]
             [moviefinder-app.user.user :as user]
             [moviefinder-app.user.user-db :as user-db]
-            [moviefinder-app.user.user-db-impl]))
+            [moviefinder-app.deps :as deps]))
 
 (defn fixture []
-  (let [user-db (user-db/->UserDb {:user-db/impl :user-db-impl/in-memory})]
-    {:user-db/user-db user-db}))
-
+  (deps/deps-test))
 
 (deftest user-db-test
   (testing "find by email"

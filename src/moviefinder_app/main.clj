@@ -2,22 +2,12 @@
   (:require [moviefinder-app.env :as env]
             [moviefinder-app.account]
             [moviefinder-app.counter]
-            [moviefinder-app.email.send-email :as send-email]
-            [moviefinder-app.email.send-email-impl]
-            [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link-db-impl]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]
-            [moviefinder-app.user-session.user-session-db-impl]
-            [moviefinder-app.user.user-db :as user-db]
-            [moviefinder-app.user.user-db-impl]
-            [moviefinder-app.movie.movie-db :as movie-db]
-            [moviefinder-app.movie.movie-db-impl]
             [moviefinder-app.home]
             [moviefinder-app.login.send-login-link]
             [moviefinder-app.login.use-login-link]
             [moviefinder-app.movie.details]
             [moviefinder-app.requests :as requests]
-            [moviefinder-app.user-session]
+            [moviefinder-app.deps :as deps]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.params :refer [wrap-params]]
@@ -65,41 +55,6 @@
 ;; 
 ;; 
 ;; 
-;; 
-;; 
-
-
-(def login-link-db (login-link-db/->LoginLinkDb
-                    {:login-link-db/impl :login-link-db-impl/in-memory}))
-
-(def send-email (send-email/->SendEmail
-                 {:send-email/impl :send-email-impl/mock
-                  :send-email/log? true}))
-
-(def user-session-db (user-session-db/->UserSessionDb
-                      {:user-session-db/impl :user-session-db-impl/in-memory}))
-
-(def user-db (user-db/->UserDb
-              {:user-db/impl :user-db-impl/in-memory}))
-
-(def movie-db (movie-db/->MovieDb
-               {:movie-db/impl :movie-db-impl/tmdb}))
-
-(defn assoc-deps [request]
-  (assoc request
-         :movie-db/movie-db movie-db
-         :user-db/user-db user-db
-         :user-session-db/user-session-db user-session-db
-         :login-link-db/login-link-db login-link-db
-         :send-email/send-email send-email))
-
-;; 
-;; 
-;; 
-;; 
-;; 
-;; 
-;; 
 
 (defn handle [request]
   (if (:request/hx? request)
@@ -109,6 +64,11 @@
 (defn tap [x]
   (println x)
   x)
+
+(def deps (deps/deps-real))
+
+(defn assoc-deps [request]
+  (merge request deps))
 
 (defn handle-ring-request [ring-request]
   (-> ring-request

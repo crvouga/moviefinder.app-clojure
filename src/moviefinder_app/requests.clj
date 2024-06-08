@@ -57,7 +57,7 @@
 (defn ring-request->request [ring-request]
   {:request/route (route ring-request)
    :request/hx? (hx? ring-request)
-   :request/session-id (session-id ring-request)
+   :request/user-session-id (session-id ring-request)
    :request/form-data (-> ring-request :form-params str-keys->keywords)})
 
 ;; 

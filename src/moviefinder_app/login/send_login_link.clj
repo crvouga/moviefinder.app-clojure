@@ -30,7 +30,7 @@
    :email/body-view (view-login-link-email-body login-link)})
 
 (defn- assoc-login-link [input]
-  (let [email (-> input :login/email)
+  (let [email (-> input :send-login-link/email)
         login-link (login-link/new! email)]
     (assoc input ::login-link login-link)))
 
@@ -59,7 +59,7 @@
       put-login-link!
       ::login-link))
 
-(defn view-login-email-sent [_request]
+(defn view-send-login-link-ok [_request]
   [:div.flex.gap-3.flex-col.w-full
    (icon/checkmark-circle {:class "size-20 text-green-500 -ml-2"})
    [:h1.text-3xl.font-bold. "Email sent"]
@@ -76,12 +76,11 @@
 (defmethod requests/handle-hx :route/submitted-send-login-link [request]
   (sleep)
   (-> request
-      (assoc :login/email (-> request :request/form-data :email)
-             :user-session/id (-> request :request/session-id))
+      (assoc :send-login-link/email (-> request :request/form-data :email))
       send-login-link!)
-  (requests/html (view-login-email-sent request)))
+  (requests/html (view-send-login-link-ok request)))
 
-(defn view-login-with-email-form [_request]
+(defn view-send-login-link-form [_request]
   [:form.flex.flex-col.gap-4.w-full
    {:method "POST"
     :hx-post (-> {:route/name :route/submitted-send-login-link} route/encode)
@@ -92,7 +91,7 @@
     {:text-field/id "email"
      :text-field/label "Email Address"
      :text-field/type "email"
-     :text-field/name :login/email
+     :text-field/name "email"
      :text-field/required? true})
 
    (view/button
@@ -105,7 +104,7 @@
   [:div.w-full.h-full.flex.flex-1.flex-col
    (view/top-bar {:top-bar/title "Login with email"})
    [:div.flex-1.w-full.p-6.flex.flex-col.items-center
-    (view-login-with-email-form request)]])
+    (view-send-login-link-form request)]])
 
 (defn view-login [request]
   (view/view-app-tabs-layout
