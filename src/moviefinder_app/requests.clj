@@ -52,13 +52,13 @@
     k))
 
 (defn- str-keys->keywords [m]
-  (update-keys str->keyword m))
+  (update-keys m str->keyword))
 
 (defn ring-request->request [ring-request]
   {:request/route (route ring-request)
    :request/hx-request? (hx-request? ring-request)
    :request/session-id (session-id ring-request)
-   :request/form-data (->> ring-request :form-params str-keys->keywords)})
+   :request/form-data (-> ring-request :form-params str-keys->keywords)})
 
 ;; 
 ;; 
