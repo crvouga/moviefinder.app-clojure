@@ -12,7 +12,7 @@
             [moviefinder-app.view]
             [moviefinder-app.view.icon]))
 
-(defn- assoc-login-link [input]
+(defn- assoc-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
         login-link-id (-> input :login-link/id)
         login-link (first (login-link-db/find-by-id! login-link-db login-link-id))]
@@ -39,7 +39,7 @@
 (defn mark-login-link-as-used [input]
   (update input ::login-link login-link/mark-as-used))
 
-(defn assoc-user [input]
+(defn assoc-user! [input]
   (let [login-link (-> input ::login-link)
         user-email (-> login-link :login-link/email)
         user-db (-> input :user-db/user-db)
@@ -75,12 +75,12 @@
 
 (defn use-login-link! [input]
   (-> input
-      assoc-login-link
+      assoc-login-link!
       validate-link-found
       validate-link-not-expired
       validate-link-not-used
       mark-login-link-as-used
-      assoc-user
+      assoc-user!
       assoc-user-session
       put-user!
       put-user-session!
