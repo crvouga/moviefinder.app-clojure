@@ -75,7 +75,7 @@
   (Thread/sleep 2000))
 
 (defmethod requests/handle-hx :route/submitted-send-login-link [request]
-
+  (sleep)
   (-> request
       (assoc :login/email (-> request :request/form-data :email)
              :user-session/id (-> request :request/session-id))
@@ -89,7 +89,6 @@
     :hx-swap "outerHTML"
     :hx-target "this"
     :hx-indicator "#login-with-email-indicator"}
-   
    (view/text-field
     {:text-field/id "email"
      :text-field/label "Email Address"
