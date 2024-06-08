@@ -14,6 +14,7 @@
             [moviefinder-app.view]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.session :refer [wrap-session]]))
 ;; 
 ;; 
@@ -101,6 +102,7 @@
 
 (defn run-server! [input]
   (-> #'handle-ring-request
+      (wrap-params)
       (wrap-session)
       (wrap-reload)
       (run-jetty {:port (input :server/port) :join? false})))

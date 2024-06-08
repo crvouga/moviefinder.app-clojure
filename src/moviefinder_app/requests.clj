@@ -39,10 +39,26 @@
 (defn- session-id [ring-request]
   (ring-request :session/key))
 
+
+(defn- valid-keyword? [s]
+  (try
+    (boolean (keyword s))
+    (catch Exception _ 
+      false)))
+
+(defn- str->keyword [k]
+  (if (and (string? k) (valid-keyword? k))
+    (keyword k)
+    k))
+
+(defn- str-keys->keywords [m]
+  (update-keys str->keyword m))
+
 (defn ring-request->request [ring-request]
   {:request/route (route ring-request)
    :request/hx-request? (hx-request? ring-request)
-   :request/session-id (session-id ring-request)})
+   :request/session-id (session-id ring-request)
+   :request/form-data (->> ring-request :form-params str-keys->keywords)})
 
 ;; 
 ;; 
