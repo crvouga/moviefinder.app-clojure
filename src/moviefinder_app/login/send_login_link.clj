@@ -1,37 +1,66 @@
 (ns moviefinder-app.login.send-login-link
   (:require [moviefinder-app.email.send-email :as send-email]
-           [moviefinder-app.env :as env :as env]
-           [moviefinder-app.login.login-link :as login-link]
-           [moviefinder-app.login.login-link-db-impl]
-           [moviefinder-app.login.login-link-db :as login-link-db]
-           [moviefinder-app.requests :as requests]
-           [moviefinder-app.route :as route]
-           [moviefinder-app.user-session.user-session-db-impl]
-           [moviefinder-app.view :as view]
-           [moviefinder-app.view.icon :as icon]))
+            [moviefinder-app.env :as env :as env]
+            [moviefinder-app.login.login-link :as login-link]
+            [moviefinder-app.login.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-link-db-impl]
+            [moviefinder-app.requests :as requests]
+            [moviefinder-app.route :as route]
+            [moviefinder-app.view :as view]
+            [moviefinder-app.view.icon :as icon]))
 
 
 (def base-url (env/get! "BASE_URL"))
 
-(defn prepend-base-url [pathname]
+(defn- prepend-base-url [pathname]
   (str base-url pathname))
 
 (defn ->login-link-route [login-link]
   {:route/name :login/clicked-login-link
    :login-link/id (login-link :login-link/id)})
 
-(defn view-login-link-email-body [login-link]
+(defn- view-login-link-email-body [login-link]
   (view/button
    {:href (-> login-link ->login-link-route moviefinder-app.route/encode prepend-base-url)
     :button/element :a
     :button/label "Login"}))
 
-(defn ->login-link-email [login-link]
+(defn- ->login-link-email [login-link]
   {:email/to (-> login-link :login-link/email)
    :email/subject "Login to moviefinder.app"
    :email/body-view (view-login-link-email-body login-link)})
 
+(defn- assoc-login-link [input]
+  (let [email (-> input :login/email)
+        login-link (login-link/new! email)]
+    (assoc input ::login-link login-link)))
+
+(defn- assoc-login-link-email [input]
+  (let [login-link (-> input ::login-link)
+        login-link-email (->login-link-email login-link)]
+    (assoc input ::login-link-email login-link-email)))
+
+(defn- send-login-link-email! [input]
+  (let [send-email (-> input :send-email/send-email)
+        login-link-email (-> input ::login-link-email)]
+    (send-email/send-email! send-email login-link-email)
+    input))
+
+(defn- put-login-link! [input]
+  (let [login-link-db (-> input :login-link-db/login-link-db)
+        login-link (-> input ::login-link)]
+    (login-link-db/put! login-link-db #{login-link})
+    input))
+
 (defn send-login-link! [input]
+  (-> input
+      assoc-login-link
+      assoc-login-link-email
+      send-login-link-email!
+      put-login-link!
+      ::login-link))
+
+#_(defn send-login-link! [input]
   (let [login-link-db (-> input :login-link-db/login-link-db)
         send-email (-> input :send-email/send-email)
         email (-> input :login/email)
