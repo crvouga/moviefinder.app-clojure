@@ -3,7 +3,7 @@
             [moviefinder-app.login.login-link :as login-link]
             [moviefinder-app.login.login-link-db :as login-link-db] 
             [moviefinder-app.requests :as requests]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.user-session.user-session-db-interface :as user-session-db]
             [moviefinder-app.user.user :as user]
             [moviefinder-app.user.user-db :as user-db]))
 

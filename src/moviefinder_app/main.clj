@@ -6,7 +6,7 @@
             [moviefinder-app.email.send-email-impl]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.login.login-link-db-impl]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.user-session.user-session-db-interface :as user-session-db]
             [moviefinder-app.user-session.user-session-db-impl]
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.user.user-db-impl]

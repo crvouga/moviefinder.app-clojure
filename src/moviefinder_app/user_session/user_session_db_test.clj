@@ -1,6 +1,6 @@
 (ns moviefinder-app.user-session.user-session-db-test
   (:require [clojure.test :refer [deftest is testing]]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.user-session.user-session-db-interface :as user-session-db]
             [moviefinder-app.user-session.user-session-db-impl]))
 
 (defn fixture []

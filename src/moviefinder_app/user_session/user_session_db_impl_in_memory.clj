@@ -1,11 +1,10 @@
 (ns moviefinder-app.user-session.user-session-db-impl-in-memory
-  (:require [moviefinder-app.user-session.user-session-db :refer [->UserSessionDb
-                                                                  UserSessionDb]]))
+  (:require [moviefinder-app.user-session.user-session-db-interface :as user-session-db]))
 
 
 
 (defrecord UserSessionDbInMemory [sessions-by-session-id!]
-  UserSessionDb
+  user-session-db/UserSessionDb
   (find-by-session-id! [_this session-id]
     (->> @sessions-by-session-id!
          vals
@@ -18,5 +17,5 @@
       (reset! sessions-by-session-id! by-id-new))))
 
 
-(defmethod ->UserSessionDb :user-session-db-impl/in-memory [_input]
+(defmethod user-session-db/->UserSessionDb :user-session-db-impl/in-memory [_input]
   (->UserSessionDbInMemory (atom {})))

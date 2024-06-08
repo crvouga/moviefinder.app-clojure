@@ -7,15 +7,15 @@
 
 
 (defn fixture []
-  {:f/db (login-link-db/->LoginLinkDb
-          {:login-link-db/impl :login-link-db/impl-in-memory})})
+  {::db (login-link-db/->LoginLinkDb
+         {:login-link-db/impl :login-link-db-impl/in-memory})})
 
 
 
 (deftest login-link-db-test
   (testing "find and insert"
     (let [f (fixture)
-          db (f :f/db)
+          db (f ::db)
           login-link (login-link/random!)
           email (-> login-link :login-link/email)
           before (login-link-db/find-by-email! db email)
@@ -27,7 +27,7 @@
 
   (testing "find by id"
     (let [f (fixture)
-          db (f :f/db)
+          db (f ::db)
           login-link (login-link/random!)
           id (-> login-link :login-link/id)
           before (login-link-db/find-by-id! db id)
@@ -38,7 +38,7 @@
   
   (testing "it should be unique by id"
     (let [f (fixture)
-           db (f :f/db)
+           db (f ::db)
            login-link (login-link/random!)
            id (-> login-link :login-link/id)
            before (login-link-db/find-by-id! db id)
@@ -51,7 +51,7 @@
 
   (testing "it should always keep the last one put"
     (let [f (fixture)
-          db (f :f/db)
+          db (f ::db)
           login-link (login-link/random!)
           _ (login-link-db/put! db #{login-link})
           before (login-link-db/find-by-id! db (-> login-link :login-link/id))
@@ -63,7 +63,7 @@
 
   (testing "find and insert with many"
     (let [f (fixture)
-          db (f :f/db)
+          db (f ::db)
           login-link-a (login-link/random!)
           login-link-b (login-link/random!)
           login-link-c (login-link/random!)
