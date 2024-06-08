@@ -3,7 +3,7 @@
             [moviefinder-app.error :refer [thrown-err?]]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.login.login-link :as login-link]
-            [moviefinder-app.user-session.user-session-db-interface :as user-session-db]
+            [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.user.user :as user]
             [moviefinder-app.login.fixture :refer [fixture]]

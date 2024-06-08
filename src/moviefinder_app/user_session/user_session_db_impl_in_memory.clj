@@ -1,5 +1,5 @@
 (ns moviefinder-app.user-session.user-session-db-impl-in-memory
-  (:require [moviefinder-app.user-session.user-session-db-interface :as user-session-db]))
+  (:require [moviefinder-app.user-session.user-session-db :as user-session-db]))
 
 
 
