@@ -49,12 +49,12 @@
    (tab-panel view-tab-panel)
    (tabs
     (tab {:tab/label "Feed"
-          :tab/active? (= (active-route :route/name) :home/home)
-          :tab/route {:route/name :home/home}
+          :tab/active? (= (active-route :route/name) :route/home)
+          :tab/route {:route/name :route/home}
           :tab/icon (moviefinder-app.view.icon/home)})
     (tab {:tab/label "Account"
-          :tab/active? (= (active-route :route/name) :account/account)
-          :tab/route {:route/name :account/account}
+          :tab/active? (= (active-route :route/name) :route/account)
+          :tab/route {:route/name :route/account}
           :tab/icon (moviefinder-app.view.icon/user-circle)}))))
 
 (defn icon-button [input]

@@ -46,7 +46,7 @@
 
 (defmethod moviefinder-app.requests/handle-hx :default [request]
   (-> request
-      (assoc :request/route {:route/name :home/home})
+      (assoc :request/route {:route/name :route/home})
       moviefinder-app.requests/handle-hx))
 
 

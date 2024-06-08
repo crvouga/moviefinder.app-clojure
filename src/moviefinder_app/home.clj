@@ -15,7 +15,7 @@
 
 (defn movie-details-href [movie]
   (moviefinder-app.route/encode 
-   {:route/name :movie/detail
+   {:route/name :route/movie-details
     :movie/id (-> movie :movie/id)}))
 
 (defn view-feed-item-title [movie]
@@ -81,11 +81,11 @@
     (view-feed-slides! input)]])
 
 (defn view-home [input]
-  (moviefinder-app.view/view-app-tabs-layout {:route/name :home/home}  (view-feed! input)))
+  (moviefinder-app.view/view-app-tabs-layout {:route/name :route/home}  (view-feed! input)))
 
 (defmethod moviefinder-app.requests/handle-hx :noop [_request]
   {:status 200})
 
-(defmethod moviefinder-app.requests/handle-hx :home/home [request]
+(defmethod moviefinder-app.requests/handle-hx :route/home [request]
   (moviefinder-app.requests/html (view-home request)))
 

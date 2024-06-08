@@ -13,15 +13,15 @@
     {:button/element :button
      :button/label "Login"
      :hx-target "#app"
-     :hx-push-url (-> {:route/name :login/login}
+     :hx-push-url (-> {:route/name :route/login}
                       moviefinder-app.route/encode)
-     :hx-get (-> {:route/name :login/login}
+     :hx-get (-> {:route/name :route/login}
                  moviefinder-app.route/encode)})])
 
 (defn view-account [request]
   (moviefinder-app.view/view-app-tabs-layout 
-   {:route/name :account/account}
+   {:route/name :route/account}
    (view-login-cta request)))
 
-(defmethod moviefinder-app.requests/handle-hx :account/account [request]
+(defmethod moviefinder-app.requests/handle-hx :route/account [request]
   (moviefinder-app.requests/html (view-account request)))
