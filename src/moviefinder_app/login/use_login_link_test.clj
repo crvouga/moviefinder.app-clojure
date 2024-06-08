@@ -13,7 +13,8 @@
 
 (defn fixture []
   (merge (deps/deps-test)
-         {:send-login-link/email "test@test.com"}))
+         {:send-login-link/email "test@test.com"
+          :user-session/id (java.util.UUID/randomUUID)}))
 
 (deftest use-login-link-test
   (testing "use login link"
@@ -76,5 +77,11 @@
           login-link-expired (login-link/mark-as-expired login-link)
           _ (login-link-db/put! (f :login-link-db/login-link-db) #{login-link-expired})
           input (merge f login-link-expired)
-          _ (thrown-err? :err/login-link-expired (use-login-link! input))])))
-      
+          _ (thrown-err? :err/login-link-expired (use-login-link! input))]))
+
+  (testing "it should error if there is not session id to associate with the user"
+    (let [f (fixture)
+          login-link (send-login-link! f)
+          input (-> (merge f login-link) (dissoc :user-session/id))
+          _ (thrown-err? :err/user-session-id-not-associate-with-request (use-login-link! input))])))
+    

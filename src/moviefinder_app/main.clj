@@ -12,6 +12,7 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.session :refer [wrap-session]]
+            [ring.middleware.session.memory :refer [memory-store]]
             [moviefinder-app.view :as view]))
 
 (defmethod requests/handle-hx :default [request]
@@ -19,21 +20,12 @@
       (assoc :request/route {:route/name :route/home})
       requests/handle-hx))
 
-
 (defmethod requests/handle :default [request]
   (-> request
       requests/handle-hx
       :response/view
       view/html-doc
       requests/html-doc))
-
-;; 
-;; 
-;; 
-;; 
-;; 
-;; 
-;; 
 
 (defn handle [request]
   (if (:request/hx? request)
@@ -60,10 +52,9 @@
 (defn run-server! [input]
   (-> #'handle-ring-request
       (wrap-params)
-      (wrap-session)
+      (wrap-session {:store (memory-store)})
       (wrap-reload)
       (run-jetty {:port (input :server/port) :join? false})))
-
 
 (def port (-> (moviefinder-app.env/get! "PORT") Integer/parseInt))
 (def base-url (moviefinder-app.env/get! "BASE_URL"))

@@ -1,7 +1,7 @@
 (ns moviefinder-app.login.use-login-link
   (:require [moviefinder-app.error :refer [err ex->err-type]]
             [moviefinder-app.login.login-link :as login-link]
-            [moviefinder-app.login.login-link-db :as login-link-db] 
+            [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.requests :as requests]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user.user :as user]
@@ -45,6 +45,12 @@
         user (if maybe-user maybe-user (user/new! user-email))]
     (assoc input ::user user)))
 
+(defn validate-user-session-id-exists [input]
+  (let [user-session-id (-> input :user-session/id)]
+    (when-not user-session-id
+      (throw (err :err/user-session-id-not-associate-with-request input)))
+    input))
+
 (defn- assoc-user-session [input]
   (let [user (-> input ::user)
         user-session-id (-> input :user-session/id)
@@ -79,10 +85,12 @@
       validate-link-not-used
       mark-login-link-as-used
       assoc-user!
+      validate-user-session-id-exists
       assoc-user-session
       put-user!
       put-user-session!
       put-login-link!))
+
 
 (defn- view-use-login-link-ok [_request]
   [:div.w-full.flex.flex-col
@@ -104,7 +112,7 @@
 
 (defmulti view-use-login-link-err ex->err-type)
 
-(defmethod view-use-login-link-err :err/login-link-not-found [_ex _request] 
+(defmethod view-use-login-link-err :err/login-link-not-found [_ex _request]
   [:div "Login link was not found"])
 
 (defmethod view-use-login-link-err :err/login-link-already-used [_ex _request]
@@ -113,17 +121,23 @@
 (defmethod view-use-login-link-err :err/login-link-expired [_ex _request]
   [:div "Login link has expired. Please request a new one"])
 
+(defmethod view-use-login-link-err :err/user-session-id-not-associate-with-request [_ex _request]
+  [:div "User session ID not found"])
+
 (defmethod view-use-login-link-err :default [_ex _request]
   [:div "An error occurred"])
 
-(defn handle-use-login-link  [request]
-  (try
-    (let [input (merge request (:request/route request))]
-      (use-login-link! input))
-    (requests/redirect {:route/name :route/use-login-link-ok})
-    (catch Exception ex
-      (requests/html (view-use-login-link-err ex request)))))
-
 
 (defmethod requests/handle :route/use-login-link [request]
-  (handle-use-login-link request))
+  (try
+    (-> request
+        (merge (:request/route request))
+        use-login-link!)
+    (-> request
+        view-use-login-link-ok
+        view/html-doc
+        requests/html-doc)
+    (catch Exception ex
+      (-> (view-use-login-link-err ex request)
+          view/html-doc
+          requests/html-doc))))

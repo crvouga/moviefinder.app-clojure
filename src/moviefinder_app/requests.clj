@@ -36,8 +36,9 @@
 (defn- hx? [ring-request]
   (boolean (get-in ring-request [:headers "hx-request"])))
 
-(defn- session-id [ring-request]
-  (ring-request :session/key))
+
+(defn- ring-session-id [ring-request]
+  (get-in ring-request [:session/key]))
 
 
 (defn- valid-keyword? [s]
@@ -64,9 +65,10 @@
       request)))
 
 (defn assoc-user-session-id [request ring-request]
-  (let [user-session-id (session-id ring-request)]
+  (let [user-session-id (ring-session-id ring-request)]
+    (println "user-session-id="user-session-id)
     (if user-session-id
-      (assoc request :request/user-session-id user-session-id)
+      (assoc request :user-session/id user-session-id)
       request)))
 
 
@@ -97,7 +99,10 @@
   (if (:response/ok? response) 200 500))
 
 (defn- html-body [response]
-  (-> response :response/view hiccup/html str))
+  (-> response
+      :response/view
+      hiccup/html
+      str))
 
 (def html-headers
   {"Content-Type" "text/html"})
