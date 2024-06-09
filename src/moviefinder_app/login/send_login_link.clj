@@ -78,6 +78,7 @@
   [:form.flex.flex-col.gap-4.w-full
    {:method "POST"
     :hx-post (-> {:route/name :route/send-login-link} route/encode)
+    :hx-push-url (-> {:route/name :route/login ::sent-login-link? true} route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
     :hx-indicator "#login-with-email-indicator"}
@@ -98,7 +99,9 @@
   [:div.w-full.h-full.flex.flex-1.flex-col
    (view/top-bar {:top-bar/title "Login with email"})
    [:div.flex-1.w-full.p-6.flex.flex-col.items-center
-    (view-send-login-link-form request)]])
+    (if (-> request :request/route ::sent-login-link?)
+      (view-send-login-link-ok request)
+      (view-send-login-link-form request))]])
 
 (defn view-login [request]
   (view/app-tabs-layout

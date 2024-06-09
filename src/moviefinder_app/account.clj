@@ -18,10 +18,18 @@
      :hx-get (-> {:route/name :route/login}
                  moviefinder-app.route/encode)})])
 
+(defn view-logged-in [_request]
+  [:div "Logged in"])
+
+(defn view-account-screen [request]
+  (if (-> request :user/id)
+    (view-logged-in request)
+    (view-login-cta request)))
+
 (defn view-account [request]
   (moviefinder-app.view/app-tabs-layout 
    {:route/name :route/account}
-   (view-login-cta request)))
+   (view-account-screen request)))
 
 (defmethod moviefinder-app.handle/handle-hx :route/account [request]
   (moviefinder-app.handle/html (view-account request)))

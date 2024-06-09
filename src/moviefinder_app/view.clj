@@ -72,7 +72,7 @@
   [:nav.flex.w-full.shrink-0.border-t.border-neutral-700.divide-x.divide-neutral-700 {} children])
 
 (defn tab-panel [children]
-  [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll {} children])
+  [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll children])
 
 
 (defn app-tabs-layout [active-route view-tab-panel]
@@ -112,3 +112,14 @@
    (icon/checkmark-circle {:class "size-20 text-green-500 -ml-2"})
    [:h1.text-3xl.font-bold (-> input :success/title)]
    [:p.opacity-80 (-> input :success/body)]])
+
+(defn failure [input]
+  [:div.flex.gap-3.flex-col.w-full
+   (icon/exclaimation-circle {:class "size-20 text-red-500 -ml-2"})
+   [:h1.text-3xl.font-bold (-> input :failure/title)]
+   [:p.opacity-80 (-> input :failure/body)]])
+
+(defn loading [props]
+  [:div.flex.gap-3.flex-col.w-full.flex-1.items-center.justify-center
+   props
+   (spinner)])

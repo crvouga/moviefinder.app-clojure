@@ -92,17 +92,24 @@
       put-login-link!))
 
 
+
+(def view-top-bar
+  (view/top-bar {:top-bar/title "Login with email"}))
+
+(def view-back-to-app
+  [:div.pt-6.w-fit
+   (view/button {:button/label "Back to app"
+                 :button/start (icon/arrow-left)
+                 :button/element :a
+                 :href (-> {:route/name :route/home} route/encode)})])
+
 (defn- view-use-login-link-ok [_request]
   [:div.w-full.flex.flex-col
-   (view/top-bar {:top-bar/title "Login with email"})
+   view-top-bar
    [:div.flex-1.w-full.p-6.flex.flex-col
     (view/success {:success/title "Logged in"
                    :success/body "You have successfully logged in."})
-    [:div.pt-6.w-fit
-     (view/button {:button/label "Back to app"
-                   :button/start (icon/arrow-left)
-                   :button/element :a
-                   :href (-> {:route/name :route/home} route/encode)})]]])
+    view-back-to-app]])
 
 (defmethod handle/handle-hx :route/use-login-link-ok [request]
   (-> request
@@ -110,22 +117,31 @@
       view/html-doc
       handle/html-doc))
 
-(defmulti view-use-login-link-err ex->err-type)
 
-(defmethod view-use-login-link-err :err/login-link-not-found [_ex _request]
-  [:div "Login link was not found"])
 
-(defmethod view-use-login-link-err :err/login-link-already-used [_ex _request]
-  [:div "Login link has already been used"])
+(defmulti err->message ex->err-type)
 
-(defmethod view-use-login-link-err :err/login-link-expired [_ex _request]
-  [:div "Login link has expired. Please request a new one"])
+(defmethod err->message :err/login-link-not-found [_ex _request]
+  "Login link was not found. Please request a new one")
 
-(defmethod view-use-login-link-err :err/user-session-id-not-associate-with-request [_ex _request]
-  [:div "User session ID not found"])
+(defmethod err->message :err/login-link-already-used [_ex _request]
+  "Login link has already been used. Please request a new one")
 
-(defmethod view-use-login-link-err :default [_ex _request]
-  [:div "An error occurred"])
+(defmethod err->message :err/login-link-expired [_ex _request]
+  "Login link has expired. Please request a new one")
+
+(defmethod err->message :err/user-session-id-not-associate-with-request [_ex _request]
+  "User session ID not found")
+
+(defmethod err->message :default [_ex _request]
+  "An error occurred")
+
+(defn- view-use-login-link-err [ex request]
+  [:div.w-full.flex.flex-col
+   view-top-bar
+   [:div.flex-1.w-full.p-6.flex.flex-col
+    (view/failure {:failure/title (err->message ex request)})
+    view-back-to-app]])
 
 (defmethod handle/handle :route/use-login-link [request]
   (try
