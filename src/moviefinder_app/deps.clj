@@ -8,9 +8,11 @@
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.user.user-db-impl]
             [moviefinder-app.movie.movie-db :as movie-db]
-            [moviefinder-app.movie.movie-db-impl]))
+            [moviefinder-app.movie.movie-db-impl]
+            [moviefinder-app.db :as db]
+            [moviefinder-app.env :as env]))
 
-(defn deps-test []
+(defn deps-test-unit []
   {:movie-db/movie-db
    (movie-db/->MovieDb
     {:movie-db/impl :movie-db-impl/tmdb})
@@ -31,6 +33,22 @@
    (send-email/->SendEmail
     {:send-email/impl :send-email-impl/mock
      :send-email/log? false})})
+
+(defn deps-test-int []
+  (merge
+   (deps-test-unit)
+   {:user-session-db/user-session-db
+    (user-session-db/->UserSessionDb
+     {:user-session-db/impl :user-session-db-impl/postgres
+      :db/conn db/conn})}))
+
+(defn int-test? []
+  (boolean (env/get! "INTEGRATION_TEST" false)))
+
+(defn deps-test []
+  (if (int-test?)
+    (deps-test-int)
+    (deps-test-unit)))  
 
 (defn deps-real []
   (merge

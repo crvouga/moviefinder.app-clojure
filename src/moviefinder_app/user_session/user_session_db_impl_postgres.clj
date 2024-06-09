@@ -1,8 +1,8 @@
-(ns moviefinder-app.user-session.user-session-db-impl-sql
+(ns moviefinder-app.user-session.user-session-db-impl-postgres
   (:require [moviefinder-app.user-session.user-session-db :as user-session-db]))
 
 
-(defrecord UserSessionDbSql []
+(defrecord UserSessionDbPostgres [input]
   user-session-db/UserSessionDb
   (find-by-session-id! [_this _session-id]
     (throw (Exception. "Not implemented")))
@@ -11,5 +11,5 @@
     (throw (Exception. "Not implemented"))))
 
 
-(defmethod user-session-db/->UserSessionDb :user-session-db/impl-sql [_input]
-  (->UserSessionDbSql))
+(defmethod user-session-db/->UserSessionDb :user-session-db-impl/postgres [input]
+  (->UserSessionDbPostgres input))

@@ -1,0 +1,18 @@
+version: "3.1"
+
+services:
+  postgres:
+    container_name: moviefinder-app-postgres
+    image: postgres:16.1
+    restart: always
+    environment:
+      POSTGRES_USER: moviefinder-app
+      POSTGRES_PASSWORD: moviefinder-app
+      POSTGRES_DB: moviefinder-app
+    ports:
+      - "5434:5432"
+    volumes:
+      - moviefinder-app-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  moviefinder-app-postgres-data:

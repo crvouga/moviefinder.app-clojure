@@ -24,8 +24,9 @@
         :when (not (nil? val))]
   (System/setProperty key val))
 
-(defn get! [key]
+(defn get! [key & [default-val]]
   (let [env-var (or (System/getenv key) (System/getProperty key))]
-    (if (nil? env-var)
-      (throw (Exception. (str key " not set")))
-      env-var)))
+    (cond
+      (not (nil? env-var)) env-var
+      (not (nil? default-val)) default-val
+      :else (throw (Exception. (str key " not set"))))))
