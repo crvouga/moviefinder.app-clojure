@@ -37,8 +37,6 @@
   (boolean (get-in ring-request [:headers "hx-request"])))
 
 
-
-
 (defn- valid-keyword? [s]
   (try
     (boolean (keyword s))
