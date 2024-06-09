@@ -6,6 +6,7 @@
             [moviefinder-app.login.send-login-link]
             [moviefinder-app.login.use-login-link]
             [moviefinder-app.movie.details]
+            [moviefinder-app.user-session.user-session]
             [moviefinder-app.handle :as handle]
             [moviefinder-app.deps :as deps]
             [ring.adapter.jetty :refer [run-jetty]]
@@ -31,9 +32,9 @@
     (handle/handle-hx request)
     (handle/handle request)))
 
-(defn tap [x]
-  (println x)
-  x)
+(defn log-request [request]
+  (println (select-keys request [:request/route :session/id :user/id :request/form-data :request/hx?]))
+  request)
 
 (def deps (deps/deps-real))
 
@@ -43,8 +44,9 @@
 (defn handle-ring-request [ring-request]
   (-> ring-request
       handle/ring-request->request
-      tap
       assoc-deps
+      moviefinder-app.user-session.user-session/assoc-user-session!
+      log-request
       handle
       handle/response->ring-response))
 
