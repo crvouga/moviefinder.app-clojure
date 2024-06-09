@@ -12,7 +12,7 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.session :refer [wrap-session]]
-            [ring.middleware.session.memory :refer [memory-store]]
+            [ring.middleware.cookies :refer [wrap-cookies]]
             [moviefinder-app.view :as view]))
 
 (defmethod requests/handle-hx :default [request]
@@ -51,6 +51,7 @@
 
 (defn run-server! [input]
   (-> #'handle-ring-request
+      (wrap-cookies)
       (wrap-params)
       (wrap-session)
       (wrap-reload)
@@ -61,3 +62,7 @@
 (defn -main []
   (run-server! {:server/port port})
   (println (str "Server running at " base-url)))
+
+(comment
+  (-main)
+  )
