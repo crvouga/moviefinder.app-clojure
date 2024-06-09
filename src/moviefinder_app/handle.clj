@@ -60,14 +60,11 @@
       (assoc request :request/hx? hx?)
       request)))
 
-
-(defn assoc-session-id-to-request [request ring-request]
-  (let [session (get-in ring-request [:session])
-        session-id (get-in ring-request [:session :session/id])]
+(defn assoc-session-id [request ring-request]
+  (let [session-id (ring-request :session/id)]
     (if session-id
       (assoc request :session/id session-id)
       request)))
-
 
 (defn assoc-form-data [request ring-request]
   (let [form-data (-> ring-request :form-params str-keys->keywords)]
@@ -79,8 +76,16 @@
   (-> {}
       (assoc-route ring-request)
       (assoc-hx? ring-request)
-      (assoc-session-id-to-request ring-request)
+      (assoc-session-id ring-request)
       (assoc-form-data ring-request)))
+
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
+;; 
 
 (defn set-cookie-value [key value]
   (str key "=" value
