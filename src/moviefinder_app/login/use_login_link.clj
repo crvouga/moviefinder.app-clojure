@@ -2,7 +2,7 @@
   (:require [moviefinder-app.error :refer [err ex->err-type]]
             [moviefinder-app.login.login-link :as login-link]
             [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.requests :as requests]
+            [moviefinder-app.handle :as handle]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user.user :as user]
             [moviefinder-app.user.user-db :as user-db]
@@ -104,11 +104,11 @@
                    :button/element :a
                    :href (-> {:route/name :route/home} route/encode)})]]])
 
-(defmethod requests/handle-hx :route/use-login-link-ok [request]
+(defmethod handle/handle-hx :route/use-login-link-ok [request]
   (-> request
       view-use-login-link-ok
       view/html-doc
-      requests/html-doc))
+      handle/html-doc))
 
 (defmulti view-use-login-link-err ex->err-type)
 
@@ -127,17 +127,9 @@
 (defmethod view-use-login-link-err :default [_ex _request]
   [:div "An error occurred"])
 
-
-(defmethod requests/handle :route/use-login-link [request]
+(defmethod handle/handle :route/use-login-link [request]
   (try
-    (-> request
-        (merge (:request/route request))
-        use-login-link!)
-    (-> request
-        view-use-login-link-ok
-        view/html-doc
-        requests/html-doc)
+    (-> request (merge (:request/route request)) use-login-link!)
+    (-> request view-use-login-link-ok view/html-doc handle/html-doc)
     (catch Exception ex
-      (-> (view-use-login-link-err ex request)
-          view/html-doc
-          requests/html-doc))))
+      (-> (view-use-login-link-err ex request) view/html-doc handle/html-doc))))

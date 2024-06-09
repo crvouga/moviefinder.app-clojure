@@ -1,5 +1,5 @@
 (ns moviefinder-app.home
-  (:require [moviefinder-app.requests :as requests]
+  (:require [moviefinder-app.handle :as handle]
             [moviefinder-app.view :as view]
             [moviefinder-app.route :as route]
             [moviefinder-app.movie.movie-db :as movie-db]))
@@ -83,9 +83,9 @@
 (defn view-home [input]
   (view/app-tabs-layout {:route/name :route/home}  (view-feed! input)))
 
-(defmethod requests/handle-hx :noop [_request]
+(defmethod handle/handle-hx :noop [_request]
   {:status 200})
 
-(defmethod requests/handle-hx :route/home [request]
-  (requests/html (view-home request)))
+(defmethod handle/handle-hx :route/home [request]
+  (handle/html (view-home request)))
 

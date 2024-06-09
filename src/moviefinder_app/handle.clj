@@ -1,4 +1,4 @@
-(ns moviefinder-app.requests
+(ns moviefinder-app.handle
   (:require [clojure.string :as string]
             [hiccup2.core :as hiccup]
             [ring.util.response :as ring-response]

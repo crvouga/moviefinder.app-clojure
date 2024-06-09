@@ -1,5 +1,5 @@
 (ns moviefinder-app.account
-  (:require [moviefinder-app.requests]
+  (:require [moviefinder-app.handle]
             [moviefinder-app.route]
             [moviefinder-app.view]
             [moviefinder-app.view.icon]))
@@ -23,5 +23,5 @@
    {:route/name :route/account}
    (view-login-cta request)))
 
-(defmethod moviefinder-app.requests/handle-hx :route/account [request]
-  (moviefinder-app.requests/html (view-account request)))
+(defmethod moviefinder-app.handle/handle-hx :route/account [request]
+  (moviefinder-app.handle/html (view-account request)))

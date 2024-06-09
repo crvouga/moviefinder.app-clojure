@@ -3,7 +3,7 @@
             [moviefinder-app.env :as env]
             [moviefinder-app.login.login-link :as login-link]
             [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.requests :as requests]
+            [moviefinder-app.handle :as handle]
             [moviefinder-app.route :as route]
             [moviefinder-app.view :as view]))
 
@@ -68,11 +68,11 @@
      :hx-get (-> {:route/name :route/login} route/encode)}
     "Back to login"]])
 
-(defmethod requests/handle-hx :route/send-login-link [request]
+(defmethod handle/handle-hx :route/send-login-link [request]
   (-> request
       (assoc :send-login-link/email (-> request :request/form-data :email))
       send-login-link!)
-  (requests/html (view-send-login-link-ok request)))
+  (handle/html (view-send-login-link-ok request)))
 
 (defn view-send-login-link-form [_request]
   [:form.flex.flex-col.gap-4.w-full
@@ -105,7 +105,7 @@
    {:route/name :route/account}
    (view-login-screen request)))
 
-(defmethod requests/handle-hx :route/login [request]
+(defmethod handle/handle-hx :route/login [request]
   (-> request
       view-login
-      requests/html))
+      handle/html))

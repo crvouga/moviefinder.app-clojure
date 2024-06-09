@@ -6,7 +6,7 @@
             [moviefinder-app.login.send-login-link]
             [moviefinder-app.login.use-login-link]
             [moviefinder-app.movie.details]
-            [moviefinder-app.requests :as requests]
+            [moviefinder-app.handle :as handle]
             [moviefinder-app.deps :as deps]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
@@ -15,22 +15,22 @@
             [ring.middleware.cookies :refer [wrap-cookies]]
             [moviefinder-app.view :as view]))
 
-(defmethod requests/handle-hx :default [request]
+(defmethod handle/handle-hx :default [request]
   (-> request
       (assoc :request/route {:route/name :route/home})
-      requests/handle-hx))
+      handle/handle-hx))
 
-(defmethod requests/handle :default [request]
+(defmethod handle/handle :default [request]
   (-> request
-      requests/handle-hx
+      handle/handle-hx
       :response/view
       view/html-doc
-      requests/html-doc))
+      handle/html-doc))
 
 (defn handle [request]
   (if (:request/hx? request)
-    (requests/handle-hx request)
-    (requests/handle request)))
+    (handle/handle-hx request)
+    (handle/handle request)))
 
 (defn tap [x]
   (println x)
@@ -43,11 +43,11 @@
 
 (defn handle-ring-request [ring-request]
   (-> ring-request
-      requests/ring-request->request
+      handle/ring-request->request
       tap
       assoc-deps
       handle
-      requests/response->ring-response))
+      handle/response->ring-response))
 
 (defn run-server! [input]
   (-> #'handle-ring-request

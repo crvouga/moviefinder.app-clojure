@@ -1,5 +1,5 @@
 (ns moviefinder-app.movie.details
-  (:require [moviefinder-app.requests :as requests]
+  (:require [moviefinder-app.handle :as handle]
             [moviefinder-app.view :as view] 
             [moviefinder-app.movie.movie-db :as movie-db]))
 
@@ -63,5 +63,5 @@
         movie (movie-db/get! movie-db movie-id)]
     (view-movie-details movie)))
 
-(defmethod moviefinder-app.requests/handle-hx :route/movie-details [request]
-  (moviefinder-app.requests/html (view-movie-details! request)))
+(defmethod moviefinder-app.handle/handle-hx :route/movie-details [request]
+  (moviefinder-app.handle/html (view-movie-details! request)))

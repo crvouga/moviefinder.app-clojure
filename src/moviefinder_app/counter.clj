@@ -1,17 +1,17 @@
 (ns moviefinder-app.counter
   (:require [moviefinder-app.view] 
             [moviefinder-app.route]
-            [moviefinder-app.requests]))
+            [moviefinder-app.handle]))
 
 (def clicks! (atom 0))
 
-(defmethod moviefinder-app.requests/handle-hx ::clicked-append [_]
+(defmethod moviefinder-app.handle/handle-hx ::clicked-append [_]
   (swap! clicks! inc)
-  (moviefinder-app.requests/html [:p "Clicked!"]))
+  (moviefinder-app.handle/html [:p "Clicked!"]))
 
-(defmethod moviefinder-app.requests/handle-hx ::clicked-clear [_]
+(defmethod moviefinder-app.handle/handle-hx ::clicked-clear [_]
   (reset! clicks! 0)
-  (moviefinder-app.requests/html ""))
+  (moviefinder-app.handle/html ""))
 
 
 (defn view-counter-panel []
@@ -37,5 +37,5 @@
 (defn view-couter-index []
   (moviefinder-app.view/app-tabs-layout :counter/index (view-counter-panel)))
 
-(defmethod moviefinder-app.requests/handle-hx :counter/index [_]
-  (moviefinder-app.requests/html (view-couter-index)))
+(defmethod moviefinder-app.handle/handle-hx :counter/index [_]
+  (moviefinder-app.handle/html (view-couter-index)))

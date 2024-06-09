@@ -37,7 +37,7 @@
     [element
      props
      (-> props :button/start)
-     (when hx-indicator-id
+     (when (and hx-indicator-id false)
        (spinner {:id hx-indicator-id}))
      label]))
 
