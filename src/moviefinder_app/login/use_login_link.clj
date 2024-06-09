@@ -46,16 +46,16 @@
     (assoc input ::user user)))
 
 (defn validate-user-session-id-exists [input]
-  (let [user-session-id (-> input :user-session/id)]
+  (let [user-session-id (-> input :session/id)]
     (when-not user-session-id
       (throw (err :err/user-session-id-not-associate-with-request input)))
     input))
 
 (defn- assoc-user-session [input]
   (let [user (-> input ::user)
-        user-session-id (-> input :user-session/id)
+        user-session-id (-> input :session/id)
         user-id (:user/id user)
-        user-session {:user-session/id user-session-id
+        user-session {:session/id user-session-id
                       :user/id user-id}]
     (assoc input ::user-session user-session)))
 

@@ -11,7 +11,6 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [moviefinder-app.view :as view]))
 
@@ -51,9 +50,9 @@
 
 (defn run-server! [input]
   (-> #'handle-ring-request
+      (handle/wrap-session-id)
       (wrap-cookies)
       (wrap-params)
-      (wrap-session)
       (wrap-reload)
       (run-jetty {:port (input :server/port) :join? false})))
 
@@ -64,5 +63,4 @@
   (println (str "Server running at " base-url)))
 
 (comment
-  (-main)
-  )
+  (-main))

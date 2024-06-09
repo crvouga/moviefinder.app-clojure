@@ -14,7 +14,7 @@
 (defn fixture []
   (merge (deps/deps-test)
          {:send-login-link/email "test@test.com"
-          :user-session/id (java.util.UUID/randomUUID)}))
+          :session/id (java.util.UUID/randomUUID)}))
 
 (deftest use-login-link-test
   (testing "use login link"
@@ -30,11 +30,11 @@
           login-link (send-login-link! f)
           before (user-session-db/find-by-session-id!
                   (f :user-session-db/user-session-db)
-                  (f :user-session/id))
+                  (f :session/id))
           _ (use-login-link! (merge f login-link))
           after (user-session-db/find-by-session-id!
                  (f :user-session-db/user-session-db)
-                 (f :user-session/id))]
+                 (f :session/id))]
       (is (= before #{}))
       (is (= (count after) 1))))
 
@@ -82,6 +82,6 @@
   (testing "it should error if there is not session id to associate with the user"
     (let [f (fixture)
           login-link (send-login-link! f)
-          input (-> (merge f login-link) (dissoc :user-session/id))
+          input (-> (merge f login-link) (dissoc :session/id))
           _ (thrown-err? :err/user-session-id-not-associate-with-request (use-login-link! input))])))
     

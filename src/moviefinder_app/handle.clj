@@ -37,8 +37,6 @@
   (boolean (get-in ring-request [:headers "hx-request"])))
 
 
-(defn- ring-session-id [ring-request]
-  (get-in ring-request [:session/key]))
 
 
 (defn- valid-keyword? [s]
@@ -64,10 +62,12 @@
       (assoc request :request/hx? hx?)
       request)))
 
-(defn assoc-user-session-id [request ring-request]
-  (let [user-session-id (ring-session-id ring-request)]
-    (if user-session-id
-      (assoc request :user-session/id user-session-id)
+
+(defn assoc-session-id-to-request [request ring-request]
+  (let [session (get-in ring-request [:session])
+        session-id (get-in ring-request [:session :session/id])]
+    (if session-id
+      (assoc request :session/id session-id)
       request)))
 
 
@@ -81,8 +81,34 @@
   (-> {}
       (assoc-route ring-request)
       (assoc-hx? ring-request)
-      (assoc-user-session-id ring-request)
+      (assoc-session-id-to-request ring-request)
       (assoc-form-data ring-request)))
+
+(defn set-cookie-value [key value]
+  (str key "=" value
+       "; Path=/"
+       "; HttpOnly"
+       "; SameSite=Strict"
+       #_"; Secure"
+       "; Max-Age=31536000"))
+
+(defn assoc-set-cookie [ring-response key value]
+  (assoc-in ring-response [:headers "Set-Cookie"] (set-cookie-value key value)))
+
+(defn get-cookie [ring-request key]
+  (get-in ring-request [:cookies key :value]))
+
+(defn wrap-session-id [handler]
+  (fn [ring-request]
+    (let [session-id (get-cookie ring-request "session-id")
+          session-id-final (or session-id (str (java.util.UUID/randomUUID)))
+          ring-request (assoc ring-request :session/id session-id-final)
+          ring-response (handler ring-request)
+          ring-response-final (if session-id
+                                ring-response
+                                (assoc-set-cookie ring-response "session-id" session-id-final))]
+      ring-response-final)))
+
 
 ;; 
 ;; 

@@ -12,9 +12,9 @@
 (deftest user-session-db-test
   (testing "find user id by session id"
     (let [f (fixture)
-          session {:user-session/id 1 :user/id 2}]
+          session {:session/id 1 :user/id 2}]
       (user-session-db/put! (f :f/db) #{session})
-      (is (= #{session} (user-session-db/find-by-session-id! (f :f/db) (session :user-session/id))))))
+      (is (= #{session} (user-session-db/find-by-session-id! (f :f/db) (session :session/id))))))
 
   (testing "insert user session"
     (is (= 1 1))))
