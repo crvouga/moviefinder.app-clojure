@@ -66,7 +66,6 @@
 
 (defn assoc-user-session-id [request ring-request]
   (let [user-session-id (ring-session-id ring-request)]
-    (println "user-session-id="user-session-id)
     (if user-session-id
       (assoc request :user-session/id user-session-id)
       request)))
