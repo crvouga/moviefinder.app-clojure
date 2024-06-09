@@ -52,7 +52,7 @@
 (defn run-server! [input]
   (-> #'handle-ring-request
       (wrap-params)
-      (wrap-session {:store (memory-store)})
+      (wrap-session)
       (wrap-reload)
       (run-jetty {:port (input :server/port) :join? false})))
 
