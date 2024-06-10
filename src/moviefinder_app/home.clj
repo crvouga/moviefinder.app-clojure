@@ -24,17 +24,6 @@
     (-> movie :movie/title)]])
 
 
-(defn swiper-event-script []
-  "
-   document.addEventListener('DOMContentLoaded', function () {
-     const swiperEl = document.querySelector('swiper-container');
-     swiperEl.addEventListener('swiperslidechange', (event) => {
-       const [swiper] = event.detail;
-       console.log('slide changed', swiper.activeIndex);
-     });
-   });
-  ")
-
 (defn view-feed-slide [movie]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200
@@ -46,14 +35,77 @@
      :hx-swap "innerHTML"
      :hx-push-url (movie-details-href movie)}]])
 
+(defn swiper-event-script []
+  "
+   function initializeSwiperEventScript() {
+     const swiperEl = document.querySelector('swiper-container');
+   
+     if (!swiperEl) {
+       return;
+     }
+   
+     swiperEl.addEventListener('swiperslidechange', (event) => {
+       const [swiper] = event.detail;
+       const slideId = `slide-${swiper.activeIndex}`;
+       const slideEl = document.getElementById(slideId);
+       if (slideEl) {
+         console.log('dispatching slide-changed event', swiper.activeIndex, slideEl);
+         const event = new CustomEvent('slide-changed');
+         slideEl.dispatchEvent(event);
+       }
+     });
+   }
+   initializeSwiperEventScript()
+
+   // Initialize the script when DOM content is fully loaded
+   document.addEventListener('DOMContentLoaded', initializeSwiperEventScript);
+     
+  if(typeof observer === 'undefined') {
+     
+   
+
+   // Create a MutationObserver to watch for changes in the DOM
+   const observer = new MutationObserver((mutationsList, observer) => {
+     for (const mutation of mutationsList) {
+       if (mutation.type === 'childList') {
+         // Check if #feed-container was added
+         mutation.addedNodes.forEach(node => {
+           if (node.id === 'feed-container') {
+             console.log('#feed-container added');
+             initializeSwiperEventScript();
+           }
+         });
+         // Check if #feed-container was removed
+         mutation.removedNodes.forEach(node => {
+           if (node.id === 'feed-container') {
+             console.log('#feed-container removed');
+           }
+         });
+       }
+     }
+   });
+
+   // Start observing the document body for changes
+   observer.observe(document.body, { childList: true, subtree: true });
+       }
+  ")
+
+
+(defn slide-id [slide-index]
+  (str "slide-" slide-index))
+
 (defn view-feed-slides! [request]
   (let [movie-db (-> request :movie-db/movie-db)
-        movies (movie-db/find! movie-db {})
-        initial-slide (-> request :request/route :feed/slide-index)]
+        movies (movie-db/find! movie-db {})]
     (for [[slide-index movie] (map-indexed vector (->> movies :paginated/results))]
       [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
-       {:id (str "slide-" slide-index)}
-       [:div.w-full.h-full.flex-1.h-tmx-slide-content
+       {:id (slide-id slide-index)}
+       [:div.w-full.h-full.flex-1
+        {:hx-trigger (str "slide-changed from:#" (slide-id slide-index))
+         :hx-target "this"
+         :hx-swap "none"
+         :hx-get (-> {:route-name :route-changed-slide :feed/slide-index slide-index} route/encode)
+         :hx-push-url (-> request :request/route (assoc :feed/slide-index slide-index) route/encode)}
         (view-feed-slide movie)]])))
 
 (defmethod handle/handle-hx :route/changed-slide [_request]
