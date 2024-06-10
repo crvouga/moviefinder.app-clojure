@@ -13,6 +13,5 @@ CREATE INDEX idx_user_session_user_id ON user_session (user_id);
 -- migrate:down
 
 DROP INDEX idx_user_session_user_id;
-DROP INDEX idx_user_session_session_id;
 DROP TABLE user_session;
 

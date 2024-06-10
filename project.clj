@@ -20,6 +20,9 @@
   :profiles {:dev {:dependencies [[ring/ring-mock "0.4.0"]]}}
   :repl-options {:init-ns moviefinder-app.main}
   :aliases {"test-int" ["shell" "sh" "-c" "INTEGRATION_TEST=true lein test"]
+            "build" ["shell" "lein" "db-up"]
+            "db-up" ["shell" "dbmate" "up"]
+            "db-down" ["shell" "dbmate" "down"]
             "db-start" ["shell""docker-compose" "-f" "docker-compose.local.yml" "up" "-d"]
             "db-stop" ["shell" "docker-compose" "-f" "docker-compose.local.yml" "down"]})
 
