@@ -18,14 +18,14 @@
        {:session/id :session_id
         :user/id :user_id
         :user-session/created-at-posix :created_at_posix
-        :user-session/id :user-session-id})))
+        :user-session/id :user_session_id})))
 
 (defn row->user-session [row]
   (rename-keys
    row
    {:session_id :session/id
     :user_id :user/id
-    :user-session-id :user-session/id
+    :user_session_id :user-session/id
     :created_at_posix :user-session/created-at-posix}))
 
 
