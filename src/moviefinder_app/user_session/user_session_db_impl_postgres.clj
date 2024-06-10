@@ -3,7 +3,8 @@
             [moviefinder-app.db :as db]
             [moviefinder-app.user-session.user-session :as user-session]
             [honey.sql :as sql]
-            [clojure.set :refer [rename-keys]]))
+            [clojure.set :refer [rename-keys]]
+            [moviefinder-app.user.user :as user]))
 
 (defn ensure-timestamps [user-session]
   (merge {:user-session/created-at-posix (System/currentTimeMillis)} user-session))
@@ -44,7 +45,7 @@
   )
 
 (defn- query-find-by-session-id [session-id]
-  {:select [:user_id :session_id :created-at-posix]
+  {:select [:user_id :session_id :created_at_posix]
    :from :user-session
    :where [:= :session_id (str session-id)]})
 
@@ -56,6 +57,20 @@
   (def sql (sql/format query))
   sql)
 
+(defn- query-find-by-user-id [user-id]
+  {:select [:user_id :session_id :created_at_posix]
+   :from :user-session
+   :where [:= :user_id (str user-id)]})
+
+(comment
+  (def user (user/random!))
+  user
+  (def query (query-find-by-user-id user))
+  query
+  (def sql (sql/format query))
+  sql
+  )
+
 (defrecord UserSessionDbPostgres [input]
   user-session-db/UserSessionDb
   (find-by-session-id!
@@ -65,11 +80,19 @@
          (db/query (:db/conn input))
          (map row->user-session)
          set))
+  
+  (find-by-user-id!
+   [_this user-id]
+   (->> user-id
+        (query-find-by-user-id)
+        (db/query (:db/conn input))
+        (map row->user-session)
+        set))
 
-  (put!
-   [_this user-sessions]
-   (db/execute! (:db/conn input) (query-put user-sessions))
-   nil))
+   (put!
+    [_this user-sessions]
+    (db/execute! (:db/conn input) (query-put user-sessions))
+    nil))
 
 
 (defmethod user-session-db/->UserSessionDb :user-session-db-impl/postgres [input]

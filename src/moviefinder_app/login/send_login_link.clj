@@ -29,7 +29,7 @@
    :email/body-view (view-login-link-email-body login-link)})
 
 (defn- assoc-login-link [input]
-  (let [email (-> input :send-login-link/email)
+  (let [email (-> input :user/email)
         login-link (login-link/new! email)]
     (assoc input ::login-link login-link)))
 
@@ -70,7 +70,7 @@
 
 (defmethod handle/handle-hx :route/send-login-link [request]
   (-> request
-      (assoc :send-login-link/email (-> request :request/form-data :email))
+      (assoc :user/email (-> request :request/form-data :email))
       send-login-link!)
   (handle/html (view-send-login-link-ok request)))
 

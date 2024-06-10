@@ -1,5 +1,5 @@
 (ns moviefinder-app.login.use-login-link
-  (:require [moviefinder-app.error :refer [err ex->err-type]]
+  (:require [moviefinder-app.error :refer [err err->msg]]
             [moviefinder-app.login.login-link :as login-link]
             [moviefinder-app.login.login-link-db :as login-link-db]
             [moviefinder-app.handle :as handle]
@@ -46,16 +46,16 @@
     (assoc input ::user user)))
 
 (defn validate-user-session-id-exists [input]
-  (let [user-session-id (-> input :session/id)]
-    (when-not user-session-id
+  (let [session-id (-> input :session/id)]
+    (when-not session-id
       (throw (err :err/user-session-id-not-associate-with-request input)))
     input))
 
 (defn- assoc-user-session [input]
   (let [user (-> input ::user)
-        user-session-id (-> input :session/id)
+        session-id (-> input :session/id)
         user-id (:user/id user)
-        user-session {:session/id user-session-id
+        user-session {:session/id session-id
                       :user/id user-id}]
     (assoc input ::user-session user-session)))
 
@@ -117,30 +117,26 @@
       view/html-doc
       handle/html-doc))
 
-
-
-(defmulti err->message ex->err-type)
-
-(defmethod err->message :err/login-link-not-found [_ex _request]
+(defmethod err->msg :err/login-link-not-found [_ex]
   "Login link was not found. Please request a new one")
 
-(defmethod err->message :err/login-link-already-used [_ex _request]
+(defmethod err->msg :err/login-link-already-used [_ex]
   "Login link has already been used. Please request a new one")
 
-(defmethod err->message :err/login-link-expired [_ex _request]
+(defmethod err->msg :err/login-link-expired [_ex]
   "Login link has expired. Please request a new one")
 
-(defmethod err->message :err/user-session-id-not-associate-with-request [_ex _request]
+(defmethod err->msg :err/user-session-id-not-associate-with-request [_ex]
   "User session ID not found")
 
-(defmethod err->message :default [_ex _request]
+(defmethod err->msg :default [_ex]
   "An error occurred")
 
 (defn- view-use-login-link-err [ex request]
   [:div.w-full.flex.flex-col
    view-top-bar
    [:div.flex-1.w-full.p-6.flex.flex-col
-    (view/failure {:failure/title (err->message ex request)})
+    (view/failure {:failure/title (err->msg ex request)})
     view-back-to-app]])
 
 (defmethod handle/handle :route/use-login-link [request]

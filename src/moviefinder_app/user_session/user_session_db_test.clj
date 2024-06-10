@@ -19,6 +19,16 @@
       (is (= #{} before))
       (is (= #{session} after))))
   
+  (testing "find by user id"
+    (let [f (fixture)
+          session (user-session/random!)
+          user-session-db (f :user-session-db/user-session-db)
+          before (user-session-db/find-by-user-id! user-session-db (session :user/id))
+          _ (user-session-db/put! user-session-db #{session})
+          after (user-session-db/find-by-user-id! user-session-db (session :user/id))]
+      (is (= #{} before))
+      (is (= #{session} after))))
+  
   (testing "assoc timestamps if missing"
     (let [f (fixture)
           session (-> (user-session/random!) (dissoc :user-session/created-at-posix))

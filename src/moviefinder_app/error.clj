@@ -12,6 +12,12 @@
 (defn ex->err-type [ex & _args]
   (-> ex ex->err :err/err))
 
+(defmacro try-catch [body]
+  `(try
+     [nil ~body]
+     (catch Exception e#
+       [(ex->err e#) nil])))
+
 (defmacro thrown-err? [expected-error-type & body]
   `(try
      ~@body

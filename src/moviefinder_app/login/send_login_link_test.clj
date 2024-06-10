@@ -9,13 +9,13 @@
 
 (defn fixture []
   (merge (deps/deps-test)
-         {:send-login-link/email "test@test.com"}))
+         {:user/email "test@test.com"}))
 
 (deftest send-login-link-test
   (testing "send login link"
     (let [f (fixture)
           login-link-db (f :login-link-db/login-link-db)
-          email (f :send-login-link/email)
+          email (f :user/email)
           before (login-link-db/find-by-email! login-link-db email)
           _ (send-login-link! f)
           after (login-link-db/find-by-email! login-link-db email)]

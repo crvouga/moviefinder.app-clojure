@@ -13,7 +13,7 @@
 
 (defn fixture []
   (merge (deps/deps-test)
-         {:send-login-link/email "test@test.com"
+         {:user/email "test@test.com"
           :session/id (java.util.UUID/randomUUID)}))
 
 (deftest use-login-link-test
@@ -21,7 +21,7 @@
     (let [f (fixture)
           login-link (send-login-link! f)
           _ (use-login-link! (merge f login-link))
-          after (first (login-link-db/find-by-email! (f :login-link-db/login-link-db) (:send-login-link/email f)))]
+          after (first (login-link-db/find-by-email! (f :login-link-db/login-link-db) (:user/email f)))]
       (is (not (nil? (after :login-link/used-at-posix))))))
 
 
@@ -41,20 +41,20 @@
   (testing "it should create a new user if the email is not found"
     (let [f (fixture)
           login-link (send-login-link! f)
-          before (first (user-db/find-by-email! (f :user-db/user-db) (:send-login-link/email f)))
+          before (first (user-db/find-by-email! (f :user-db/user-db) (:user/email f)))
           _ (use-login-link! (merge f login-link))
-          after (first (user-db/find-by-email! (f :user-db/user-db) (:send-login-link/email f)))]
+          after (first (user-db/find-by-email! (f :user-db/user-db) (:user/email f)))]
       (is (nil? before))
       (is (not (nil? after)))))
 
   (testing "it should NOT create a new user if already exists"
     (let [f (fixture)
           login-link (send-login-link! f)
-          user (user/new! (f :send-login-link/email))
+          user (user/new! (f :user/email))
           _ (user-db/put! (f :user-db/user-db) #{user})
-          before (user-db/find-by-email! (f :user-db/user-db) (:send-login-link/email f))
+          before (user-db/find-by-email! (f :user-db/user-db) (:user/email f))
           _ (use-login-link! (merge f login-link))
-          after (user-db/find-by-email! (f :user-db/user-db) (:send-login-link/email f))]
+          after (user-db/find-by-email! (f :user-db/user-db) (:user/email f))]
       (is (= before after))
       (is (= after #{user}))))
 
