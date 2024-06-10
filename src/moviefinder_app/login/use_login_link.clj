@@ -139,9 +139,12 @@
     (view/failure {:failure/title (err->msg ex)})
     view-back-to-app]])
 
+(defmethod handle/handle :route/use-login-link-ok [request]
+  (-> request view-use-login-link-ok view/html-doc handle/html-doc))
+
 (defmethod handle/handle :route/use-login-link [request]
   (try
     (-> request (merge (:request/route request)) use-login-link!)
-    (-> request view-use-login-link-ok view/html-doc handle/html-doc)
+    (handle/redirect {:route/name :route/use-login-link-ok})
     (catch Exception ex
       (-> (view-use-login-link-err ex request) view/html-doc handle/html-doc))))
