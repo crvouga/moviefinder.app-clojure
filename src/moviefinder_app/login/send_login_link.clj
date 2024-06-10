@@ -65,7 +65,8 @@
    [:div.w-full.py-2]
    [:a.text-underline.opacity-80.underline
     {:href (-> {:route/name :route/login} route/encode)
-     :hx-get (-> {:route/name :route/login} route/encode)}
+     :hx-get (-> {:route/name :route/login} route/encode)
+     :hx-push-url (-> {:route/name :route/login} route/encode)}    
     "Back to login"]])
 
 (defmethod handle/handle-hx :route/send-login-link [request]
