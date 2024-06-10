@@ -5,7 +5,9 @@
 (defn new [to subject view-body]
   {:email/to to
    :email/subject subject
-   :email/body-html (-> view-body hiccup2.core/html str)})
+   :email/body-html (-> view-body
+                        hiccup2.core/html
+                        str)})
 
 
 (defn- view-body-document [view-body]
