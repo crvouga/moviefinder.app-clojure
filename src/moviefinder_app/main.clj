@@ -60,6 +60,3 @@
 (defn -main []
   (run-server! {:server/port port})
   (println (str "Server running at " base-url)))
-
-(comment
-  (-main))
