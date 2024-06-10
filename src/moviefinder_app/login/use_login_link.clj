@@ -132,11 +132,11 @@
 (defmethod err->msg :default [_ex]
   "An error occurred")
 
-(defn- view-use-login-link-err [ex request]
+(defn- view-use-login-link-err [ex _request]
   [:div.w-full.flex.flex-col
    view-top-bar
    [:div.flex-1.w-full.p-6.flex.flex-col
-    (view/failure {:failure/title (err->msg ex request)})
+    (view/failure {:failure/title (err->msg ex)})
     view-back-to-app]])
 
 (defmethod handle/handle :route/use-login-link [request]

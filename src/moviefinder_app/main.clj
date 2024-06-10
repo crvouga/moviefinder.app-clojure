@@ -5,6 +5,7 @@
             [moviefinder-app.home]
             [moviefinder-app.login.send-login-link]
             [moviefinder-app.login.use-login-link]
+            [moviefinder-app.logout.logout]
             [moviefinder-app.movie.details]
             [moviefinder-app.user-session.user-session :as user-session]
             [moviefinder-app.handle :as handle]
