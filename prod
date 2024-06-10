@@ -1,14 +1,32 @@
 #!/bin/bash
 
 DBMATE_VERSION="1.14.0"
-DBMATE_URL="https://github.com/amacneil/dbmate/releases/download/v${DBMATE_VERSION}/dbmate-linux-amd64"
+DBMATE_URL="https://github.com/amacneil/dbmate/releases/download/v${DBMATE_VERSION}/dbmate-macos-amd64"
 
 echo "Downloading dbmate version ${DBMATE_VERSION}..."
+
 curl -L -o dbmate ${DBMATE_URL}
+
+if [ $? -ne 0 ]; then
+    echo "Error downloading dbmate."
+    exit 1
+fi
 
 chmod +x dbmate
 
+./dbmate --version
+
+if [ $? -ne 0 ]; then
+    echo "Downloaded dbmate binary is not executable or corrupted."
+    exit 1
+fi
+
 ./dbmate up
+
+if [ $? -ne 0 ]; then
+    echo "dbmate up failed."
+    exit 1
+fi
 
 rm dbmate
 
@@ -17,5 +35,10 @@ echo "dbmate up executed successfully."
 echo "Starting the application..."
 
 lein run
+
+if [ $? -ne 0 ]; then
+    echo "Failed to start the application."
+    exit 1
+fi
 
 echo "Application started successfully."
