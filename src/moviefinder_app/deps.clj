@@ -57,3 +57,9 @@
     (send-email/->SendEmail
      {:send-email/impl :send-email-impl/mock
       :send-email/log? true})}))
+
+
+(def deps (deps-real))
+
+(defn assoc-deps [request]
+  (merge request deps))

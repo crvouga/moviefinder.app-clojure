@@ -6,7 +6,7 @@
             [moviefinder-app.login.send-login-link]
             [moviefinder-app.login.use-login-link]
             [moviefinder-app.movie.details]
-            [moviefinder-app.user-session.user-session]
+            [moviefinder-app.user-session.user-session :as user-session]
             [moviefinder-app.handle :as handle]
             [moviefinder-app.deps :as deps]
             [ring.adapter.jetty :refer [run-jetty]]
@@ -36,16 +36,13 @@
   (println (select-keys request [:request/route :session/id :user/id :request/form-data :request/hx?]))
   request)
 
-(def deps (deps/deps-real))
 
-(defn assoc-deps [request]
-  (merge request deps))
 
 (defn handle-ring-request [ring-request]
   (-> ring-request
       handle/ring-request->request
-      assoc-deps
-      moviefinder-app.user-session.user-session/assoc-user-session!
+      deps/assoc-deps
+      user-session/assoc-user-session!
       log-request
       handle
       handle/response->ring-response))
