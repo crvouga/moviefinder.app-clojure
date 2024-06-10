@@ -7,22 +7,25 @@
             [moviefinder-app.user.user :as user]
             [moviefinder-app.session :as session]))
 
-(defn ensure-timestamps [user-session]
-  (merge {:user-session/created-at-posix (System/currentTimeMillis)} user-session))
+(defn- ensure-no-missing-columns [user-session]
+  (merge {:user-session/created-at-posix (System/currentTimeMillis)
+          :user-session/id (user-session/random-user-session-id!)} user-session))
 
 (defn user-session->row [user-session]
   (-> user-session
-      ensure-timestamps
+      ensure-no-missing-columns
       (rename-keys
        {:session/id :session_id
         :user/id :user_id
-        :user-session/created-at-posix :created_at_posix})))
+        :user-session/created-at-posix :created_at_posix
+        :user-session/id :user-session-id})))
 
 (defn row->user-session [row]
   (rename-keys
    row
    {:session_id :session/id
     :user_id :user/id
+    :user-session-id :user-session/id
     :created_at_posix :user-session/created-at-posix}))
 
 
@@ -46,7 +49,7 @@
   )
 
 (defn- query-find-by-session-id [session-id]
-  {:select [:user_id :session_id :created_at_posix]
+  {:select [:user_id :session_id :created_at_posix :user_session_id]
    :from :user-session
    :where [:and 
            [:= :session_id (str session-id)]
@@ -61,7 +64,7 @@
   sql)
 
 (defn- query-find-by-user-id [user-id]
-  {:select [:user_id :session_id :created_at_posix]
+  {:select [:user_id :session_id :created_at_posix :user_session_id]
    :from :user-session
    :where [:and
            [:= :user_id (str user-id)]

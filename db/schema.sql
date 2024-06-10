@@ -27,6 +27,7 @@ CREATE TABLE public.schema_migrations (
 --
 
 CREATE TABLE public.user_session (
+    user_session_id text NOT NULL,
     session_id text NOT NULL,
     user_id text NOT NULL,
     created_at_posix bigint NOT NULL,
@@ -85,7 +86,7 @@ ALTER TABLE ONLY public.schema_migrations
 --
 
 ALTER TABLE ONLY public.user_session
-    ADD CONSTRAINT user_session_pkey PRIMARY KEY (session_id);
+    ADD CONSTRAINT user_session_pkey PRIMARY KEY (user_session_id);
 
 
 --
@@ -121,4 +122,5 @@ CREATE INDEX idx_user_session_user_id ON public.user_session USING btree (user_i
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20240610052222');
+    ('20240610052222'),
+    ('20240610085058');

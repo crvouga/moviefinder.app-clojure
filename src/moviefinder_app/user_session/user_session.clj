@@ -6,9 +6,13 @@
             [moviefinder-app.session :as session]
             [moviefinder-app.user.user :as user]))
 
+(defn random-user-session-id! []
+  (str "user-session:" (session/random-session-id!)))
+
 (defn random! []
   {:session/id (session/random-session-id!)
    :user/id (user/random-user-id!)
+   :user-session/id (random-user-session-id!)
    :user-session/created-at-posix (System/currentTimeMillis)})
 
 (defn assoc-user-session! [input]
