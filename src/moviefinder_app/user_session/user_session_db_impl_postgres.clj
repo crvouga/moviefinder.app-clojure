@@ -4,7 +4,8 @@
             [moviefinder-app.user-session.user-session :as user-session]
             [honey.sql :as sql]
             [clojure.set :refer [rename-keys]]
-            [moviefinder-app.user.user :as user]))
+            [moviefinder-app.user.user :as user]
+            [moviefinder-app.session :as session]))
 
 (defn ensure-timestamps [user-session]
   (merge {:user-session/created-at-posix (System/currentTimeMillis)} user-session))
@@ -47,10 +48,12 @@
 (defn- query-find-by-session-id [session-id]
   {:select [:user_id :session_id :created_at_posix]
    :from :user-session
-   :where [:= :session_id (str session-id)]})
+   :where [:and 
+           [:= :session_id (str session-id)]
+           [:is :deleted_at_posix nil]]})
 
 (comment
-  (def session-id (java.util.UUID/randomUUID))
+  (def session-id (session/random-session-id!))
   session-id
   (def query (query-find-by-session-id session-id))
   query
@@ -60,12 +63,28 @@
 (defn- query-find-by-user-id [user-id]
   {:select [:user_id :session_id :created_at_posix]
    :from :user-session
-   :where [:= :user_id (str user-id)]})
+   :where [:and
+           [:= :user_id (str user-id)]
+           [:is :deleted_at_posix nil]]})
 
 (comment
-  (def user (user/random!))
-  user
-  (def query (query-find-by-user-id user))
+  (def user-id (user/random-user-id!))
+  user-id
+  (def query (query-find-by-user-id user-id))
+  query
+  (def sql (sql/format query))
+  sql
+  )
+
+(defn- query-zap-by-session-id [session-id]
+  {:update :user-session
+   :set {:deleted_at_posix (System/currentTimeMillis)}
+   :where [:= :session_id (str session-id)]})
+
+(comment
+  (def session-id (session/random-session-id!))
+  session-id
+  (def query (query-zap-by-session-id session-id))
   query
   (def sql (sql/format query))
   sql
@@ -88,6 +107,12 @@
         (db/query (:db/conn input))
         (map row->user-session)
         set))
+
+  (zap-by-session-id!
+    [_this session-id]
+    (->> session-id
+        (query-zap-by-session-id)
+        (db/execute! (:db/conn input))))
 
    (put!
     [_this user-sessions]

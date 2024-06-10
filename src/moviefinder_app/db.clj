@@ -33,11 +33,14 @@
   DbConn
   (query [_this sql-map]
     (jdbc/query db-spec (sql/format sql-map)))
-  (execute! [_this sql-map]
-    (jdbc/execute! db-spec (sql/format sql-map))))
+  (execute!
+   [_this sql-map]
+   (jdbc/execute! db-spec (sql/format sql-map))
+   nil))
 
 (def conn (->DbConnImpl db-spec))
 
 (comment
   (query conn {:select [:user_id :session_id :created_at_posix]
-               :from :user_session}))
+               :from :user_session
+               :limit 5}))

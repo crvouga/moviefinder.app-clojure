@@ -8,6 +8,21 @@
 (defn fixture []
   (deps/deps-test))
 
+(comment
+  (def user-session-db
+    (-> (deps/deps-test-int) :user-session-db/user-session-db))
+  
+  user-session-db
+
+  (def user-session  (user-session/random!))
+  user-session
+  
+  (user-session-db/put! user-session-db #{user-session})
+
+  (user-session-db/find-by-session-id! user-session-db (user-session :session/id))
+
+  (user-session-db/zap-by-session-id! user-session-db (user-session :session/id)))
+
 (deftest user-session-db-test
   (testing "put and find"
     (let [f (fixture)
@@ -37,5 +52,16 @@
           after (first (user-session-db/find-by-session-id! user-session-db (session :session/id)))]
       (is (not (contains? session :user-session/created-at-posix)))
       (is (contains? after :user-session/created-at-posix))))
+  
+  (testing "zapping by session id"
+    (let [f (fixture)
+          session (user-session/random!)
+          user-session-db (f :user-session-db/user-session-db)
+          _ (user-session-db/put! user-session-db #{session})
+          before (user-session-db/find-by-session-id! user-session-db (session :session/id))
+          _ (user-session-db/zap-by-session-id! user-session-db (session :session/id))
+          after (user-session-db/find-by-session-id! user-session-db (session :session/id))]
+      (is (= #{session} before))
+      (is (= #{} after))))
   
   )

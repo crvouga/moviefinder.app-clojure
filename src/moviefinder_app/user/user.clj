@@ -8,16 +8,19 @@
        (str/split #"-")
        first))
 
-(defn- random-email! []
+(defn random-user-id! []
+  (str "user:" (java.util.UUID/randomUUID)))
+
+(defn random-email! []
   (str "email" (short-id!) "@email.com"))
 
 (defn random! []
   {:user/email (random-email!)
-   :user/id (java.util.UUID/randomUUID)})
+   :user/id (random-user-id!)})
 
 (defn new! [email]
   {:user/email email
-   :user/id (java.util.UUID/randomUUID)})
+   :user/id (random-user-id!)})
 
 (comment
   (short-id!)

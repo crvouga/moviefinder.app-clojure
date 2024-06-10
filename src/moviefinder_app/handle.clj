@@ -1,6 +1,7 @@
 (ns moviefinder-app.handle
   (:require [clojure.string :as string]
             [hiccup2.core :as hiccup]
+            [moviefinder-app.session :as session]
             [ring.util.response :as ring-response]
             [moviefinder-app.route :as route]))
 
@@ -104,7 +105,7 @@
 (defn wrap-session-id [handler]
   (fn [ring-request]
     (let [session-id (get-cookie ring-request "session-id")
-          session-id-final (or session-id (str (java.util.UUID/randomUUID)))
+          session-id-final (or session-id (session/random-session-id!))
           ring-request (assoc ring-request :session/id session-id-final)
           ring-response (handler ring-request)
           ring-response-final (if session-id

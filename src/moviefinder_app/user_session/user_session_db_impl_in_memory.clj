@@ -18,6 +18,14 @@
          vals
          (filter #(= user-id (:user/id %)))
          set))
+  
+  (zap-by-session-id! [_this session-id]
+    (let [by-id (->> @sessions-by-session-id!
+                     vals
+                     (filter #(not= session-id (:session/id %)))
+                      (map (juxt :session/id identity))
+                     (into {}))]
+      (reset! sessions-by-session-id! by-id)))
 
   (put! [_this user-sessions]
     (let [by-id (->> user-sessions

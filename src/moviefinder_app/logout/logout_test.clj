@@ -5,23 +5,32 @@
             [moviefinder-app.logout.logout :as logout]
             [moviefinder-app.deps :as deps]
             [moviefinder-app.user.user :as user]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]))
+            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.session :as session]
+            [moviefinder-app.user.user-db :as user-db]))
 
 (defn fixture []
-  (let [deps (deps/deps-test)
+  (let [deps (deps/deps-test-int)
         user (user/random!)
-        session {:session/id (java.util.UUID/randomUUID)}
+        _ (user-db/put! (deps :user-db/user-db) #{user})
+        session {:session/id (session/random-session-id!)}
         login-link (send-login-link/send-login-link! (merge deps user))
         _ (use-login-link/use-login-link! (merge deps login-link session))]
-    (merge deps user)))
+    (merge deps user session login-link)))
 
 (comment
   (def f (fixture))
   f
+  (select-keys f [:user/id :user/email :session/id])
   (def before (first (user-session-db/find-by-user-id!
                       (f :user-session-db/user-session-db)
                       (f :user/id))))
   before
+  (logout/logout! f)
+  (def after (first (user-session-db/find-by-user-id!
+                      (f :user-session-db/user-session-db)
+                      (f :user/id))))
+  after
   )
 
 (deftest logout-test

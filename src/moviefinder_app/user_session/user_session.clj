@@ -2,11 +2,13 @@
   (:require [moviefinder-app.handle]
             [moviefinder-app.route] 
             [moviefinder-app.view]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]))
+            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.session :as session]
+            [moviefinder-app.user.user :as user]))
 
 (defn random! []
-  {:session/id (str (java.util.UUID/randomUUID))
-   :user/id (str (java.util.UUID/randomUUID))
+  {:session/id (session/random-session-id!)
+   :user/id (user/random-user-id!)
    :user-session/created-at-posix (System/currentTimeMillis)})
 
 (defn assoc-user-session! [input]

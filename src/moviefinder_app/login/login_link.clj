@@ -6,14 +6,17 @@
 (defn expired-at []
   (+ (System/currentTimeMillis) twenty-four-hours-in-millis))
 
+(defn random-login-link-id! []
+  (str "login-link:" (java.util.UUID/randomUUID)))
+
 (defn random! []
-  {:login-link/id (java.util.UUID/randomUUID)
+  {:login-link/id (random-login-link-id!)
    :login-link/email "test@test.com"
    :login-link/created-at-posix (System/currentTimeMillis)
    :login-link/expired-at-posix (expired-at)})
 
 (defn new! [email]
-  {:login-link/id (java.util.UUID/randomUUID)
+  {:login-link/id (random-login-link-id!)
    :login-link/email email
    :login-link/created-at-posix (System/currentTimeMillis)
    :login-link/expired-at-posix (expired-at)})

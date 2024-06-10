@@ -8,13 +8,14 @@
             [moviefinder-app.user.user :as user]
             [moviefinder-app.login.send-login-link :refer [send-login-link!]]
             [moviefinder-app.login.use-login-link :refer [use-login-link!]]
-            [moviefinder-app.deps :as deps]))
+            [moviefinder-app.deps :as deps]
+            [moviefinder-app.session :as session]))
 
 
 (defn fixture []
   (merge (deps/deps-test)
-         {:user/email "test@test.com"
-          :session/id (java.util.UUID/randomUUID)}))
+         {:user/email (user/random-email!)
+          :session/id (session/random-session-id!)}))
 
 (deftest use-login-link-test
   (testing "use login link"
