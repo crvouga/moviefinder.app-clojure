@@ -1,6 +1,7 @@
 (ns moviefinder-app.db
   (:require [clojure.java.jdbc :as jdbc]
             [moviefinder-app.env :as env]
+            [honey.sql :as sql]
             [clojure.string :as str]))
 
 (defn extract-user-info
@@ -59,15 +60,15 @@
 (def db-spec (parse-database-url database-url))
 
 (defprotocol DbConn
-  (query [this sql-str])
-  (execute! [this sql-str]))
+  (query [this sql-map])
+  (execute! [this sql-map]))
 
 
 (defrecord DbConnImpl [db-spec]
   DbConn
-  (query [_this sql-str]
-    (jdbc/query db-spec [sql-str]))
-  (execute! [_this sql-str]
-    (jdbc/execute! db-spec [sql-str])))
+  (query [_this sql-map]
+    (jdbc/query db-spec (sql/format sql-map)))
+  (execute! [_this sql-map]
+    (jdbc/execute! db-spec (sql/format sql-map))))
 
 (def conn (->DbConnImpl db-spec))

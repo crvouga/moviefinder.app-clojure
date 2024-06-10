@@ -52,7 +52,7 @@
 
 (defn deps-real []
   (merge
-   (deps-test)
+   (deps-test-int)
    {:send-email/send-email
     (send-email/->SendEmail
      {:send-email/impl :send-email-impl/mock

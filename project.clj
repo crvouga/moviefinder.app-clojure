@@ -19,7 +19,7 @@
   :test-paths ["src"]
   :profiles {:dev {:dependencies [[ring/ring-mock "0.4.0"]]}}
   :repl-options {:init-ns moviefinder-app.main}
-  :aliases {"test-int" ["shell" "lein" "test"]
+  :aliases {"test-int" ["shell" "sh" "-c" "INTEGRATION_TEST=true lein test"]
             "db-start" ["shell""docker-compose" "-f" "docker-compose.local.yml" "up" "-d"]
             "db-stop" ["shell" "docker-compose" "-f" "docker-compose.local.yml" "down"]})
 
