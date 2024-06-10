@@ -20,16 +20,29 @@
 (defn extract-dbname
   "Extracts the database name from the database URL."
   [database-url]
-  (let [dbname (second (re-find #"/([^?]+)" database-url))]
+  (let [dbname (-> database-url
+                   (str/split #"/")
+                   last
+                   (str/split #"\?")
+                   first)]
     {:dbname dbname}))
+
+(defn remove-quotes [s]
+  (->> (str/split s #"\"")
+       (filter #(not= % "\""))
+       (apply str)))
 
 (defn extract-params
   "Extracts the query parameters from the database URL."
   [database-url]
-  (let [query-string (second (re-find #"\?(.+)$" database-url))
-        params (when query-string
-                 (into {} (map #(str/split % #"=")
-                               (str/split query-string #"&"))))]
+  (let [entries (-> database-url
+                    (str/split #"\?")
+                    last
+                    (str/split #"&"))
+        params (->> entries
+                    (map #(str/split % #"="))
+                    (map (fn [[k v]] [(keyword k) (remove-quotes v)]))
+                    (into {}))]
     params))
 
 (def database-url (env/get! "DATABASE_URL"))
