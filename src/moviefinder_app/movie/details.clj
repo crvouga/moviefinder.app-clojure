@@ -1,7 +1,8 @@
 (ns moviefinder-app.movie.details
   (:require [moviefinder-app.handle :as handle]
             [moviefinder-app.view :as view] 
-            [moviefinder-app.movie.movie-db :as movie-db]))
+            [moviefinder-app.movie.movie-db :as movie-db]
+            [moviefinder-app.media-feedback.media-feedback :as media-feedback]))
 
 (defn year [maybe-date-string]
   (when maybe-date-string
@@ -46,16 +47,17 @@
        (view-video-link video)])]])
 
 (defn view-movie-details [movie]
-  [:div.w-full.flex.flex-col.h-full.flex-1
+  [:div.w-full.flex.flex-col.flex-1.overflow-hidden
    (moviefinder-app.view/top-bar {:top-bar/title (-> movie :movie/title)})
-   [:div.w-full.flex.flex-col.h-full.flex-1.relative.pt-14.overflow-y-scroll.p-4.gap-4
+   [:div.w-full.flex.flex-col.flex-1.relative.pt-14.overflow-y-scroll.p-4.gap-4
     (view-backdrop movie)
     (view-poster movie)
     (view-title movie)
     (view-year movie)
     (view-overview movie)
     (view-videos movie)
-    view-gutter]])
+    view-gutter]
+   (media-feedback/view-media-feedback-form)])
   
 (defn view-movie-details! [request]
   (let [movie-id (-> request :request/route :movie/id)

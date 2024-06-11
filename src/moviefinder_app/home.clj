@@ -3,7 +3,7 @@
             [moviefinder-app.view :as view]
             [moviefinder-app.route :as route]
             [moviefinder-app.movie.movie-db :as movie-db]
-            [moviefinder-app.view.icon :as icon]))
+            [moviefinder-app.media-feedback.media-feedback :as media-feedback]))
 
 (defn view-youtube-video [props]
   [:iframe.w-full.h-64 
@@ -25,37 +25,28 @@
     (-> movie :movie/title)]])
 
 
-(defn view-feed-slide-actions []
-  (view/action-button-container
-   (view/action-buttton {:action-button/icon (icon/eye-slash)
-                         :action-button/label "Not seen"})
-   (view/action-buttton {:action-button/icon (icon/eye)
-                         :action-button/label "Seen"})))
-
-(defn view-feed-slide [movie]
+(defn view-feed-slide [input]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:div.w-full.flex.flex-col.justify-center.items-center.relative.flex-1
     [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200.min-h-full.min-w-full
-     {:src (-> movie :movie/poster-url) :loading :lazy}]
+     {:src (-> input ::movie :movie/poster-url) :loading :lazy}]
     [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
-     {:hx-get (movie-details-href movie)
+     {:hx-get (-> input ::movie movie-details-href)
       :hx-target "#app"
-      :href (movie-details-href movie)
+      :href (-> input ::movie movie-details-href)
       :hx-swap "innerHTML"
-      :hx-push-url (movie-details-href movie)}]]
-   (view-feed-slide-actions)])
+      :hx-push-url (-> input ::movie movie-details-href)}]]
+   (media-feedback/view-media-feedback-form)])
 
 (defn swiper-event-script []
   "
    function initializeSwiperEventScript() {
-     const swiperEl = window.swiperEl
+     const swiperEl = document.querySelector('swiper-container')
      
      if (!swiperEl) {
        return;
      }
-   
-     window.swiperEl = document.querySelector('swiper-container');
-   
+      
      swiperEl.addEventListener('swiperslidechange', (event) => {
        const [swiper] = event.detail;
        const slideId = `slide-${swiper.activeIndex}`;
@@ -113,7 +104,7 @@
          :hx-swap "none"
          :hx-get (-> {:route-name :route-changed-slide :feed/slide-index slide-index} route/encode)
          :hx-push-url (-> request :request/route (assoc :feed/slide-index slide-index) route/encode)}
-        (view-feed-slide movie)]])))
+        (view-feed-slide (assoc request ::movie movie))]])))
 
 (defmethod handle/handle-hx :route/changed-slide [_request]
   (handle/html [:div]))

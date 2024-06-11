@@ -82,7 +82,11 @@
    children])
 
 (defn action-buttton [props]
-  [:button.flex-1.p-2.flex.flex-col.items-center.justify-center.gap-1.text-xs {}
+  [:button.flex-1.p-1.flex.flex-col.items-center.justify-center.gap-0.5.text-xs
+   {:disabled (-> props :action-button/disabled?)
+    :class (str (when (-> props :action-button/disabled? not) "hover:bg-neutral-800 ")
+                (when (-> props :action-button/active?) "text-blue-500 ")
+                (when (-> props :action-button/disabled?) "opacity-50 "))}
    (-> props :action-button/icon)
    (-> props :action-button/label)])
 
