@@ -92,22 +92,23 @@
 
 
 (defn toggle-button-group [props & children]
-  [:div.flex.flex-col.gap-2.items-center.justify-center
-   [:div.flex.w-fit.border.rounded.overflow-hidden.divide-x.border-neutral-700.divide-neutral-700 props
-    children]
+  [:div.flex.flex-row.gap-2.items-center.justify-center
    (when (-> props :toggle-button-group/label string?)
-     [:label.text-xs.font-bold (-> props :toggle-button-group/label)])])
+     [:label.text-sm.font-bold (-> props :toggle-button-group/label)])
+   [:div.flex.w-fit.border.rounded.overflow-hidden.divide-x.border-neutral-700.divide-neutral-700 props
+    children]])
 
 (defn toggle-button [props]
-  [:button.p-1.flex.flex-col.items-center.justify-center.gap-0.5.text-xs.aspect-square.p-2
+  [:button.p-1.flex.flex-row.items-center.justify-center.gap-1.text-xs.p-2.aspect-square
    {:disabled (-> props :toggle-button/disabled?)
     :class (str
-            "size-[48px] "
+            "h-[48px] "
+            (when (-> props :toggle-button/selected?) "bg-blue-600 ")
             (when (-> props :toggle-button/disabled? not) "hover:bg-neutral-800 ")
             (when (-> props :toggle-button/active?) "text-blue-500 ")
             (when (-> props :toggle-button/disabled?) "opacity-50 "))}
    (-> props :toggle-button/icon)
-   #_(-> props :toggle-button/label)])
+   (-> props :toggle-button/label)])
 
 (defn app-tabs-layout [active-route view-tab-panel]
   (tab-container

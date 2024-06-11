@@ -8,7 +8,7 @@
 (defn intersect? [set1 set2]
   (-> (set/intersection set1 set2) not-empty?))
 
-(def icon-props {:class "size-5"})
+(def icon-props {:class "size-6 shrink-0"})
 
 (defn- view-no-feedback [props]
   (view/action-button-container
@@ -46,34 +46,65 @@
    (view-not-seen)])
 
 
-(defn view-seen-toggle-buttons []
-  (view/toggle-button-group
-    #_{:toggle-button-group/label "Seen?"}
-   (view/toggle-button {:toggle-button/icon (icon/eye icon-props)
-                        :toggle-button/label "Seen"})
-   (view/toggle-button {:toggle-button/icon (icon/eye-slash icon-props)
-                        :toggle-button/label "Not seen"})))
+(defn view-seen-toggle-buttons [input]
+  (let [seen? (-> input :feedback/type (contains? :feedback-type/seen))
+        not-seen? (-> input :feedback/type (contains? :feedback-type/not-seen))
+        neither? (not (or seen? not-seen?))]
+    (view/toggle-button-group
+     {:toggle-button-group/label "Seen?"}
+     (view/toggle-button {:toggle-button/icon (icon/eye icon-props)
+                          ;; :toggle-button/label (when (or neither? seen?) "Seen")
+                          :toggle-button/selected? seen?})
+     (view/toggle-button {:toggle-button/icon (icon/eye-slash icon-props)
+                          ;; :toggle-button/label (when (or neither? not-seen?) "Not seen")
+                          :toggle-button/selected? not-seen?}))))
 
-(defn view-like-toggle-buttons []
-  (view/toggle-button-group
-    #_{:toggle-button-group/label "Liked?"}
-   (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-up icon-props)
-                        :toggle-button/label "Like"})
-   (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-down icon-props)
-                        :toggle-button/label "Dislike"})))
+(defn view-like-toggle-buttons [input]
+  (let [like? (-> input :feedback/type (contains? :feedback-type/like))
+        dislike? (-> input :feedback/type (contains? :feedback-type/dislike))
+        neither? (not (or like? dislike?))]
+    (view/toggle-button-group
+     {:toggle-button-group/label "Like?"}
+     (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-up icon-props)
+                          ;; :toggle-button/label (when (or neither? like?) "Like")
+                          :toggle-button/selected? like?})
+     (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-down icon-props)
+                          ;; :toggle-button/label (when (or neither? dislike?) "Dislike")
+                          :toggle-button/selected? dislike?}))))
+  
 
 
-(defn view-interested-toggle-buttons []
-  (view/toggle-button-group
-   #_{:toggle-button-group/label "Interested?"}
-   (view/toggle-button {:toggle-button/icon (icon/checkmark icon-props)
-                        :toggle-button/label "Interested"})
-   (view/toggle-button {:toggle-button/icon (icon/x icon-props)
-                        :toggle-button/label "Not interested"})))
+(defn view-interested-toggle-buttons [input]
+  (let [interested? (-> input :feedback/type (contains? :feedback-type/insterested))
+        not-interested? (-> input :feedback/type (contains? :feedback-type/not-interested))
+        neither? (not (or interested? not-interested?))]
+    (view/toggle-button-group
+     {:toggle-button-group/label "Interested?"}
+     (view/toggle-button {:toggle-button/icon (icon/checkmark icon-props)
+                          ;; :toggle-button/label (when (or neither? interested?) "Interested")
+                          :toggle-button/selected? interested?})
+     (view/toggle-button {:toggle-button/icon (icon/x icon-props)
+                          ;; :toggle-button/label (when (or neither? not-interested?) "Uninterested")
+                          :toggle-button/selected? not-interested?}))))
 
+
+(def feedbacks [#{:feedback-type/seen}
+                #{:feedback-type/not-seen}
+                #{:feedback-type/seen :feedback-type/like}
+                #{:feedback-type/seen :feedback-type/dislike}
+                #{:feedback-type/not-seen :feedback-type/interested}
+                #{:feedback-type/not-seen :feedback-type/not-interested}])
+
+(def feedbacks-cycle (atom (cycle feedbacks)))
 
 (defn view-media-feedback-form []
-  [:div.w-full.flex.items-center.justify-center.p-2.gap-4.border-t.border-neutral-700
-   (view-seen-toggle-buttons)
-   (view-like-toggle-buttons)
-   (view-interested-toggle-buttons)])
+  (let [feedback {:feedback/type (first @feedbacks-cycle)}
+        seen? (-> feedback :feedback/type (contains? :feedback-type/seen))
+        not-seen? (-> feedback :feedback/type (contains? :feedback-type/not-seen))]
+    (swap! feedbacks-cycle rest)
+    [:div.w-full.flex.items-center.justify-center.p-2.gap-4.border-t.border-neutral-700
+     (view-seen-toggle-buttons feedback)
+     (when seen?
+       (view-like-toggle-buttons feedback)) 
+     (when not-seen?
+       (view-interested-toggle-buttons feedback))]))
