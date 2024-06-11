@@ -2,7 +2,8 @@
   (:require [moviefinder-app.handle :as handle]
             [moviefinder-app.view :as view]
             [moviefinder-app.route :as route]
-            [moviefinder-app.movie.movie-db :as movie-db]))
+            [moviefinder-app.movie.movie-db :as movie-db]
+            [moviefinder-app.view.icon :as icon]))
 
 (defn view-youtube-video [props]
   [:iframe.w-full.h-64 
@@ -24,72 +25,78 @@
     (-> movie :movie/title)]])
 
 
+(defn view-feed-slide-actions []
+  (view/action-button-container
+   (view/action-buttton {:action-button/icon (icon/eye-slash)
+                         :action-button/label "Not seen"})
+   (view/action-buttton {:action-button/icon (icon/eye)
+                         :action-button/label "Seen"})))
+
 (defn view-feed-slide [movie]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
-   [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200.min-h-full.min-w-full
-    {:src (-> movie :movie/poster-url) :loading :lazy}]
-   [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
-    {:hx-get (movie-details-href movie)
-     :hx-target "#app"
-     :href (movie-details-href movie)
-     :hx-swap "innerHTML"
-     :hx-push-url (movie-details-href movie)}]])
+   [:div.w-full.flex.flex-col.justify-center.items-center.relative.flex-1
+    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200.min-h-full.min-w-full
+     {:src (-> movie :movie/poster-url) :loading :lazy}]
+    [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
+     {:hx-get (movie-details-href movie)
+      :hx-target "#app"
+      :href (movie-details-href movie)
+      :hx-swap "innerHTML"
+      :hx-push-url (movie-details-href movie)}]]
+   (view-feed-slide-actions)])
 
 (defn swiper-event-script []
   "
    function initializeSwiperEventScript() {
-     const swiperEl = document.querySelector('swiper-container');
-   
+     const swiperEl = window.swiperEl
+     
      if (!swiperEl) {
        return;
      }
+   
+     window.swiperEl = document.querySelector('swiper-container');
    
      swiperEl.addEventListener('swiperslidechange', (event) => {
        const [swiper] = event.detail;
        const slideId = `slide-${swiper.activeIndex}`;
        const slideEl = document.getElementById(slideId);
        if (slideEl) {
-         console.log('dispatching slide-changed event', swiper.activeIndex, slideEl);
          const event = new CustomEvent('slide-changed');
          slideEl.dispatchEvent(event);
        }
      });
-   }
-   initializeSwiperEventScript()
-
-   // Initialize the script when DOM content is fully loaded
-   document.addEventListener('DOMContentLoaded', initializeSwiperEventScript);
-     
-  if(typeof observer === 'undefined') {
-     
    
+     window.addEventListener('popstate', (event) => {
+       const base64 = window.location.pathname.split('/')[1]
+       const routeEdn = atob(base64);
+       console.log(routeEdn);
+       // swiperEl.swiper.slideTo(slideIndex);
+     });
+   }
 
-   // Create a MutationObserver to watch for changes in the DOM
-   const observer = new MutationObserver((mutationsList, observer) => {
-     for (const mutation of mutationsList) {
-       if (mutation.type === 'childList') {
-         // Check if #feed-container was added
-         mutation.addedNodes.forEach(node => {
-           if (node.id === 'feed-container') {
-             console.log('#feed-container added');
-             initializeSwiperEventScript();
-           }
-         });
-         // Check if #feed-container was removed
-         mutation.removedNodes.forEach(node => {
-           if (node.id === 'feed-container') {
-             console.log('#feed-container removed');
-           }
-         });
-       }
-     }
-   });
-
-   // Start observing the document body for changes
-   observer.observe(document.body, { childList: true, subtree: true });
-       }
+   initializeSwiperEventScript()
+   document.addEventListener('DOMContentLoaded', initializeSwiperEventScript);  
+   if(typeof observer === 'undefined') {
+    const observer = new MutationObserver((mutationsList, observer) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach(node => {
+            if (node.id === 'feed-container') {
+              console.log('#feed-container added');
+              initializeSwiperEventScript();
+            }
+          });
+          mutation.removedNodes.forEach(node => {
+            if (node.id === 'feed-container') {
+              console.log('#feed-container removed');
+            }
+          });
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+   }
   ")
-
 
 (defn slide-id [slide-index]
   (str "slide-" slide-index))

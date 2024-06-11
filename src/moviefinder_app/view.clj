@@ -15,7 +15,7 @@
     [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]
     [:script {:src "https://unpkg.com/swiper/swiper-bundle.min.js"}]
-    [:link {:rel "stylesheet" :href "https://unpkg.com/swiper/swiper-bundle.min.css"}]]
+    #_[:link {:rel "stylesheet" :href "https://unpkg.com/swiper/swiper-bundle.min.css"}]]
 
    [:body.bg-neutral-950.text-white {:hx-boost true :hx-target "#app" :hx-swap "innerHTML"}
     [:div
@@ -76,6 +76,15 @@
 (defn tab-panel [children]
   [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll children])
 
+
+(defn action-button-container [& children]
+  [:div.flex.flex-row.w-full.items-center.justify-center.divide-x.divide-neutral-700.border-t.border-neutral-700
+   children])
+
+(defn action-buttton [props]
+  [:button.flex-1.p-2.flex.flex-col.items-center.justify-center.gap-1.text-xs {}
+   (-> props :action-button/icon)
+   (-> props :action-button/label)])
 
 (defn app-tabs-layout [active-route view-tab-panel]
   (tab-container
