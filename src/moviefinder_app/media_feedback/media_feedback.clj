@@ -40,11 +40,40 @@
                           :action-button/label "Interested"}))
    (view-no-feedback {:feedback/type #{:feedback/not-seen}})])
 
-(def views
+(def _views
   [(view-no-feedback {})
    (view-seen)
    (view-not-seen)])
 
 
+(defn view-seen-toggle-buttons []
+  (view/toggle-button-group
+    #_{:toggle-button-group/label "Seen?"}
+   (view/toggle-button {:toggle-button/icon (icon/eye icon-props)
+                        :toggle-button/label "Seen"})
+   (view/toggle-button {:toggle-button/icon (icon/eye-slash icon-props)
+                        :toggle-button/label "Not seen"})))
+
+(defn view-like-toggle-buttons []
+  (view/toggle-button-group
+    #_{:toggle-button-group/label "Liked?"}
+   (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-up icon-props)
+                        :toggle-button/label "Like"})
+   (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-down icon-props)
+                        :toggle-button/label "Dislike"})))
+
+
+(defn view-interested-toggle-buttons []
+  (view/toggle-button-group
+   #_{:toggle-button-group/label "Interested?"}
+   (view/toggle-button {:toggle-button/icon (icon/checkmark icon-props)
+                        :toggle-button/label "Interested"})
+   (view/toggle-button {:toggle-button/icon (icon/x icon-props)
+                        :toggle-button/label "Not interested"})))
+
+
 (defn view-media-feedback-form []
-  (rand-nth views))
+  [:div.w-full.flex.items-center.justify-center.p-2.gap-4.border-t.border-neutral-700
+   (view-seen-toggle-buttons)
+   (view-like-toggle-buttons)
+   (view-interested-toggle-buttons)])
