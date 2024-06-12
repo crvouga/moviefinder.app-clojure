@@ -64,9 +64,9 @@
                   :success/body "We've sent you an email with a link to login with."})
    [:div.w-full.py-2]
    [:a.text-underline.opacity-80.underline
-    {:href (-> {:route/name :route/login} route/encode)
-     :hx-get (-> {:route/name :route/login} route/encode)
-     :hx-push-url (-> {:route/name :route/login} route/encode)}    
+    {:href (-> {:route/name :route/login-with-email} route/encode)
+     :hx-get (-> {:route/name :route/login-with-email} route/encode)
+     :hx-push-url (-> {:route/name :route/login-with-email} route/encode)}    
     "Back to login"]])
 
 (defmethod handle/handle-hx :route/send-login-link [request]
@@ -79,7 +79,7 @@
   [:form.flex.flex-col.gap-4.w-full
    {:method "POST"
     :hx-post (-> {:route/name :route/send-login-link} route/encode)
-    :hx-push-url (-> {:route/name :route/login ::sent-login-link? true} route/encode)
+    :hx-push-url (-> {:route/name :route/login-with-email ::sent-login-link? true} route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
     :hx-indicator "#login-with-email-indicator"}
@@ -109,7 +109,7 @@
    {:route/name :route/account}
    (view-login-screen request)))
 
-(defmethod handle/handle-hx :route/login [request]
+(defmethod handle/handle-hx :route/login-with-email [request]
   (-> request
       view-login
       handle/html))

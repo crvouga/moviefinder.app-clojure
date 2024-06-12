@@ -13,9 +13,9 @@
     {:button/element :button
      :button/label "Login"
      :hx-target "#app"
-     :hx-push-url (-> {:route/name :route/login}
+     :hx-push-url (-> {:route/name :route/login-with-email}
                       route/encode)
-     :hx-get (-> {:route/name :route/login}
+     :hx-get (-> {:route/name :route/login-with-email}
                  route/encode)})])
 
 (defn view-logged-in [_request]
