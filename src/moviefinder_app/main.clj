@@ -1,5 +1,6 @@
 (ns moviefinder-app.main
   (:require [moviefinder-app.env :as env]
+            [moviefinder-app.db-migration :as db-migration]
             [moviefinder-app.account]
             [moviefinder-app.counter]
             [moviefinder-app.home]
@@ -59,8 +60,13 @@
 (def port (-> (moviefinder-app.env/get! "PORT") Integer/parseInt))
 (def base-url (moviefinder-app.env/get! "BASE_URL"))
 (defn -main []
+  (println "Running migrations...")
+  (db-migration/db-up!)
+  (println "Migrations done.")
+  (println "Starting server...")
   (run-server! {:server/port port})
-  (println (str "Server running at " base-url)))
+  (println (str "Server started."))
+  (println (str "Visit " base-url " in your browser.")))
 
 (comment
   (-main))
