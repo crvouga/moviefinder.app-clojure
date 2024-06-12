@@ -10,6 +10,6 @@
   (verify-code! [_this phone-number code]
     (println "Verifying code" code "for" phone-number)))
 
-(defmethod verify-sms/->VerifySms :verify-sms/impl-mock
+(defmethod verify-sms/->VerifySms :verify-sms-impl/mock
   [_]
   (->VerifySMSMock))

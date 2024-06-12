@@ -12,9 +12,12 @@
     [:link {:rel "icon" :href "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><text y='32' font-size='32'>🍿</text></svg>"}]
     [:meta {:name :viewport :content "width=device-width, initial-scale=1.0"}]
     [:script {:src "https://cdn.tailwindcss.com"}]
-    [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
-    [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]
-    [:script {:src "https://unpkg.com/swiper/swiper-bundle.min.js"}]
+    [:script {:src "https://unpkg.com/htmx.org@1.9.12"
+              :async true}]
+    [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"
+              :async true}]
+    #_[:script {:src "https://unpkg.com/swiper/swiper-bundle.min.js"
+                :async true}]
     #_[:link {:rel "stylesheet" :href "https://unpkg.com/swiper/swiper-bundle.min.css"}]]
 
    [:body.bg-neutral-950.text-white {:hx-boost true :hx-target "#app" :hx-swap "innerHTML"}
@@ -23,11 +26,22 @@
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center overflow-hidden rounded border border-neutral-700"}
       children]]]])
 
+(defn merge-class [props-left props-right]
+  (let [class-left (-> props-left :class)
+        class-right (-> props-right :class)]
+    (if (and class-left class-right)
+      (assoc props-left :class (str class-left " " class-right))
+      props-left)))
+
+(defn merge-props [props-left props-right]
+  (let [props-left (merge-class props-left props-right)]
+    (merge props-left props-right)))
+
 (defn spinner 
   ([]
    (spinner {}))
   ([props]
-   (icon/spinner (merge {:class "animate-spin size-8"} props))))
+   (icon/spinner (merge-props {:class "animate-spin size-8"} props))))
 
 (defn button
   [props]
@@ -40,11 +54,12 @@
      props
      (-> props :button/start)
      (when (and hx-indicator-id false)
-       (spinner {:id hx-indicator-id}))
+       (spinner {:id hx-indicator-id :class "display-none"}))
      label]))
 
 (defn text-field [input]
   [:div.w-full.flex.flex-col.gap-2
+   {:class (when (-> input :text-field/hidden? not) "display-none")}
    [:label.font-bold.text-base
     {:for (-> input :text-field/id)}
     (-> input :text-field/label)]
