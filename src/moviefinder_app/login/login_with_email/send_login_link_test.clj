@@ -1,11 +1,11 @@
-(ns moviefinder-app.login.send-login-link-test
+(ns moviefinder-app.login.login-with-email.send-login-link-test
   (:require [clojure.string :refer [includes?]]
             [clojure.test :refer [deftest is testing]]
             [moviefinder-app.email.send-email :as send-email]
-            [moviefinder-app.login.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-link.login-link-db :as login-link-db]
             [moviefinder-app.route :as route]
             [moviefinder-app.deps :as deps]
-            [moviefinder-app.login.send-login-link :refer [send-login-link! ->login-link-route]]))
+            [moviefinder-app.login.login-with-email.send-login-link :refer [send-login-link! ->login-link-route]]))
 
 (defn fixture []
   (merge (deps/deps-test)

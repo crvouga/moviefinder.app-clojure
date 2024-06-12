@@ -1,5 +1,5 @@
-(ns moviefinder-app.login.login-link-db-impl-in-memory
-  (:require [moviefinder-app.login.login-link-db :as login-link-db]))
+(ns moviefinder-app.login.login-link.login-link-db-impl-in-memory
+  (:require [moviefinder-app.login.login-link.login-link-db :as login-link-db]))
 
 (defn index-by [f m]
   (->> m

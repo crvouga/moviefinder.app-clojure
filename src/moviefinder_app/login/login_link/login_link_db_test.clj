@@ -1,9 +1,9 @@
-(ns moviefinder-app.login.login-link-db-test
+(ns moviefinder-app.login.login-link.login-link-db-test
   (:require [clojure.set :as set]
             [clojure.test :refer [deftest is testing]]
-            [moviefinder-app.login.login-link :as login-link]
-            [moviefinder-app.login.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link-db-impl]))
+            [moviefinder-app.login.login-link.login-link :as login-link]
+            [moviefinder-app.login.login-link.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-link.login-link-db-impl]))
 
 
 (defn fixture []

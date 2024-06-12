@@ -1,7 +1,7 @@
-(ns moviefinder-app.login.use-login-link
+(ns moviefinder-app.login.login-with-email.use-login-link
   (:require [moviefinder-app.error :refer [err err->msg]]
-            [moviefinder-app.login.login-link :as login-link]
-            [moviefinder-app.login.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-link.login-link :as login-link]
+            [moviefinder-app.login.login-link.login-link-db :as login-link-db]
             [moviefinder-app.handle :as handle]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user.user :as user]

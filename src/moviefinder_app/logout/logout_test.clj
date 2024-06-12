@@ -1,7 +1,7 @@
 (ns moviefinder-app.logout.logout-test
   (:require [clojure.test :refer [deftest is testing]]
-            [moviefinder-app.login.send-login-link :as send-login-link]
-            [moviefinder-app.login.use-login-link :as use-login-link]
+            [moviefinder-app.login.login-with-email.send-login-link :as send-login-link]
+            [moviefinder-app.login.login-with-email.use-login-link :as use-login-link]
             [moviefinder-app.logout.logout :as logout]
             [moviefinder-app.deps :as deps]
             [moviefinder-app.user.user :as user]
