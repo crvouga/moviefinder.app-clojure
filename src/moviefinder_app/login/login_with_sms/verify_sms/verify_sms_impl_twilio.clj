@@ -1,5 +1,5 @@
-(ns moviefinder-app.login.login-with-sms.verify-sms-impl-twilio
-  (:require [moviefinder-app.login.login-with-sms.verify-sms :as verify-sms]))
+(ns moviefinder-app.login.login-with-sms.verify-sms.verify-sms-impl-twilio
+  (:require [moviefinder-app.login.login-with-sms.verify-sms.verify-sms :as verify-sms]))
 
 
 (defrecord VerifySMSTwilio []

@@ -1,4 +1,4 @@
-(ns moviefinder-app.login.login-with-sms.verify-sms)
+(ns moviefinder-app.login.login-with-sms.verify-sms.verify-sms)
 
 (defprotocol VerifySms
   (send-code! [this phone-number])

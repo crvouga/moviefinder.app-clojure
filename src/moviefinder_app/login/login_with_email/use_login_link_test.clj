@@ -1,8 +1,8 @@
 (ns moviefinder-app.login.login-with-email.use-login-link-test
   (:require [clojure.test :refer [deftest is testing]]
             [moviefinder-app.error :refer [thrown-err?]]
-            [moviefinder-app.login.login-link.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link.login-link :as login-link]
+            [moviefinder-app.login.login-with-email.login-link.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-with-email.login-link.login-link :as login-link]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.user.user :as user]

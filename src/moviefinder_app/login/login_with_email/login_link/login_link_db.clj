@@ -1,4 +1,4 @@
-(ns moviefinder-app.login.login-link.login-link-db)
+(ns moviefinder-app.login.login-with-email.login-link.login-link-db)
 
 
 (defprotocol LoginLinkDb

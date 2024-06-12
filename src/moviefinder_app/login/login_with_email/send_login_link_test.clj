@@ -2,7 +2,7 @@
   (:require [clojure.string :refer [includes?]]
             [clojure.test :refer [deftest is testing]]
             [moviefinder-app.email.send-email :as send-email]
-            [moviefinder-app.login.login-link.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-with-email.login-link.login-link-db :as login-link-db]
             [moviefinder-app.route :as route]
             [moviefinder-app.deps :as deps]
             [moviefinder-app.login.login-with-email.send-login-link :refer [send-login-link! ->login-link-route]]))

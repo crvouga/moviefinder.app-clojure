@@ -1,8 +1,8 @@
 (ns moviefinder-app.deps
   (:require [moviefinder-app.email.send-email :as send-email]
             [moviefinder-app.email.send-email-impl]
-            [moviefinder-app.login.login-link.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-link.login-link-db-impl]
+            [moviefinder-app.login.login-with-email.login-link.login-link-db :as login-link-db]
+            [moviefinder-app.login.login-with-email.login-link.login-link-db-impl]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user-session.user-session-db-impl]
             [moviefinder-app.user.user-db :as user-db]

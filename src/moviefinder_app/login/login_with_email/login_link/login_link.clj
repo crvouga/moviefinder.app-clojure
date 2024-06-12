@@ -1,4 +1,4 @@
-(ns moviefinder-app.login.login-link.login-link)
+(ns moviefinder-app.login.login-with-email.login-link.login-link)
 
 (def twenty-four-hours-in-millis
   (* 24 60 60 1000))
