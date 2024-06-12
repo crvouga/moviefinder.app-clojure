@@ -39,19 +39,20 @@
 
 (defn- query-put [user-sessions]
   {:insert-into :user-session
-   :values (->> user-sessions seq (map user-session->row))})
+   :values (->> user-sessions seq (map user-session->row))
+   :on-conflict [:user_session_id]
+   :do-nothing :do-nothing})
 
 (comment
+  (sql/format (query-put user-sessions))
   (def user-sessions (set (for [_ (range 3)] (user-session/random!))))
   user-sessions
-  (query-put user-sessions)
-  (sql/format (query-put user-sessions))
-  )
+  (query-put user-sessions))
 
 (defn- query-find-by-session-id [session-id]
   {:select [:user_id :session_id :created_at_posix :user_session_id]
    :from :user-session
-   :where [:and 
+   :where [:and
            [:= :session_id (str session-id)]
            [:is :deleted_at_posix nil]]})
 
@@ -76,8 +77,7 @@
   (def query (query-find-by-user-id user-id))
   query
   (def sql (sql/format query))
-  sql
-  )
+  sql)
 
 (defn- query-zap-by-session-id [session-id]
   {:update :user-session
@@ -90,8 +90,7 @@
   (def query (query-zap-by-session-id session-id))
   query
   (def sql (sql/format query))
-  sql
-  )
+  sql)
 
 (defrecord UserSessionDbPostgres [input]
   user-session-db/UserSessionDb
@@ -102,22 +101,22 @@
          (db/query (:db/conn input))
          (map row->user-session)
          set))
-  
+
   (find-by-user-id!
-   [_this user-id]
-   (->> user-id
-        (query-find-by-user-id)
-        (db/query (:db/conn input))
-        (map row->user-session)
-        set))
+    [_this user-id]
+    (->> user-id
+         (query-find-by-user-id)
+         (db/query (:db/conn input))
+         (map row->user-session)
+         set))
 
   (zap-by-session-id!
     [_this session-id]
     (->> session-id
-        (query-zap-by-session-id)
-        (db/execute! (:db/conn input))))
+         (query-zap-by-session-id)
+         (db/execute! (:db/conn input))))
 
-   (put!
+  (put!
     [_this user-sessions]
     (db/execute! (:db/conn input) (query-put user-sessions))
     nil))
@@ -133,14 +132,17 @@
       :db/conn db/conn}))
 
   (def user-session (user-session/random!))
+  user-session
   (user-session-db/put! user-session-db #{user-session})
   (user-session-db/find-by-session-id! user-session-db (user-session :session/id))
+  (user-session-db/zap-by-session-id! user-session-db (user-session :session/id))
 
   (def user-sessions-many (set (for [_ (range 3)] (user-session/random!))))
 
   (user-session-db/put! user-session-db user-sessions-many)
 
   (def rand-user-session (-> user-sessions-many seq rand-nth))
+  (user-session-db/put! user-session-db #{rand-user-session})
   (user-session-db/find-by-session-id! user-session-db (rand-user-session :session/id))
-  
-  )
+  (user-session-db/find-by-user-id! user-session-db (rand-user-session :user/id))
+  (user-session-db/zap-by-session-id! user-session-db (rand-user-session :session/id)))

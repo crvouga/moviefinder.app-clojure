@@ -6,7 +6,7 @@
             [moviefinder-app.deps :as deps]))
 
 (defn fixture []
-  (deps/deps-test))
+  (deps/deps-test-int))
 
 (comment
   (def user-session-db
@@ -64,4 +64,12 @@
       (is (= #{session} before))
       (is (= #{} after))))
   
+  (testing "put! should not error on putting the same item twice"
+    (let [f (fixture)
+          session (user-session/random!)
+          user-session-db (f :user-session-db/user-session-db)
+          _ (user-session-db/put! user-session-db #{session})
+          _ (user-session-db/put! user-session-db #{session})
+          after (user-session-db/find-by-session-id! user-session-db (session :session/id))]
+      (is (= #{session} after))))
   )
