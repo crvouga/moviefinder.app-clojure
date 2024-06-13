@@ -27,7 +27,7 @@
       assoc-form-data
       send-code!
       assoc-phone-number-in-route
-      verify-code/view-form
+      verify-code/view-verify-code-form
       handle/html))
 
 (defn view-send-code-form [request]
@@ -44,7 +44,8 @@
                      route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
-    :hx-indicator "#send-code-indicator"}
+    :hx-indicator "#send-code-indicator"
+    :hx-trigger "submit"}
    (view/text-field {:text-field/id "phone-number"
                      :text-field/label "Phone number"
                      :text-field/type "tel"

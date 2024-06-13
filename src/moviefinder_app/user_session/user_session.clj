@@ -15,6 +15,10 @@
    :user-session/id (random-user-session-id!)
    :user-session/created-at-posix (System/currentTimeMillis)})
 
+(defn new [input]
+  (-> input
+      (select-keys [:user/id :session/id])))
+
 (defn assoc-user-session! [input]
   (let [user-session-db (input :user-session-db/user-session-db)
         user-sessions (user-session-db/find-by-session-id! user-session-db (:session/id input))]

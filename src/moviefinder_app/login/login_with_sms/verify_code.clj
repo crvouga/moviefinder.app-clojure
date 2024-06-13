@@ -7,9 +7,10 @@
             [moviefinder-app.view.icon :as icon]
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.user.user :as user]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]))
+            [moviefinder-app.user-session.user-session-db :as user-session-db]
+            [moviefinder-app.user-session.user-session :as user-session]))
 
-(defn view-verified [_request]
+(defn view-code-verified [_request]
   [:div.flex.flex-col.w-full
    (view/success {:success/title "Code verified"
                   :success/body "You are now logged in."})
@@ -46,9 +47,7 @@
 
 (defn- assoc-user-session [input]
   (let [user (-> input ::user)
-        session-id (-> input :session/id)
-        user-id (:user/id user)
-        user-session {:session/id session-id :user/id user-id}]
+        user-session (user-session/new (merge input user))]
     (assoc input ::user-session user-session)))
 
 (defn- put-user! [input]
@@ -64,6 +63,7 @@
     input))
 
 (defmethod handle/handle-hx :route/clicked-verify-code [request]
+  (println (str "request: " (keys request)))
   (-> request
       assoc-phone-number
       assoc-code
@@ -72,10 +72,10 @@
       verify-code!
       put-user!
       put-user-session!
-      view-verified
+      view-code-verified
       handle/html))
 
-(defn view-form [request]
+(defn view-verify-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
    {:method "POST"
     :hx-post (-> {:route/name :route/clicked-verify-code} route/encode)
@@ -87,17 +87,19 @@
     :hx-swap "outerHTML"
     :hx-target "this"
     :hx-indicator "#verify-code-indicator"
-    :hx-on "submit: return false;"}
+    :hx-trigger "submit"}
    (view/text-field {:text-field/id "code"
                      :text-field/label "Code"
-                     :text-field/type "tel"})
+                     :text-field/name "code"
+                     :text-field/type "tel"
+                     :text-field/required? true})
    (view/button {:button/type "submit"
                  :button/label "Verify code"})])
 
 
 (defmethod login-with-sms/view-step :login-with-sms-step/done [request]
-  (view-verified request))
+  (view-code-verified request))
 
 (defmethod login-with-sms/view-step :login-with-sms-step/verify-code [request]
-  (view-form request))
+  (view-verify-code-form request))
 

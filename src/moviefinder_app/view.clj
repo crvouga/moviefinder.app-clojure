@@ -48,7 +48,9 @@
   (let [element (-> props :button/element (or :button))
         hx-indicator-id (-> props :button/hx-indicator-id)
         label (-> props :button/label)
-        props-base {:class "text-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 text-lg rounded active:opacity-50 flex items-center justify-center gap-2"}
+        type (-> props :button/type (or "button"))
+        props-base {:class "text-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 text-lg rounded active:opacity-50 flex items-center justify-center gap-2"
+                    :type type}
         props (merge props-base props)]
     [element
      props

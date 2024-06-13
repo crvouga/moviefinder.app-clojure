@@ -10,13 +10,11 @@
    (icon/door {:class "size-20"})
    [:h1.text-xl.font-bold "Login to access your account."]
    (view/button
-    {:button/element :button
+    {:button/element :a
      :button/label "Login"
-     :hx-target "#app"
-     :hx-push-url (-> {:route/name :route/login-with-sms}
-                      route/encode)
-     :hx-get (-> {:route/name :route/login-with-sms}
-                 route/encode)})])
+     :hx-boost true
+     :href (-> {:route/name :route/login-with-sms}
+               route/encode)})])
 
 (defn view-logged-in [_request]
   [:div.w-full.h-full.flex.flex-col.items-center.justify-center
