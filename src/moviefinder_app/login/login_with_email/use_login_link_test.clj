@@ -51,7 +51,7 @@
   (testing "it should NOT create a new user if already exists"
     (let [f (fixture)
           login-link (send-login-link! f)
-          user (user/new! (f :user/email))
+          user (user/new! f)
           _ (user-db/put! (f :user-db/user-db) #{user})
           before (user-db/find-by-email! (f :user-db/user-db) (:user/email f))
           _ (use-login-link! (merge f login-link))

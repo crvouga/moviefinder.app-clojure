@@ -1,22 +1,24 @@
 (ns moviefinder-app.main
-  (:require [moviefinder-app.env :as env]
-            [moviefinder-app.db-migration :as db-migration]
-            [moviefinder-app.account]
+  (:require [moviefinder-app.account]
             [moviefinder-app.counter]
+            [moviefinder-app.db-migration :as db-migration]
+            [moviefinder-app.deps :as deps]
+            [moviefinder-app.env :as env]
+            [moviefinder-app.handle :as handle]
             [moviefinder-app.home]
             [moviefinder-app.login.login-with-email.send-login-link]
             [moviefinder-app.login.login-with-email.use-login-link]
             [moviefinder-app.login.login-with-sms.login-with-sms]
+            [moviefinder-app.login.login-with-sms.send-code]
+            [moviefinder-app.login.login-with-sms.verify-code]
             [moviefinder-app.logout.logout]
             [moviefinder-app.movie.details]
             [moviefinder-app.user-session.user-session :as user-session]
-            [moviefinder-app.handle :as handle]
-            [moviefinder-app.deps :as deps]
+            [moviefinder-app.view :as view]
             [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.reload :refer [wrap-reload]]
-            [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [moviefinder-app.view :as view]))
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.reload :refer [wrap-reload]]))
 
 (defmethod handle/handle-hx :default [request]
   (-> request
@@ -60,6 +62,7 @@
 
 (def port (-> (moviefinder-app.env/get! "PORT") Integer/parseInt))
 (def base-url (moviefinder-app.env/get! "BASE_URL"))
+
 (defn -main []
   (println "Running migrations...")
   (db-migration/db-up!)

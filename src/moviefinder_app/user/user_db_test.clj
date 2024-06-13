@@ -17,6 +17,15 @@
       (is (= before #{}))
       (is (= after #{user}))))
   
+  (testing "find by phone number"
+    (let [f (fixture)
+          user (user/random!)
+          before (user-db/find-by-phone-number! (:user-db/user-db f) (:user/phone-number user))
+          _ (user-db/put! (:user-db/user-db f) #{user})
+          after (user-db/find-by-phone-number! (:user-db/user-db f) (:user/phone-number user))]
+      (is (= before #{}))
+      (is (= after #{user}))))
+  
   
   (testing "find by id"
     (let [f (fixture)

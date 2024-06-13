@@ -42,7 +42,7 @@
         user-email (-> login-link :login-link/email)
         user-db (-> input :user-db/user-db)
         maybe-user (first (user-db/find-by-email! user-db user-email))
-        user (if maybe-user maybe-user (user/new! user-email))]
+        user (if maybe-user maybe-user (user/new! {:user/email user-email}))]
     (assoc input ::user user)))
 
 (defn validate-user-session-id-exists [input]

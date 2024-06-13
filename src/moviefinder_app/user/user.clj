@@ -14,13 +14,17 @@
 (defn random-email! []
   (str "email" (short-id!) "@email.com"))
 
+(defn random-phone-number! []
+  (str "123-456-7890" (short-id!)))
+
 (defn random! []
-  {:user/email (random-email!)
+  {:user/phone-number (random-phone-number!)
+   :user/email (random-email!)
    :user/id (random-user-id!)})
 
-(defn new! [email]
-  {:user/email email
-   :user/id (random-user-id!)})
+(defn new! [input]
+  (-> (select-keys input [:user/email :user/phone-number])
+      (assoc :user/id (random-user-id!))))
 
 (comment
   (short-id!)
