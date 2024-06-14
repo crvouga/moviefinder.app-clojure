@@ -33,7 +33,8 @@
    
    :verify-sms/verify-sms
    (verify-sms/->VerifySms 
-    {:verify-sms/impl :verify-sms-impl/mock})
+    {:verify-sms/impl :verify-sms-impl/mock
+     :verify-sms-mock/code 123})
 
    :send-email/send-email
    (send-email/->SendEmail

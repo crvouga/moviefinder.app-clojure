@@ -4,7 +4,7 @@
 (defn err [error-type error-payload]
   (ex-info "" (merge error-payload {:err/err error-type})))
 
-(defmulti err->msg (comp :err/err ex-data))
+(defmulti err->msg :err/err)
 
 (defn ex->err [ex]
   (ex-data ex))

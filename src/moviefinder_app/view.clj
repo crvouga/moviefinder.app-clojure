@@ -37,6 +37,11 @@
   (let [props-left (merge-class props-left props-right)]
     (merge props-left props-right)))
 
+(defn alert [props]
+  [:div.bg-neutral-800.border.border-neutral-700.rounded.p-4.flex.flex-row.items-center.gap-2
+   (merge {:class ""} props)
+   [:p.text-sm.opacity-80 (-> props :alert/message)]])
+
 (defn spinner 
   ([]
    (spinner {}))

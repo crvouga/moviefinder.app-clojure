@@ -4,5 +4,4 @@
   (send-code! [this phone-number])
   (verify-code! [this phone-number code]))
 
-
 (defmulti ->VerifySms :verify-sms/impl)

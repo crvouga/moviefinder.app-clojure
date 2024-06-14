@@ -12,9 +12,7 @@
    (view/button
     {:button/element :a
      :button/label "Login"
-     :hx-boost true
-     :href (-> {:route/name :route/login-with-sms}
-               route/encode)})])
+     :href (-> {:route/name :route/login-with-sms} route/encode)})])
 
 (defn view-logged-in [_request]
   [:div.w-full.h-full.flex.flex-col.items-center.justify-center

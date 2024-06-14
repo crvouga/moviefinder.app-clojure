@@ -1,5 +1,6 @@
 (ns moviefinder-app.login.login-with-sms.verify-code
   (:require [moviefinder-app.handle :as handle]
+            [moviefinder-app.error :as error]
             [moviefinder-app.login.login-with-sms.login-with-sms :as login-with-sms]
             [moviefinder-app.login.login-with-sms.verify-sms.verify-sms :as verify-sms]
             [moviefinder-app.route :as route]
@@ -63,22 +64,33 @@
     input))
 
 (defmethod handle/handle-hx :route/clicked-verify-code [request]
-  (println (str "request: " (keys request)))
-  (-> request
-      assoc-phone-number
-      assoc-code
-      assoc-user
-      assoc-user-session
-      verify-code!
-      put-user!
-      put-user-session!
-      view-code-verified
-      handle/html))
+  (try
+    (-> request
+        assoc-phone-number
+        assoc-code
+        assoc-user
+        assoc-user-session
+        verify-code!
+        put-user!
+        put-user-session!
+        view-code-verified
+        handle/html)
+    (catch Exception ex
+      (-> request
+          (assoc-in [:request/route :err/err] (error/ex->err ex))
+          login-with-sms/view-step
+          handle/html))))
+
+(defmethod error/err->msg :err/wrong-code [_]
+  "Wrong code entered")
 
 (defn view-verify-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
    {:method "POST"
-    :hx-post (-> {:route/name :route/clicked-verify-code} route/encode)
+    :hx-post (-> request 
+                 :request/route
+                 (assoc :route/name :route/clicked-verify-code) 
+                 route/encode)
     :hx-push-url (-> request
                      :request/route
                      (assoc :route/name :route/login-with-sms)
@@ -88,6 +100,9 @@
     :hx-target "this"
     :hx-indicator "#verify-code-indicator"
     :hx-trigger "submit"}
+   (when (-> request :request/route :err/err)
+     (view/alert {:alert/variant :alert/error
+                  :alert/message (-> request :request/route :err/err error/err->msg)}))
    (view/text-field {:text-field/id "code"
                      :text-field/label "Code"
                      :text-field/name "code"
