@@ -112,9 +112,9 @@
 (defn- html-body [response] 
   (-> response
       :response/view
-      
       hiccup/html
-      str))
+      str
+      append-doc-type))
 
 (defn- html-headers [response]
   {"Content-Type" "text/html"
