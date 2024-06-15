@@ -52,33 +52,11 @@
 (defn- str-keys->keywords [m]
   (update-keys m str->keyword))
 
-(defn assoc-route [request ring-request]
-  (assoc request :request/route (route ring-request)))
-
-(defn assoc-hx? [request ring-request]
-  (let [hx? (hx? ring-request)]
-    (if hx?
-      (assoc request :request/hx? hx?)
-      request)))
-
-(defn assoc-session-id [request ring-request]
-  (let [session-id (ring-request :session/id)]
-    (if session-id
-      (assoc request :session/id session-id)
-      request)))
-
-(defn assoc-form-data [request ring-request]
-  (let [form-data (-> ring-request :form-params str-keys->keywords)]
-    (if-not (empty? form-data)
-      (assoc request :request/form-data form-data)
-      request)))
-
 (defn ring-request->request [ring-request]
-  (-> {}
-      (assoc-route ring-request)
-      (assoc-hx? ring-request)
-      (assoc-session-id ring-request)
-      (assoc-form-data ring-request)))
+  {:request/route (route ring-request)
+   :request/hx? (hx? ring-request)
+   :session/id (ring-request :session/id)
+   :request/form-data (-> ring-request :form-params str-keys->keywords)})
 
 ;; 
 ;; 
@@ -134,7 +112,8 @@
       str))
 
 (def html-headers
-  {"Content-Type" "text/html"})
+  {"Content-Type" "text/html"
+   "Cache-Control" "no-store, max-age=0"})
 
 (defmethod response->ring-response :response-type/html [response]
   {:status (status response)

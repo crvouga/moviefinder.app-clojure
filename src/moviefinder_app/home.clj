@@ -28,11 +28,12 @@
 (defn view-feed-slide [input]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:div.w-full.flex.flex-col.justify-center.items-center.relative.flex-1
+    {:hx-boost true}
     [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200.min-h-full.min-w-full
      {:src (-> input ::movie :movie/poster-url) :loading :lazy}]
     [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
      {:hx-get (-> input ::movie movie-details-href)
-      :hx-target "#app"
+      :hx-boost true
       :href (-> input ::movie movie-details-href)
       :hx-swap "innerHTML"
       :hx-push-url (-> input ::movie movie-details-href)}]]

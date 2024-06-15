@@ -19,6 +19,9 @@
     (view/button {:button/label "Back to app"
                   :button/start (icon/arrow-left)
                   :button/element :a
+                  :hx-get (-> {:route/name :route/home} route/encode)
+                  :hx-push-url (-> {:route/name :route/home} route/encode)
+                  :hx-boost true
                   :href (-> {:route/name :route/home} route/encode)})]])
 
 (defn- assoc-phone-number [request]
@@ -76,30 +79,34 @@
         view-code-verified
         handle/html)
     (catch Exception ex
+      (println ex)
       (-> request
           (assoc-in [:request/route :err/err] (error/ex->err ex))
           login-with-sms/view-step
-          handle/html))))
+          handle/html
+          (assoc :response/hx-push-url
+                 (-> request
+                     :request/route
+                     (assoc :route/name :route/login-with-sms
+                            :login-with-sms/step :login-with-sms-step/verify-sms
+                            :err/err (error/ex->err ex))
+                     route/encode))))))
 
 (defmethod error/err->msg :err/wrong-code [_]
   "Wrong code entered")
 
 (defn view-verify-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
-   {:method "POST"
-    :hx-post (-> request 
+   {:hx-post (-> request
                  :request/route
-                 (assoc :route/name :route/clicked-verify-code) 
+                 (assoc :route/name :route/clicked-verify-code)
+                 (assoc :login-with-sms/step :login-with-sms-step/verify-code)
                  route/encode)
-    :hx-push-url (-> request
-                     :request/route
-                     (assoc :route/name :route/login-with-sms)
-                     (assoc :login-with-sms/step :login-with-sms-step/done)
-                     route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
-    :hx-indicator "#verify-code-indicator"
-    :hx-trigger "submit"}
+    :hx-trigger "submit"
+    :method "POST"
+    :hx-boost true}
    (when (-> request :request/route :err/err)
      (view/alert {:alert/variant :alert/error
                   :alert/message (-> request :request/route :err/err error/err->msg)}))
@@ -107,7 +114,7 @@
                      :text-field/label "Code"
                      :text-field/name "code"
                      :text-field/type "tel"
-                     :text-field/required? true})
+                     #_:text-field/required? #_true})
    (view/button {:button/type "submit"
                  :button/label "Verify code"})])
 

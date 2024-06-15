@@ -44,7 +44,6 @@
                      route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
-    :hx-indicator "#send-code-indicator"
     :hx-trigger "submit"}
    (view/text-field {:text-field/id "phone-number"
                      :text-field/label "Phone number"
