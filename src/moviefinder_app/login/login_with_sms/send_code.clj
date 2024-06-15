@@ -1,7 +1,6 @@
 (ns moviefinder-app.login.login-with-sms.send-code
   (:require [moviefinder-app.handle :as handle]
             [moviefinder-app.login.login-with-sms.login-with-sms :as login-with-sms]
-            [moviefinder-app.login.login-with-sms.verify-code :as verify-code]
             [moviefinder-app.login.login-with-sms.verify-sms.verify-sms :as verify-sms]
             [moviefinder-app.route :as route]
             [moviefinder-app.view :as view]))
@@ -17,20 +16,18 @@
     (verify-sms/send-code! verify-sms phone-number)
     input))
 
-(defn- assoc-phone-number-in-route [request]
-  (let [phone-number (-> request :user/phone-number)]
-    (-> request
-        (assoc-in [:request/route :user/phone-number] phone-number))))
+(defn assoc-verify-code-route [request]
+  (-> request
+      (assoc :request/route {:route/name :route/login-with-sms
+                             :login-with-sms/route :route/verify-code
+                             :user/phone-number (-> request :user/phone-number)})))
 
-(defmethod handle/handle-hx-get :route/clicked-send-code [request]
+(defmethod handle/hx-post :route/clicked-send-code [request]
   (-> request
       assoc-form-data
       send-code!
-      verify-code/view-verify-code-form
-
-      handle/html
-      
-      (handle/hx-push-route (-> request assoc-form-data assoc-phone-number-in-route :request/route))))
+      assoc-verify-code-route
+      handle/handle-hx-get-push))
 
 (defn view-send-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
@@ -39,17 +36,18 @@
                  :request/route
                  (assoc :route/name :route/clicked-send-code)
                  route/encode)
-    :hx-swap "outerHTML"
-    :hx-target "this"
+    :hx-swap "innerHTML"
+    :hx-target "#app"
     :hx-trigger "submit"}
    (view/text-field {:text-field/id "phone-number"
                      :text-field/label "Phone number"
                      :text-field/type "tel"
                      :text-field/name "phone-number"
-                     :text-field/required? true})
+                     :text-field/required? true
+                     :text-field/autofocus? true})
    (view/button {:button/type "submit"
                  :button/label "Send code"
                  :button/hx-indicator-id "send-code-indicator"})])
 
-(defmethod login-with-sms/view-step :default [request]
+(defmethod login-with-sms/hx-get :default [request]
   (view-send-code-form request))

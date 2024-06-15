@@ -69,7 +69,7 @@
      :hx-push-url (-> {:route/name :route/login-with-email} route/encode)}    
     "Back to login"]])
 
-(defmethod handle/handle-hx-get :route/send-login-link [request]
+(defmethod handle/hx-get :route/send-login-link [request]
   (-> request
       (assoc :user/email (-> request :request/form-data :email))
       send-login-link!)
@@ -109,7 +109,7 @@
    {:route/name :route/account}
    (view-login-screen request)))
 
-(defmethod handle/handle-hx-get :route/login-with-email [request]
+(defmethod handle/hx-get :route/login-with-email [request]
   (-> request
       view-login
       handle/html))

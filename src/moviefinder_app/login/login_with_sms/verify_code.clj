@@ -24,6 +24,15 @@
                   :hx-boost true
                   :href (-> {:route/name :route/home} route/encode)})]])
 
+
+(defmethod login-with-sms/hx-get :route/verified-code [request]
+  (view-code-verified request))
+
+;; 
+;; 
+;; 
+;; 
+
 (defn- assoc-phone-number [request]
   (let [phone-number (-> request :request/route :user/phone-number)]
     (-> request
@@ -66,7 +75,19 @@
     (user-session-db/put! user-session-db #{user-session})
     input))
 
-(defmethod handle/handle-hx-get :route/clicked-verify-code [request]
+(defn- assoc-verify-code-ok-route [request]
+  (-> request 
+      (assoc :request/route {:route/name :route/login-with-sms
+                             :login-with-sms/route :route/verified-code})))
+
+(defn- assoc-verify-code-err-route [request ex]
+  (-> request
+      (assoc :request/route {:route/name :route/login-with-sms
+                             :login-with-sms/route :route/verify-code
+                             :user/phone-number (-> request :request/route :user/phone-number)
+                             :err/err (error/ex->err ex)})))
+
+(defmethod handle/hx-post :route/clicked-verify-code [request]
   (try
     (-> request
         assoc-phone-number
@@ -76,55 +97,44 @@
         verify-code!
         put-user!
         put-user-session!
-        view-code-verified
-        handle/html)
+        assoc-verify-code-ok-route
+        handle/handle-hx-get-push)
     (catch Exception ex
-      (println ex)
       (-> request
-          (assoc-in [:request/route :err/err] (error/ex->err ex))
-          login-with-sms/view-step
-          handle/html
-          (assoc :response/hx-push-url
-                 (-> request
-                     :request/route
-                     (assoc :route/name :route/login-with-sms
-                            :login-with-sms/step :login-with-sms-step/verify-sms
-                            :err/err (error/ex->err ex))
-                     route/encode))))))
+          (assoc-verify-code-err-route ex)
+          handle/handle-hx-get-push))))
 
 (defmethod error/err->msg :err/wrong-code [_]
   "Wrong code entered")
+
+(defmethod error/err->msg :default []
+  "An error occurred")
 
 (defn view-verify-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
    {:hx-post (-> request
                  :request/route
                  (assoc :route/name :route/clicked-verify-code)
-                 (assoc :login-with-sms/step :login-with-sms-step/verify-code)
                  route/encode)
-    :hx-swap "outerHTML"
-    :hx-target "this"
-    :hx-trigger "submit"
-    :method "POST"
-    :hx-boost true}
-   (when (-> request :request/route :err/err)
-     (view/alert {:alert/variant :alert/error
-                  :alert/message (-> request :request/route :err/err error/err->msg)}))
-   [:p.text-lg.font-bold
+    :hx-swap "innerHTML"
+    :hx-target "#app"}
+   [:p.text-lg
     (str "Enter the code sent to you at "
          (-> request :request/route :user/phone-number))]
    (view/text-field {:text-field/id "code"
                      :text-field/label "Code"
                      :text-field/name "code"
                      :text-field/type "tel"
-                     :text-field/required? true})
+                     :text-field/required? true
+                     :text-field/autofocus? true})
    (view/button {:button/type "submit"
-                 :button/label "Verify code"})])
+                 :button/label "Verify code"})
+   (when (-> request :request/route :err/err)
+     (view/alert {:alert/variant :alert/error
+                  :alert/message (-> request :request/route :err/err error/err->msg)}))])
 
 
-(defmethod login-with-sms/view-step :login-with-sms-step/done [request]
-  (view-code-verified request))
 
-(defmethod login-with-sms/view-step :login-with-sms-step/verify-code [request]
+(defmethod login-with-sms/hx-get :route/verify-code [request]
   (view-verify-code-form request))
 

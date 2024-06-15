@@ -111,11 +111,11 @@
                    :success/body "You have successfully logged in."})
     view-back-to-app]])
 
-(defmethod handle/handle-hx-get :route/use-login-link-ok [request]
+(defmethod handle/hx-get :route/use-login-link-ok [request]
   (-> request
       view-use-login-link-ok
       view/html-doc
-      handle/html-doc))
+      handle/html))
 
 (defmethod err->msg :err/login-link-not-found [_ex]
   "Login link was not found. Please request a new one")
@@ -140,11 +140,11 @@
     view-back-to-app]])
 
 (defmethod handle/handle :route/use-login-link-ok [request]
-  (-> request view-use-login-link-ok view/html-doc handle/html-doc))
+  (-> request view-use-login-link-ok view/html-doc handle/html))
 
 (defmethod handle/handle :route/use-login-link [request]
   (try
     (-> request (merge (:request/route request)) use-login-link!)
     (handle/redirect {:route/name :route/use-login-link-ok})
     (catch Exception ex
-      (-> (view-use-login-link-err ex request) view/html-doc handle/html-doc))))
+      (-> (view-use-login-link-err ex request) view/html-doc handle/html))))

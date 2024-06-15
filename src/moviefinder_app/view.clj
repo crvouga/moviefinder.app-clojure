@@ -34,9 +34,15 @@
   (let [props-left (merge-class props-left props-right)]
     (merge props-left props-right)))
 
+
+(defn- alert-class [props]
+  (condp = (-> props :alert/variant)
+    :alert/error "bg-red-800 border border-red-500 text-white"
+    "bg-neutral-800 border border-neutral-700"))
+
 (defn alert [props]
-  [:div.bg-neutral-800.border.border-neutral-700.rounded.p-4.flex.flex-row.items-center.gap-2
-   (merge {:class ""} props)
+  [:div.rounded.p-4.flex.flex-row.items-center.gap-2
+   (merge {:class (alert-class props)} props)
    [:p.text-sm.opacity-80 (-> props :alert/message)]])
 
 (defn spinner 
@@ -71,6 +77,7 @@
    [:input.border.border-neutral-600.text-white.p-4.rounded.focus:outline.bg-neutral-900
     {:id (-> input :text-field/id)
      :type (-> input :text-field/type)
+     :autofocus (-> input :text-field/autofocus?)
      :name (-> input :text-field/name)
      :placeholder (-> input :text-field/placeholder)
      :required (-> input :text-field/required?)}]])

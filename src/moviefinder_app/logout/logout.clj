@@ -8,6 +8,6 @@
     (user-session-db/zap-by-session-id! user-session-db session-id)
     input))
 
-(defmethod handle/handle-hx-get :route/logout [input]
+(defmethod handle/hx-post :route/logout [input]
   (logout! input)
   (handle/redirect {:route/name :route/account}))
