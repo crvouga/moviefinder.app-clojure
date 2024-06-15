@@ -1,8 +1,8 @@
 (ns moviefinder-app.error
   (:require [clojure.test :refer [is]]))
 
-(defn err [error-type error-payload]
-  (ex-info "" (merge error-payload {:err/err error-type})))
+(defn ex [error-type & error-payload]
+  (ex-info "" (apply merge (conj error-payload {:err/err error-type}))))
 
 
 (defmulti err->msg :err/err)

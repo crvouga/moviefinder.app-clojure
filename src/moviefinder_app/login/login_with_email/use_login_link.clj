@@ -1,5 +1,5 @@
 (ns moviefinder-app.login.login-with-email.use-login-link
-  (:require [moviefinder-app.error :refer [err err->msg]]
+  (:require [moviefinder-app.error :refer [ex err->msg]]
             [moviefinder-app.handle :as handle]
             [moviefinder-app.login.login-with-email.login-link.login-link :as login-link]
             [moviefinder-app.login.login-with-email.login-link.login-link-db :as login-link-db]
@@ -19,19 +19,19 @@
 (defn- validate-link-found [input]
   (let [login-link (-> input ::login-link)]
     (when-not login-link
-      (throw (err :err/login-link-not-found input)))
+      (throw (ex :err/login-link-not-found input)))
     input))
 
 (defn- validate-link-not-used [input]
   (let [login-link (-> input ::login-link)]
     (when (login-link/used? login-link)
-      (throw (err :err/login-link-already-used input)))
+      (throw (ex :err/login-link-already-used input)))
     input))
 
 (defn- validate-link-not-expired [input]
   (let [login-link (-> input ::login-link)]
     (when (login-link/expired? login-link)
-      (throw (err :err/login-link-expired input)))
+      (throw (ex :err/login-link-expired input)))
     input))
 
 (defn- mark-login-link-as-used [input]
@@ -48,7 +48,7 @@
 (defn validate-user-session-id-exists [input]
   (let [session-id (-> input :session/id)]
     (when-not session-id
-      (throw (err :err/user-session-id-not-associate-with-request input)))
+      (throw (ex :err/user-session-id-not-associate-with-request input)))
     input))
 
 (defn- assoc-user-session [input]

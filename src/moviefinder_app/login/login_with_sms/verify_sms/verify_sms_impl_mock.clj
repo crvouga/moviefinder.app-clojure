@@ -1,6 +1,6 @@
 (ns moviefinder-app.login.login-with-sms.verify-sms.verify-sms-impl-mock
   (:require [moviefinder-app.login.login-with-sms.verify-sms.verify-sms :as verify-sms]
-            [moviefinder-app.error :refer [err]]))
+            [moviefinder-app.error :refer [ex]]))
 
 
 (defrecord VerifySMSMock [input]
@@ -12,7 +12,7 @@
   (verify-code!
    [_this phone-number code]
    (when (-> input :verify-sms-mock/code str (not= (str code)))
-     (throw (err :err/wrong-code {:phone-number phone-number
+     (throw (ex :err/wrong-code {:phone-number phone-number
                                   :code code
                                   :expected-code (input :verify-sms-mock/code)})))
    (println "Code" code "verified for" phone-number)))
