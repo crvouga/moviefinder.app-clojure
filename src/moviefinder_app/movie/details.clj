@@ -65,5 +65,5 @@
         movie (movie-db/get! movie-db movie-id)]
     (view-movie-details movie)))
 
-(defmethod moviefinder-app.handle/handle-hx :route/movie-details [request]
+(defmethod moviefinder-app.handle/handle-hx-get :route/movie-details [request]
   (moviefinder-app.handle/html (view-movie-details! request)))

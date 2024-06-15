@@ -16,7 +16,9 @@
 
 (def request-route (comp :route/name :request/route))
 
-(defmulti handle-hx request-route)
+(defmulti handle-hx-get request-route)
+
+(defmulti handle-hx-post request-route)
 
 (defmulti handle request-route)
 

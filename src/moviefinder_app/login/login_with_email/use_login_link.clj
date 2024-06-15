@@ -111,7 +111,7 @@
                    :success/body "You have successfully logged in."})
     view-back-to-app]])
 
-(defmethod handle/handle-hx :route/use-login-link-ok [request]
+(defmethod handle/handle-hx-get :route/use-login-link-ok [request]
   (-> request
       view-use-login-link-ok
       view/html-doc

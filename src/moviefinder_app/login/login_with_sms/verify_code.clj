@@ -66,7 +66,7 @@
     (user-session-db/put! user-session-db #{user-session})
     input))
 
-(defmethod handle/handle-hx :route/clicked-verify-code [request]
+(defmethod handle/handle-hx-get :route/clicked-verify-code [request]
   (try
     (-> request
         assoc-phone-number

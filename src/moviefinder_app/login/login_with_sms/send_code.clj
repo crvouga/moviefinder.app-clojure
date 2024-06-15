@@ -22,12 +22,14 @@
     (-> request
         (assoc-in [:request/route :user/phone-number] phone-number))))
 
-(defmethod handle/handle-hx :route/clicked-send-code [request]
+(defmethod handle/handle-hx-get :route/clicked-send-code [request]
   (-> request
       assoc-form-data
       send-code!
       verify-code/view-verify-code-form
+
       handle/html
+      
       (handle/hx-push-route (-> request assoc-form-data assoc-phone-number-in-route :request/route))))
 
 (defn view-send-code-form [request]

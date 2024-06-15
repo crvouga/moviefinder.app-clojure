@@ -20,21 +20,21 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.reload :refer [wrap-reload]]))
 
-(defmethod handle/handle-hx :default [request]
+(defmethod handle/handle-hx-get :default [request]
   (-> request
       (assoc :request/route {:route/name :route/home})
-      handle/handle-hx))
+      handle/handle-hx-get))
 
 (defmethod handle/handle :default [request]
   (-> request
-      handle/handle-hx
+      handle/handle-hx-get
       :response/view
       view/html-doc
       handle/html-doc))
 
 (defn handle [request]
   (if (:request/hx? request)
-    (handle/handle-hx request)
+    (handle/handle-hx-get request)
     (handle/handle request)))
 
 (defn log-request [request]

@@ -107,7 +107,7 @@
          :hx-push-url (-> request :request/route (assoc :feed/slide-index slide-index) route/encode)}
         (view-feed-slide (assoc request ::movie movie))]])))
 
-(defmethod handle/handle-hx :route/changed-slide [_request]
+(defmethod handle/handle-hx-get :route/changed-slide [_request]
   (handle/html [:div]))
 
 (defn view-feed! [request]
@@ -122,9 +122,9 @@
 (defn view-home [input]
   (view/app-tabs-layout {:route/name :route/home}  (view-feed! input)))
 
-(defmethod handle/handle-hx :noop [_request]
+(defmethod handle/handle-hx-get :noop [_request]
   {:status 200})
 
-(defmethod handle/handle-hx :route/home [request]
+(defmethod handle/handle-hx-get :route/home [request]
   (handle/html (view-home request)))
 

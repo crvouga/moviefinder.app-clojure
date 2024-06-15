@@ -13,7 +13,7 @@
     [:div.w-full.flex-1.p-6
      (view-step request)]]))
 
-(defmethod handle/handle-hx :route/login-with-sms [request]
+(defmethod handle/handle-hx-get :route/login-with-sms [request]
   (-> request
       view-login-with-sms
       handle/html))
