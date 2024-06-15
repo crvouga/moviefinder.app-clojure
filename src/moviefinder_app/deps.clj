@@ -1,53 +1,25 @@
 (ns moviefinder-app.deps
   (:require [moviefinder-app.db :as db]
-            [moviefinder-app.email.send-email :as send-email]
-            [moviefinder-app.email.send-email-impl]
+            [moviefinder-app.email.send-email-impl :as send-email-impl]
             [moviefinder-app.env :as env]
-            [moviefinder-app.login.login-with-email.login-link.login-link-db :as login-link-db]
-            [moviefinder-app.login.login-with-email.login-link.login-link-db-impl]
-            [moviefinder-app.login.login-with-sms.verify-sms.verify-sms :as verify-sms]
-            [moviefinder-app.login.login-with-sms.verify-sms.verify-sms-impl]
-            [moviefinder-app.movie.movie-db :as movie-db]
-            [moviefinder-app.movie.movie-db-impl]
-            [moviefinder-app.user-session.user-session-db :as user-session-db]
-            [moviefinder-app.user-session.user-session-db-impl]
-            [moviefinder-app.user.user-db :as user-db]
-            [moviefinder-app.user.user-db-impl]))
+            [moviefinder-app.login.login-with-email.login-link.login-link-db-impl :as login-link-db-impl]
+            [moviefinder-app.login.login-with-sms.verify-sms.verify-sms-impl :as verify-sms-impl]
+            [moviefinder-app.movie.movie-db-impl :as movie-db-impl]
+            [moviefinder-app.user-session.user-session-db-impl :as user-session-db-impl]
+            [moviefinder-app.user.user-db-impl :as user-db-impl]))
 
 (defn deps-test-unit []
-  {:movie-db/movie-db
-   (movie-db/->MovieDb
-    {:movie-db/impl :movie-db-impl/tmdb})
-
-   :user-db/user-db
-   (user-db/->UserDb
-    {:user-db/impl :user-db-impl/in-memory})
-
-   :user-session-db/user-session-db
-   (user-session-db/->UserSessionDb
-    {:user-session-db/impl :user-session-db-impl/in-memory})
-
-   :login-link-db/login-link-db
-   (login-link-db/->LoginLinkDb
-    {:login-link-db/impl :login-link-db-impl/in-memory})
-   
-   :verify-sms/verify-sms
-   (verify-sms/->VerifySms 
-    {:verify-sms/impl :verify-sms-impl/mock
-     :verify-sms-mock/code 123})
-
-   :send-email/send-email
-   (send-email/->SendEmail
-    {:send-email/impl :send-email-impl/mock
-     :send-email/log? false})})
+  {:movie-db/movie-db (movie-db-impl/tmdb)
+   :user-db/user-db (user-db-impl/in-memory)
+   :user-session-db/user-session-db (user-session-db-impl/in-memory)
+   :login-link-db/login-link-db (login-link-db-impl/in-memory)
+   :verify-sms/verify-sms (verify-sms-impl/mock)
+   :send-email/send-email (send-email-impl/mock)})
 
 (defn deps-test-int []
   (merge
    (deps-test-unit)
-   {:user-session-db/user-session-db
-    (user-session-db/->UserSessionDb
-     {:user-session-db/impl :user-session-db-impl/postgres
-      :db/conn db/conn})}))
+   {:user-session-db/user-session-db (user-session-db-impl/postgres-with-cache db/conn)}))
 
 (defn int-test? []
   (boolean (env/get! "INTEGRATION_TEST" false)))
@@ -60,15 +32,8 @@
 (defn deps-real []
   (merge
    (deps-test-int)
-   {:verify-sms/verify-sms
-    (verify-sms/->VerifySms
-     {:verify-sms/impl :verify-sms-impl/twilio})
-    
-    :send-email/send-email
-    (send-email/->SendEmail
-     {:send-email/impl :send-email-impl/mock
-      :send-email/log? true})}))
-
+   {:verify-sms/verify-sms  (verify-sms-impl/twilio)
+    :send-email/send-email (send-email-impl/mock {:send-email/log? true})}))
 
 (def deps (deps-real))
 

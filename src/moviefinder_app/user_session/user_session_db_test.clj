@@ -6,7 +6,7 @@
             [moviefinder-app.deps :as deps]))
 
 (defn fixture []
-  (deps/deps-test-int))
+  (deps/deps-test))
 
 (comment
   (def user-session-db
@@ -19,7 +19,7 @@
   
   (user-session-db/put! user-session-db #{user-session})
 
-  (user-session-db/find-by-session-id! user-session-db (user-session :session/id))
+  (time (user-session-db/find-by-session-id! user-session-db (user-session :session/id)))
 
   (user-session-db/zap-by-session-id! user-session-db (user-session :session/id)))
 

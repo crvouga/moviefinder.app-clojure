@@ -106,6 +106,27 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: idx_user_session_deleted_at_is_null; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_user_session_deleted_at_is_null ON public.user_session USING btree (deleted_at_posix) WHERE (deleted_at_posix IS NULL);
+
+
+--
+-- Name: idx_user_session_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_user_session_session_id ON public.user_session USING btree (session_id);
+
+
+--
+-- Name: idx_user_session_session_id_deleted_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_user_session_session_id_deleted_at ON public.user_session USING btree (session_id, deleted_at_posix) WHERE (deleted_at_posix IS NULL);
+
+
+--
 -- Name: idx_user_session_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -123,4 +144,5 @@ CREATE INDEX idx_user_session_user_id ON public.user_session USING btree (user_i
 
 INSERT INTO public.schema_migrations (version) VALUES
     ('20240610052222'),
-    ('20240610085058');
+    ('20240610085058'),
+    ('20240615224208');

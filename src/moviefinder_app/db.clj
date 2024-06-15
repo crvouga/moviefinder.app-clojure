@@ -31,14 +31,29 @@
 
 (defrecord DbConnImpl [db-spec]
   DbConn
-  (query [_this sql-map]
-    (jdbc/query db-spec (sql/format sql-map)))
+  (query
+   [_this sql-map]
+   (let [sql (sql/format sql-map)]
+     (jdbc/query db-spec sql)))
   (execute!
    [_this sql-map]
-   (jdbc/execute! db-spec (sql/format sql-map))
+   (let [sql (sql/format sql-map)]
+     (jdbc/execute! db-spec sql))
    nil))
 
-(def conn (->DbConnImpl db-spec))
+(defrecord WithLog [conn]
+  DbConn
+  (query
+   [_this sql-map]
+   (println "Querying SQL:" (pr-str sql-map))
+   (time (query conn sql-map)))
+  (execute!
+   [_this sql-map]
+   (println "Executing SQL:" (pr-str sql-map))
+   (time (execute! conn sql-map))
+   nil))
+
+(def conn (-> db-spec ->DbConnImpl ->WithLog))
 
 (comment
   (query conn {:select [:user_id :session_id :created_at_posix]
