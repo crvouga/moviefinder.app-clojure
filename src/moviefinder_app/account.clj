@@ -12,6 +12,10 @@
    (view/button
     {:button/element :a
      :button/label "Login"
+     :hx-boost true
+     :hx-target "#app"
+     :hx-get (-> {:route/name :route/login-with-sms} route/encode)
+     :hx-push-url (-> {:route/name :route/login-with-sms} route/encode)
      :href (-> {:route/name :route/login-with-sms} route/encode)})])
 
 (defn view-logged-in [_request]

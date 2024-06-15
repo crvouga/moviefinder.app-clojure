@@ -26,9 +26,9 @@
   (-> request
       assoc-form-data
       send-code!
-      assoc-phone-number-in-route
       verify-code/view-verify-code-form
-      handle/html))
+      handle/html
+      (handle/hx-push-route (-> request assoc-form-data assoc-phone-number-in-route :request/route))))
 
 (defn view-send-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
@@ -37,11 +37,6 @@
                  :request/route
                  (assoc :route/name :route/clicked-send-code)
                  route/encode)
-    :hx-push-url (-> request
-                     :request/route
-                     (assoc :route/name :route/login-with-sms)
-                     (assoc :login-with-sms/step :login-with-sms-step/verify-code)
-                     route/encode)
     :hx-swap "outerHTML"
     :hx-target "this"
     :hx-trigger "submit"}

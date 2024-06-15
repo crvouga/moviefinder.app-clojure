@@ -110,11 +110,14 @@
    (when (-> request :request/route :err/err)
      (view/alert {:alert/variant :alert/error
                   :alert/message (-> request :request/route :err/err error/err->msg)}))
+   [:p.text-lg.font-bold
+    (str "Enter the code sent to you at "
+         (-> request :request/route :user/phone-number))]
    (view/text-field {:text-field/id "code"
                      :text-field/label "Code"
                      :text-field/name "code"
                      :text-field/type "tel"
-                     #_:text-field/required? #_true})
+                     :text-field/required? true})
    (view/button {:button/type "submit"
                  :button/label "Verify code"})])
 

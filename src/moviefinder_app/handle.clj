@@ -111,13 +111,15 @@
       hiccup/html
       str))
 
-(def html-headers
+
+(defn html-headers [response]
   {"Content-Type" "text/html"
-   "Cache-Control" "no-store, max-age=0"})
+   "Cache-Control" "no-store, max-age=0"
+   "HX-Push-Url" (:response/hx-push-url response)})
 
 (defmethod response->ring-response :response-type/html [response]
   {:status (status response)
-   :headers html-headers
+   :headers (html-headers response)
    :body (html-body response)})
 
 (defn- append-doc-type [html]
@@ -127,7 +129,7 @@
 
 (defmethod response->ring-response :response-type/html-document [response]
   {:status (status response)
-   :headers html-headers
+   :headers (html-headers response)
    :body (html-document-body response)})
 
 (defmethod response->ring-response :default [_response]
@@ -145,6 +147,11 @@
    :response/view view
    :response/type :response-type/html-document})
 
+(defn hx-push-url [response url]
+  (assoc response :response/hx-push-url url))
+
+(defn hx-push-route [response route]
+  (hx-push-url response (route/encode route)))
 
 ;; 
 ;; 
