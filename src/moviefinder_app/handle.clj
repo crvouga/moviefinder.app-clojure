@@ -109,11 +109,11 @@
 (defn- append-doc-type [html]
   (str "<!DOCTYPE html>" html))
 
-(defn- html-body [response]
+(defn- html-body [response] 
   (-> response
       :response/view
+      
       hiccup/html
-      append-doc-type
       str))
 
 (defn- html-headers [response]
@@ -126,10 +126,17 @@
    :headers (html-headers response)
    :body (html-body response)})
 
-(defn html [view]
-  {:response/ok? true
-   :response/view view
-   :response/type :response-type/html})
+(defn html
+  ([request view-fn]
+   (merge request
+          {:response/ok? true
+           :response/view (view-fn request)
+           :response/type :response-type/html}))
+  ([view]
+   {:response/ok? true
+    :response/view view
+    :response/type :response-type/html}))
+
 
 (defn hx-push-url [response url]
   (assoc response :response/hx-push-url url))
@@ -138,7 +145,8 @@
   (hx-push-url response (route/encode route)))
 
 (defn hx-push [input]
-  (hx-push-route input (:request/route input)))
+  (-> input
+      (hx-push-route (:request/route input))))
 
 ;; 
 ;; 

@@ -25,7 +25,7 @@
                   :href (-> {:route/name :route/home} route/encode)})]])
 
 
-(defmethod login-with-sms/hx-get :route/verified-code [request]
+(defmethod login-with-sms/view :route/verified-code [request]
   (view-code-verified request))
 
 ;; 
@@ -98,11 +98,13 @@
         put-user!
         put-user-session!
         assoc-verify-code-ok-route
-        handle/handle-hx-get-push)
+        (handle/html login-with-sms/view)
+        handle/hx-push)
     (catch Exception ex
       (-> request
           (assoc-verify-code-err-route ex)
-          handle/handle-hx-get-push))))
+          (handle/html login-with-sms/view)
+          handle/hx-push))))
 
 (defmethod error/err->msg :err/wrong-code [_]
   "Wrong code entered")
@@ -116,8 +118,8 @@
                  :request/route
                  (assoc :route/name :route/clicked-verify-code)
                  route/encode)
-    :hx-swap "innerHTML"
-    :hx-target "#app"}
+    :hx-swap "outerHTML"
+    :hx-target "this"}
    [:p.text-lg
     (str "Enter the code sent to you at "
          (-> request :request/route :user/phone-number))]
@@ -135,6 +137,6 @@
 
 
 
-(defmethod login-with-sms/hx-get :route/verify-code [request]
+(defmethod login-with-sms/view :route/verify-code [request]
   (view-verify-code-form request))
 

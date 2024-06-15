@@ -27,7 +27,8 @@
       assoc-form-data
       send-code!
       assoc-verify-code-route
-      handle/handle-hx-get-push))
+      (handle/html login-with-sms/view)
+      handle/hx-push))
 
 (defn view-send-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
@@ -36,9 +37,8 @@
                  :request/route
                  (assoc :route/name :route/clicked-send-code)
                  route/encode)
-    :hx-swap "innerHTML"
-    :hx-target "#app"
-    :hx-trigger "submit"}
+    :hx-swap "outerHTML"
+    :hx-target "this"}
    (view/text-field {:text-field/id "phone-number"
                      :text-field/label "Phone number"
                      :text-field/type "tel"
@@ -49,5 +49,5 @@
                  :button/label "Send code"
                  :button/hx-indicator-id "send-code-indicator"})])
 
-(defmethod login-with-sms/hx-get :default [request]
+(defmethod login-with-sms/view :default [request]
   (view-send-code-form request))
