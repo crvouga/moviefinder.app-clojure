@@ -126,16 +126,11 @@
    :headers (html-headers response)
    :body (html-body response)})
 
-(defn html
-  ([request view-fn]
-   (merge request
-          {:response/ok? true
-           :response/view (view-fn request)
-           :response/type :response-type/html}))
-  ([view]
-   {:response/ok? true
-    :response/view view
-    :response/type :response-type/html}))
+(defn html [request view-fn]
+  (merge request
+         {:response/ok? true
+          :response/view (view-fn request)
+          :response/type :response-type/html}))
 
 
 (defn hx-push-url [response url]
@@ -144,7 +139,7 @@
 (defn hx-push-route [response route]
   (hx-push-url response (route/encode route)))
 
-(defn hx-push [input]
+(defn hx-push-request-route [input]
   (-> input
       (hx-push-route (:request/route input))))
 

@@ -1,13 +1,13 @@
 (ns moviefinder-app.login.login-with-email.use-login-link
   (:require [moviefinder-app.error :refer [err err->msg]]
+            [moviefinder-app.handle :as handle]
             [moviefinder-app.login.login-with-email.login-link.login-link :as login-link]
             [moviefinder-app.login.login-with-email.login-link.login-link-db :as login-link-db]
-            [moviefinder-app.handle :as handle]
+            [moviefinder-app.route :as route]
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user.user :as user]
             [moviefinder-app.user.user-db :as user-db]
             [moviefinder-app.view :as view]
-            [moviefinder-app.route :as route]
             [moviefinder-app.view.icon :as icon]))
 
 (defn- assoc-login-link! [input]
@@ -112,10 +112,8 @@
     view-back-to-app]])
 
 (defmethod handle/hx-get :route/use-login-link-ok [request]
-  (-> request
-      view-use-login-link-ok
-      view/html-doc
-      handle/html))
+  (-> request 
+      (handle/html (comp view/html-doc view-use-login-link-ok))))
 
 (defmethod err->msg :err/login-link-not-found [_ex]
   "Login link was not found. Please request a new one")
@@ -132,19 +130,22 @@
 (defmethod err->msg :default [_ex]
   "An error occurred")
 
-(defn- view-use-login-link-err [ex _request]
+(defn- view-use-login-link-err [request]
   [:div.w-full.flex.flex-col
    view-top-bar
    [:div.flex-1.w-full.p-6.flex.flex-col
-    (view/failure {:failure/title (err->msg ex)})
+    (view/failure {:failure/title (err->msg (:err/err request))})
     view-back-to-app]])
 
 (defmethod handle/handle :route/use-login-link-ok [request]
-  (-> request view-use-login-link-ok view/html-doc handle/html))
+  (-> request 
+      (handle/html (comp view/html-doc view-use-login-link-ok))))
 
 (defmethod handle/handle :route/use-login-link [request]
   (try
     (-> request (merge (:request/route request)) use-login-link!)
     (handle/redirect {:route/name :route/use-login-link-ok})
     (catch Exception ex
-      (-> (view-use-login-link-err ex request) view/html-doc handle/html))))
+      (-> request
+          (assoc :err/err (ex-data ex)) 
+          (handle/html (comp view/html-doc view-use-login-link-err))))))

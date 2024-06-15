@@ -34,4 +34,5 @@
    (view-account-screen request)))
 
 (defmethod handle/hx-get :route/account [request]
-  (handle/html (view-account request)))
+  (-> request
+      (handle/html view-account)))

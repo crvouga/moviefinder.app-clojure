@@ -14,7 +14,6 @@
      (view request)]]))
 
 
-(defmethod handle/hx-get :route/login-with-sms [request] 
+(defmethod handle/hx-get :route/login-with-sms [request]
   (-> request
-      view-login-with-sms
-      handle/html))
+      (handle/html view-login-with-sms)))

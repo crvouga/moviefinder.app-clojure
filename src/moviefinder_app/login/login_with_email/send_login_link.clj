@@ -72,8 +72,8 @@
 (defmethod handle/hx-get :route/send-login-link [request]
   (-> request
       (assoc :user/email (-> request :request/form-data :email))
-      send-login-link!)
-  (handle/html (view-send-login-link-ok request)))
+      send-login-link!
+      (handle/html view-send-login-link-ok)))
 
 (defn view-send-login-link-form [_request]
   [:form.flex.flex-col.gap-4.w-full
@@ -111,5 +111,4 @@
 
 (defmethod handle/hx-get :route/login-with-email [request]
   (-> request
-      view-login
-      handle/html))
+      (handle/html view-login)))

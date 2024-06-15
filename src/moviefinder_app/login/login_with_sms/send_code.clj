@@ -28,7 +28,7 @@
       send-code!
       assoc-verify-code-route
       (handle/html login-with-sms/view)
-      handle/hx-push))
+      handle/hx-push-request-route))
 
 (defn view-send-code-form [request]
   [:form.flex.flex-col.gap-6.w-full

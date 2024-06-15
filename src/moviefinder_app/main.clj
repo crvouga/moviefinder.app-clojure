@@ -1,6 +1,5 @@
 (ns moviefinder-app.main
   (:require [moviefinder-app.account]
-            [moviefinder-app.counter]
             [moviefinder-app.db-migration :as db-migration]
             [moviefinder-app.deps :as deps]
             [moviefinder-app.env :as env]
@@ -24,14 +23,11 @@
 (defmethod handle/hx-get :default [request]
   (-> request
       (assoc :request/route {:route/name :route/home})
-      handle/hx-get))
+       ))
 
 (defmethod handle/handle :default [request]
   (-> request
-      handle/hx-get
-      :response/view
-      view/html-doc
-      handle/html))
+      (handle/html (comp view/html-doc :response/view handle/hx-get))))
 
 
 (defn log-request [request]

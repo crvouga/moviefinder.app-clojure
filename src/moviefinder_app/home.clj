@@ -107,8 +107,9 @@
          :hx-push-url (-> request :request/route (assoc :feed/slide-index slide-index) route/encode)}
         (view-feed-slide (assoc request ::movie movie))]])))
 
-(defmethod handle/hx-get :route/changed-slide [_request]
-  (handle/html [:div]))
+(defmethod handle/hx-get :route/changed-slide [request]
+  (-> request
+      (handle/html (fn [] [:div]))))
 
 (defn view-feed! [request]
   [:div#feed-container.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
@@ -126,5 +127,6 @@
   {:status 200})
 
 (defmethod handle/hx-get :route/home [request]
-  (handle/html (view-home request)))
+  (-> request
+      (handle/html view-home)))
 

@@ -66,4 +66,5 @@
     (view-movie-details movie)))
 
 (defmethod moviefinder-app.handle/hx-get :route/movie-details [request]
-  (moviefinder-app.handle/html (view-movie-details! request)))
+  (-> request
+      (handle/html view-movie-details!)))

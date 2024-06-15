@@ -99,12 +99,12 @@
         put-user-session!
         assoc-verify-code-ok-route
         (handle/html login-with-sms/view)
-        handle/hx-push)
+        handle/hx-push-request-route)
     (catch Exception ex
       (-> request
           (assoc-verify-code-err-route ex)
           (handle/html login-with-sms/view)
-          handle/hx-push))))
+          handle/hx-push-request-route))))
 
 (defmethod error/err->msg :err/wrong-code [_]
   "Wrong code entered")
