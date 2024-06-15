@@ -60,7 +60,11 @@
 (defn deps-real []
   (merge
    (deps-test-int)
-   {:send-email/send-email
+   {:verify-sms/verify-sms
+    (verify-sms/->VerifySms
+     {:verify-sms/impl :verify-sms-impl/twilio})
+    
+    :send-email/send-email
     (send-email/->SendEmail
      {:send-email/impl :send-email-impl/mock
       :send-email/log? true})}))
