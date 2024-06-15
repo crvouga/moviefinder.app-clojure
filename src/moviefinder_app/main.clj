@@ -23,7 +23,7 @@
 (defmethod handle/hx-get :default [request]
   (-> request
       (assoc :request/route {:route/name :route/home})
-       ))
+      handle/hx-get))
 
 (defmethod handle/handle :default [request]
   (-> request

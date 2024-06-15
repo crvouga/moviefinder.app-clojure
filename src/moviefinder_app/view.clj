@@ -17,9 +17,12 @@
     #_[:script {:src "https://unpkg.com/swiper/swiper-bundle.min.js"}]
     #_[:link {:rel "stylesheet" :href "https://unpkg.com/swiper/swiper-bundle.min.css"}]]
 
-   [:body.bg-neutral-950.text-white {:hx-boost true :hx-target "#app" :hx-swap "innerHTML"}
+   [:body
     [:div
-     {:class "fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"}
+     {:class "bg-neutral-950 text-white fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"
+      :hx-boost true 
+      :hx-target "#app" 
+      :hx-swap "innerHTML"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center overflow-hidden rounded border border-neutral-700"}
       children]]]])
 

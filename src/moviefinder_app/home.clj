@@ -123,9 +123,6 @@
 (defn view-home [input]
   (view/app-tabs-layout {:route/name :route/home}  (view-feed! input)))
 
-(defmethod handle/hx-get :noop [_request]
-  {:status 200})
-
 (defmethod handle/hx-get :route/home [request]
   (-> request
       (handle/html view-home)))
