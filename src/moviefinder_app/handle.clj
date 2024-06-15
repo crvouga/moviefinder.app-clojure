@@ -21,11 +21,6 @@
 
 (defmulti handle request-route-name)
 
-(defn handle-hx-get-push [request]
-  (-> request
-      hx-get
-      (assoc :response/hx-push-url (route/encode (:request/route request)))))
-
 ;; 
 ;; 
 ;; 
