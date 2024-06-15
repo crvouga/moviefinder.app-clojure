@@ -24,18 +24,28 @@
 (defn int-test? []
   (boolean (env/get! "INTEGRATION_TEST" false)))
 
+(defn prod? []
+  (boolean (env/get! "PROD" false)))
+
 (defn deps-test []
   (if (int-test?)
     (deps-test-int)
     (deps-test-unit)))  
 
-(defn deps-real []
+(defn deps-real-local []
   (merge
    (deps-test-int)
-   {:verify-sms/verify-sms  (verify-sms-impl/twilio)
-    :send-email/send-email (send-email-impl/mock {:send-email/log? true})}))
+   {:send-email/send-email (send-email-impl/mock {:send-email/log? true})}))
 
-(def deps (deps-real))
+(defn deps-real-prod []
+  (merge
+   (deps-real-local)
+   {:verify-sms/verify-sms (verify-sms-impl/twilio)}))
+
+(def deps 
+  (if (prod?)
+    (deps-real-prod)
+    (deps-real-local)))
 
 (defn assoc-deps [request]
   (merge request deps))

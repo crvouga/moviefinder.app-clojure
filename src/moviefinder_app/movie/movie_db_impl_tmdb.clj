@@ -42,13 +42,16 @@
                            :as :json-strict})
 
 (def cofiguration-cache-key :configuration)
+
+(defn get-configuration-source! []
+  (-> (client/get configuration-url configuration-params) :body))
+
 (defn get-confguration! [] 
-  (if-let [configuration (get @cache! cofiguration-cache-key)]
-      configuration
-    (let [response (client/get configuration-url configuration-params)
-          configuration (-> response :body)]
-      (swap! cache! assoc cofiguration-cache-key configuration)
-      configuration)))
+  (if-let [cached (get @cache! cofiguration-cache-key)]
+    cached
+    (let [source  (get-configuration-source!)]
+      (swap! cache! assoc cofiguration-cache-key source)
+      source)))
 ;; 
 ;; 
 ;; 
@@ -138,14 +141,18 @@
   [:movie-videos movie-id])
 
 
+(defn get-movie-videos-from-source! [movie-id]
+  (let [response (client/get (movie-video-url movie-id) base-params)
+        tmdb-videos (-> response :body :results)
+        videos (map tmdb->video tmdb-videos)]
+    videos))
+
 (defn get-movie-videos! [movie-id]
-  (if-let [videos (get @cache! (movie-videos-cache-key movie-id))]
-      videos
-    (let [response (client/get (movie-video-url movie-id) base-params)
-          tmdb-videos (-> response :body :results)
-          videos (map tmdb->video tmdb-videos)]
-      (swap! cache! assoc (movie-videos-cache-key movie-id) videos)
-      videos)))
+  (if-let [cached (get @cache! (movie-videos-cache-key movie-id))]
+      cached
+    (let [source (get-movie-videos-from-source! movie-id)]
+      (swap! cache! assoc (movie-videos-cache-key movie-id) source)
+      source)))
 
 (defn assoc-movie-videos! [movie] 
   (let [videos (get-movie-videos! (movie :movie/tmdb-id))]
@@ -179,11 +186,11 @@
     results))
 
 (defn get-discover! []
-  (if-let [discover (get @cache! (discover-cache-key 1))]
-      discover
-    (let [discover (get-discover-from-source!)]
-      (swap! cache! assoc (discover-cache-key 1) discover)
-      discover)))
+  (if-let [cached (get @cache! (discover-cache-key 1))]
+      cached
+    (let [source (get-discover-from-source!)]
+      (swap! cache! assoc (discover-cache-key 1) source)
+      source)))
 
 (defn get-discover-with-videos! []
   (let [paginated-movies (get-discover!)
@@ -219,11 +226,11 @@
     movie-with-videos))
 
 (defn get-movie-details! [movie-id]
-  (if-let [movie (get @cache! (movie-details-cache-key movie-id))]
-      movie
-    (let [movie (get-movie-details-from-source! movie-id)]
-      (swap! cache! assoc (movie-details-cache-key movie-id) movie)
-      movie)))
+  (if-let [cached (get @cache! (movie-details-cache-key movie-id))]
+      cached
+    (let [source (get-movie-details-from-source! movie-id)]
+      (swap! cache! assoc (movie-details-cache-key movie-id) source)
+      source)))
 
 ;; 
 ;; 
