@@ -3,7 +3,8 @@
             [moviefinder-app.media-feedback.media-feedback :as media-feedback]
             [moviefinder-app.media.media-db :as media-db]
             [moviefinder-app.route :as route]
-            [moviefinder-app.view :as view]))
+            [moviefinder-app.view :as view]
+            [moviefinder-app.view.icon :as icon]))
 
 (defn view-youtube-video [props]
   [:iframe.w-full.h-64 
@@ -29,59 +30,9 @@
       :hx-boost true
       :href (-> input ::media media-details-href)
       :hx-swap "innerHTML"
+      :hx-target "#app"
       :hx-push-url (-> input ::media media-details-href)}]]
-   (media-feedback/view-media-feedback-form)])
-
-(defn swiper-event-script []
-  "
-   function initializeSwiperEventScript() {
-     const swiperEl = document.querySelector('swiper-container')
-     
-     if (!swiperEl) {
-       return;
-     }
-      
-     swiperEl.addEventListener('swiperslidechange', (event) => {
-       const [swiper] = event.detail;
-       const slideId = `slide-${swiper.activeIndex}`;
-       const slideEl = document.getElementById(slideId);
-       if (slideEl) {
-         const event = new CustomEvent('slide-changed');
-         slideEl.dispatchEvent(event);
-       }
-     });
-   
-     window.addEventListener('popstate', (event) => {
-       const base64 = window.location.pathname.split('/')[1]
-       const routeEdn = atob(base64);
-       console.log(routeEdn);
-       // swiperEl.swiper.slideTo(slideIndex);
-     });
-   }
-
-   initializeSwiperEventScript()
-   document.addEventListener('DOMContentLoaded', initializeSwiperEventScript);  
-   if(typeof observer === 'undefined') {
-    const observer = new MutationObserver((mutationsList, observer) => {
-      for (const mutation of mutationsList) {
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach(node => {
-            if (node.id === 'feed-container') {
-              console.log('#feed-container added');
-              initializeSwiperEventScript();
-            }
-          });
-          mutation.removedNodes.forEach(node => {
-            if (node.id === 'feed-container') {
-              console.log('#feed-container removed');
-            }
-          });
-        }
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-   }
-  ")
+   #_(media-feedback/view-media-feedback-form)])
 
 (defn slide-id [slide-index]
   (str "slide-" slide-index))
@@ -104,9 +55,23 @@
   (-> request
       (handle/html (fn [] [:div]))))
 
+
+(defn view-filter-chips []
+  [:div.w-full.flex.items-center.p-4.gap-3
+   (view/chip {:chip/label "Trending"
+               :chip/variant :chip/contained})
+   (view/chip {:chip/label "Movie"
+               :chip/variant :chip/contained})
+   (view/chip {:chip/label "TV"
+               :chip/variant :chip/contained})])
+
+
 (defn view-feed! [request]
   [:div#feed-container.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
-   (view/view-raw-script (swiper-event-script))
+   [:div.w-full.flex.items-center
+    [:div.flex-1 (view-filter-chips)]
+    [:button.size-16.flex.items-center.justify-center
+     (icon/adjustments-horizontal)]]
    [:swiper-container#swiper-container.w-full.flex-1.max-h-full.overflow-hidden
     {:slides-per-view 1
      :direction :vertical

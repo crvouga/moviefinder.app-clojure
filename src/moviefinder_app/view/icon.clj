@@ -89,3 +89,27 @@
   ([props]
    [:svg (merge {:xmlns "http://www.w3.org/2000/svg", :viewbox "0 0 24 24", :fill "currentColor", :class "size-6"} props)
     [:path {:fill-rule "evenodd", :d "M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]))
+
+
+(defn funnel
+  ([]
+   (funnel {}))
+  ([props]
+   [:svg (merge {:xmlns "http://www.w3.org/2000/svg", :viewbox "0 0 24 24", :fill "currentColor", :class "size-6"} props)
+    [:path {:fill-rule "evenodd", :d "M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z", :clip-rule "evenodd"}]]))
+
+
+(defn adjustments-horizontal 
+  ([]
+   (adjustments-horizontal {}))
+  ([props]
+   [:svg (merge {:xmlns "http://www.w3.org/2000/svg", :viewbox "0 0 24 24", :fill "currentColor", :class "size-6"} props)
+    [:path {:d "M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"}]]))
+
+
+(defn search
+  ([]
+   (search {}))
+  ([props]
+   [:svg (merge {:xmlns "http://www.w3.org/2000/svg", :viewbox "0 0 24 24", :fill "currentColor", :class "size-6"} props)
+    [:path {:fill-rule "evenodd", :d "M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z", :clip-rule "evenodd"}]]))

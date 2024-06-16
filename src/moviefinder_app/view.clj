@@ -71,7 +71,7 @@
      label]))
 
 (defn text-field [input]
-  [:div.w-full.flex.flex-col.gap-2
+  [:div.w-full.flex.flex-col.gap-2.text-lg
    {:class (when (-> input :text-field/hidden? not) "display-none")}
    [:label.font-bold.text-base
     {:for (-> input :text-field/id)}
@@ -100,7 +100,7 @@
     (-> input :tab/label)])
 
 (defn tabs [& children]
-  [:nav.flex.w-full.shrink-0.border-t.border-neutral-700.divide-x.divide-neutral-700 {} children])
+  [:nav.flex.w-full.shrink-0.border-t.border-neutral-700 {} children])
 
 (defn tab-panel [children]
   [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll children])
@@ -143,17 +143,21 @@
   (tab-container
    (tab-panel view-tab-panel)
    (tabs
-    (tab {:tab/label "Feed"
+    (tab {:tab/label "Home"
           :tab/active? (= (active-route :route/name) :route/home)
           :tab/route {:route/name :route/home}
           :tab/icon (icon/home)})
+    (tab {:tab/label "Search"
+          :tab/active? (= (active-route :route/name) :route/search)
+          :tab/route {:route/name :route/search}
+          :tab/icon (icon/search)})
     (tab {:tab/label "Account"
           :tab/active? (= (active-route :route/name) :route/account)
           :tab/route {:route/name :route/account}
           :tab/icon (icon/user-circle)}))))
 
 (defn icon-button [input]
-  [:button.bg-transparent.text-white.p-2.rounded-full
+  [:button.bg-transparent.text-white.p-2.rounded-full.aspect-square
    (input :icon-button/icon)])
 
 
@@ -187,3 +191,7 @@
   [:div.flex.gap-3.flex-col.w-full.flex-1.items-center.justify-center
    props
    (spinner)])
+
+(defn chip [props]
+  [:button.flex.flex-row.items-center.justify-center.gap-2.p-2.px-4.rounded-full.bg-neutral-700.text-base
+   (-> props :chip/label)])
