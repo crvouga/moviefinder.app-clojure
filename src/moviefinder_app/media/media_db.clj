@@ -1,7 +1,18 @@
 (ns moviefinder-app.media.media-db)
 
-(defprotocol MediaDb
+(defprotocol MediaDb  
   (get! [this id])
-  (find! [this query]))
+  (find! [this query])
+  (put-many! [this media-list]))
 
-(defmulti ->MediaDb :media-db/impl)
+(def query {:q/limit 10
+            :q/offset 0
+            :q/select [:media/id :media/type :media/title :media/year :media/genre :media/popularity]
+            :q/order [[:media/popularity :q/desc]]
+            :q/where [:q/and
+                      [:q/or
+                       [:q/= :media/type :media/movie]
+                       [:q/= :media/type :media/tv-show]]
+                      [:q/= :media/type :media/movie]
+                      [:q/= :media/release-year 1999]
+                      [:q/in :media/genre #{:genre/horror}]]})
