@@ -69,7 +69,7 @@
         (assoc :poster_url (str base-url poster-size (tmdb-data :poster_path)))
         (assoc :backdrop_url (str base-url backdrop-size (tmdb-data :backdrop_path))))))
 
-(def tmdb-movie-keys->movie-keys
+(def tmdb-movie-keys->media-keys
   {:id :media/tmdb-id
    :title :media/title
    :overview :media/overview
@@ -110,15 +110,15 @@
       tmdb-video->video))
 
 
-(defn tmdb->movie [tmdb-configration tmdb-movie]
+(defn tmdb-movie->media [tmdb-configration tmdb-movie]
   (-> tmdb-movie
       (assoc-image-urls tmdb-configration)
-      (rename-keys tmdb-movie-keys->movie-keys)
-      (select-keys (vals tmdb-movie-keys->movie-keys))
+      (rename-keys tmdb-movie-keys->media-keys)
+      (select-keys (vals tmdb-movie-keys->media-keys))
       (assoc :media/id (:id tmdb-movie))))
 
 (defn tmdb->movie! [tmdb-movie]
-  (tmdb->movie (get-confguration!) tmdb-movie))
+  (tmdb-movie->media (get-confguration!) tmdb-movie))
 
 (defn tmdb->paginated-results [tmdb-paginated-results]
   (rename-keys tmdb-paginated-results
