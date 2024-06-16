@@ -92,13 +92,17 @@
       (assoc :youtube-watch-url (youtube-watch-url (video :key)))
       (assoc :youtube-embed-url (youtube-embed-url (video :key)))))
 
+(def tmdb-video-keys->video-keys
+  {:id :video/id
+   :name :video/name
+   :key :video/youtube-key
+   :youtube-embed-url :video/youtube-embed-url
+   :youtube-watch-url :video/youtube-watch-url})
+
 (defn tmdb-video->video [tmdb-video]
-  (rename-keys tmdb-video
-               {:id :video/tmdb-id
-                :key :video/key
-                :name :video/name
-                :youtube-embed-url :video/youtube-embed-url
-                :youtube-watch-url :video/youtube-watch-url}))
+  (-> tmdb-video
+      (rename-keys tmdb-video-keys->video-keys)
+      (select-keys (vals tmdb-video-keys->video-keys))))
 
 (defn tmdb->video [tmdb-video]
   (-> tmdb-video
@@ -110,7 +114,8 @@
   (-> tmdb-movie
       (assoc-image-urls tmdb-configration)
       (rename-keys tmdb-movie-keys->movie-keys)
-      (assoc :movie/id (:id tmdb-movie))))
+      (select-keys (vals tmdb-movie-keys->movie-keys))
+      (assoc :media/id (:id tmdb-movie))))
 
 (defn tmdb->movie! [tmdb-movie]
   (tmdb->movie (get-confguration!) tmdb-movie))
@@ -156,7 +161,7 @@
 
 (defn assoc-movie-videos! [movie]
   (let [videos (get-movie-videos! (movie :media/tmdb-id))]
-    (assoc movie :movie/videos videos)))
+    (assoc movie :media/videos videos)))
 
 
 ;; 
@@ -253,3 +258,16 @@
 
 (defn media-db-tmdb-movie []
   (->MediaDbTmdbMovie))
+
+
+(comment
+  (def media-db (media-db-tmdb-movie))
+
+  (def q
+    {:q/order [[:q/desc :media/popularity]
+               [:q/asc :media/title]]
+     :q/where [[:q/>= :media/release-year 2010]
+               [:q/<= :media/release-year 2020]
+               [:q/= :media/genre :genre/horror]]})
+
+  (-> (media-db/find! media-db q) :paginated/results (nth 5)))

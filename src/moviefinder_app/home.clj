@@ -1,9 +1,9 @@
 (ns moviefinder-app.home
   (:require [moviefinder-app.handle :as handle]
-            [moviefinder-app.view :as view]
+            [moviefinder-app.media-feedback.media-feedback :as media-feedback]
+            [moviefinder-app.media.media-db :as media-db]
             [moviefinder-app.route :as route]
-            [moviefinder-app.movie.movie-db :as movie-db]
-            [moviefinder-app.media-feedback.media-feedback :as media-feedback]))
+            [moviefinder-app.view :as view]))
 
 (defn view-youtube-video [props]
   [:iframe.w-full.h-64 
@@ -13,30 +13,23 @@
            :allowFullScreen true})])
 
 
-(defn movie-details-href [movie]
+(defn media-details-href [media]
   (route/encode 
-   {:route/name :route/movie-details
-    :movie/id (-> movie :movie/id)}))
-
-(defn view-feed-item-title [movie]
-  [:div.w-full.p-4.pb-6
-   [:a.text-2xl.font-bold.underline
-    {:href (movie-details-href movie)}
-    (-> movie :movie/title)]])
-
+   {:route/name :route/media-details
+    :media/id (-> media :media/id)}))
 
 (defn view-feed-slide [input]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:div.w-full.flex.flex-col.justify-center.items-center.relative.flex-1
     {:hx-boost true}
     [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200.min-h-full.min-w-full
-     {:src (-> input ::movie :movie/poster-url) :loading :lazy}]
+     {:src (-> input ::media :media/poster-url)}]
     [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
-     {:hx-get (-> input ::movie movie-details-href)
+     {:hx-get (-> input ::media media-details-href)
       :hx-boost true
-      :href (-> input ::movie movie-details-href)
+      :href (-> input ::media media-details-href)
       :hx-swap "innerHTML"
-      :hx-push-url (-> input ::movie movie-details-href)}]]
+      :hx-push-url (-> input ::media media-details-href)}]]
    (media-feedback/view-media-feedback-form)])
 
 (defn swiper-event-script []
@@ -94,9 +87,9 @@
   (str "slide-" slide-index))
 
 (defn view-feed-slides! [request]
-  (let [movie-db (-> request :movie-db/movie-db)
-        movies (movie-db/find! movie-db {})]
-    (for [[slide-index movie] (map-indexed vector (->> movies :paginated/results))]
+  (let [media-db (-> request :media-db/media-db)
+        media (media-db/find! media-db {})]
+    (for [[slide-index media] (map-indexed vector (->> media :paginated/results))]
       [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
        {:id (slide-id slide-index)}
        [:div.w-full.h-full.flex-1
@@ -105,7 +98,7 @@
          :hx-swap "none"
          :hx-get (-> {:route-name :route-changed-slide :feed/slide-index slide-index} route/encode)
          :hx-push-url (-> request :request/route (assoc :feed/slide-index slide-index) route/encode)}
-        (view-feed-slide (assoc request ::movie movie))]])))
+        (view-feed-slide (assoc request ::media media))]])))
 
 (defmethod handle/hx-get :route/changed-slide [request]
   (-> request

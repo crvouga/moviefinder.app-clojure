@@ -7,6 +7,8 @@
             [moviefinder-app.media.media-db-impl-tmdb-tv :as media-db-impl-tmdb-tv]))
 
 
+(defn default []
+  (media-db-impl-tmdb-movie/media-db-tmdb-movie))
 
 (defn media-db-combined-in-memory []
   (media-db-impl-combine/media-db-combine
@@ -17,9 +19,9 @@
     (media-db-impl-tmdb-tv/media-db-tmdb-tv)]))
 
 (comment 
-  (def media-db (media-db-combined-in-memory))
+  (def media-db (media-db-impl-tmdb-movie/media-db-tmdb-movie))
 
-  (def q 
+  (def q    
     {:q/order [[:q/desc :media/popularity]
                [:q/asc :media/title]]
      :q/where [[:q/>= :media/release-year 2010]

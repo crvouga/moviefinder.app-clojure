@@ -137,7 +137,7 @@
             (when (-> props :toggle-button/active?) "text-blue-500 ")
             (when (-> props :toggle-button/disabled?) "opacity-50 "))}
    (-> props :toggle-button/icon)
-   (-> props :toggle-button/label)])
+   #_(-> props :toggle-button/label)])
 
 (defn app-tabs-layout [active-route view-tab-panel]
   (tab-container

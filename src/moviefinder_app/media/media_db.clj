@@ -7,7 +7,6 @@
 
 (def query {:q/limit 10
             :q/offset 0
-            :q/select [:media/id :media/type :media/title :media/year :media/genre :media/popularity]
             :q/order [[:media/popularity :q/desc]]
             :q/where [:q/and
                       [:q/or

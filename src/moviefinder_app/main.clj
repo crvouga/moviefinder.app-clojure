@@ -11,14 +11,14 @@
             [moviefinder-app.login.login-with-sms.send-code]
             [moviefinder-app.login.login-with-sms.verify-code]
             [moviefinder-app.logout.logout]
-            [moviefinder-app.movie.details]
+            [moviefinder-app.media.media-details]
+            [moviefinder-app.session :as session]
             [moviefinder-app.user-session.user-session :as user-session]
             [moviefinder-app.view :as view]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.reload :refer [wrap-reload]]
-            [moviefinder-app.session :as session]))
+            [ring.middleware.reload :refer [wrap-reload]]))
 
 (defmethod handle/hx-get :default [request]
   (-> request

@@ -53,10 +53,10 @@
     (view/toggle-button-group
      {:toggle-button-group/label "Seen?"}
      (view/toggle-button {:toggle-button/icon (icon/eye icon-props)
-                          ;; :toggle-button/label (when (or neither? seen?) "Seen")
+                          :toggle-button/label (when (or neither? seen?) "Seen")
                           :toggle-button/selected? seen?})
      (view/toggle-button {:toggle-button/icon (icon/eye-slash icon-props)
-                          ;; :toggle-button/label (when (or neither? not-seen?) "Not seen")
+                          :toggle-button/label (when (or neither? not-seen?) "Not seen")
                           :toggle-button/selected? not-seen?}))))
 
 (defn view-like-toggle-buttons [input]
@@ -66,10 +66,10 @@
     (view/toggle-button-group
      {:toggle-button-group/label "Like?"}
      (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-up icon-props)
-                          ;; :toggle-button/label (when (or neither? like?) "Like")
+                          :toggle-button/label (when (or neither? like?) "Like")
                           :toggle-button/selected? like?})
      (view/toggle-button {:toggle-button/icon (icon/hand-thumbs-down icon-props)
-                          ;; :toggle-button/label (when (or neither? dislike?) "Dislike")
+                          :toggle-button/label (when (or neither? dislike?) "Dislike")
                           :toggle-button/selected? dislike?}))))
   
 
@@ -81,10 +81,10 @@
     (view/toggle-button-group
      {:toggle-button-group/label "Interested?"}
      (view/toggle-button {:toggle-button/icon (icon/checkmark icon-props)
-                          ;; :toggle-button/label (when (or neither? interested?) "Interested")
+                          :toggle-button/label (when (or neither? interested?) "Interested")
                           :toggle-button/selected? interested?})
      (view/toggle-button {:toggle-button/icon (icon/x icon-props)
-                          ;; :toggle-button/label (when (or neither? not-interested?) "Uninterested")
+                          :toggle-button/label (when (or neither? not-interested?) "Uninterested")
                           :toggle-button/selected? not-interested?}))))
 
 
