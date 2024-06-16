@@ -1,12 +1,11 @@
 (ns moviefinder-app.home
   (:require [moviefinder-app.handle :as handle]
-            [moviefinder-app.media-feedback.media-feedback :as media-feedback]
             [moviefinder-app.media.media-db :as media-db]
             [moviefinder-app.route :as route]
             [moviefinder-app.view :as view]
             [moviefinder-app.view.icon :as icon]))
 
-(defn view-youtube-video [props]
+#_(defn view-youtube-video [props]
   [:iframe.w-full.h-64 
    (merge props
           {:frameBorder "0" 
