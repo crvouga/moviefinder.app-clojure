@@ -3,6 +3,44 @@
             [moviefinder-app.view.icon :as icon]
             [hiccup2.core :as hiccup]))
 
+(defn view-raw-script [raw-javascript]
+  [:script
+   {:type "text/javascript"}
+   (hiccup/raw raw-javascript)])
+
+(def one-video-allowed-to-play-script
+  "document.addEventListener('OMContentLoaded', function() {
+    function ensureOneVideoPlaying() {
+        const videos = document.querySelectorAll('video');
+
+        videos.forEach(function (video) {
+            video.addEventListener('play', function() {
+                videos.forEach(function (otherVideo) {
+                    if (otherVideo !== video) {
+                        otherVideo.pause();
+                    }
+                });
+            });
+        });
+    }
+
+    // Run the function initially to set up the event listeners
+    ensureOneVideoPlaying();
+
+    // Create a MutationObserver to observe changes in the body
+    const observer = new MutationObserver(function(mutationsList) {
+        for (let mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                // Re-run the function to ensure event listeners are added to new videos
+                ensureOneVideoPlaying();
+            }
+        }
+    });
+
+    // Start observing the body for added or removed nodes
+    observer.observe(document.body, { childList: true, subtree: true });
+});")
+
 (defn html-doc [children]
   [:html {:lang "en" :doctype :html5}
    [:head
@@ -15,6 +53,7 @@
     [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"}]
+    (view-raw-script one-video-allowed-to-play-script)
     #_[:script {:src "https://unpkg.com/swiper/swiper-bundle.min.js"}]
     #_[:link {:rel "stylesheet" :href "https://unpkg.com/swiper/swiper-bundle.min.css"}]]
 
@@ -34,10 +73,10 @@
       (assoc props-left :class (str class-left " " class-right))
       props-left)))
 
+
 (defn merge-props [props-left props-right]
   (let [props-left (merge-class props-left props-right)]
     (merge props-left props-right)))
-
 
 (defn- alert-class [props]
   (condp = (-> props :alert/variant)
@@ -103,13 +142,14 @@
 (defn tabs [& children]
   [:nav.flex.w-full.shrink-0.border-t.border-neutral-700 {} children])
 
+
 (defn tab-panel [children]
   [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll children])
-
 
 (defn action-button-container [& children]
   [:div.flex.flex-row.w-full.items-center.justify-center.divide-x.divide-neutral-700.border-t.border-neutral-700
    children])
+
 
 (defn action-buttton [props]
   [:button.flex-1.p-1.flex.flex-col.items-center.justify-center.gap-0.5.text-xs
@@ -119,7 +159,6 @@
                 (when (-> props :action-button/disabled?) "opacity-50 "))}
    (-> props :action-button/icon)
    (-> props :action-button/label)])
-
 
 (defn toggle-button-group [props & children]
   [:div.flex.flex-row.gap-2.items-center.justify-center
@@ -157,10 +196,10 @@
           :tab/route {:route/name :route/account}
           :tab/icon (icon/user-circle)}))))
 
+
 (defn icon-button [input]
   [:button.bg-transparent.text-white.p-2.rounded-full.aspect-square
    (input :icon-button/icon)])
-
 
 (defn top-bar [input]
   [:div.w-full.flex.items-center.justify-center.border-b.border-neutral-700.h-16.px-2
@@ -170,11 +209,6 @@
    [:h1.flex-4.text-center.font-bold.text-lg 
     (-> input :top-bar/title)]
    [:div.flex-1]])
-
-(defn view-raw-script [raw-javascript]
-  [:script
-   {:type "text/javascript"}
-   (hiccup/raw raw-javascript)])
 
 (defn success [input]
   [:div.flex.gap-3.flex-col.w-full
