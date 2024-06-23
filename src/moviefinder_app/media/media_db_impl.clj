@@ -10,6 +10,9 @@
 (defn default []
   (media-db-impl-tmdb-movie/media-db-tmdb-movie))
 
+(defn in-memory []
+  (media-db-impl-in-memory/media-db-in-memory))
+
 (defn media-db-combined-in-memory []
   (media-db-impl-combine/media-db-combine
    (media-db-impl-in-memory/media-db-in-memory)
