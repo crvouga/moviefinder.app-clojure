@@ -3,7 +3,8 @@
             [moviefinder-app.view :as view]
             [moviefinder-app.media.media-db :as media-db]
             [moviefinder-app.media-feedback.media-feedback :as media-feedback]
-            [moviefinder-app.view.icon :as icon]))
+            [moviefinder-app.view.icon :as icon]
+            [moviefinder-app.route :as route]))
 
 (defn year [maybe-date-string]
   (when maybe-date-string
@@ -35,8 +36,14 @@
 (defn ->youtube-thumbnail-url [youtube-id]
   (str "https://img.youtube.com/vi/" youtube-id "/hqdefault.jpg"))
 
-(defn video-visible? [video]
-  (str "videoYoutubeKey === " "\"" (-> video :video/youtube-key) "\""))
+(defn ->x-video-youtube-key [video]
+  (str "\"" (-> video :video/youtube-key) "\""))
+
+(defn x-video-visible? [video]
+  (str "videoYoutubeKey === " (->x-video-youtube-key video)))
+
+(defn x-toggle-video [video]
+  (str "videoYoutubeKey = " (x-video-visible? video) " ? null : " (->x-video-youtube-key video)))
 
 (defn view-youtube-thumbnail [youtube-id]
   [:img.aspect-video.bg-neutral-900.rounded.shadow-xl.w-36.object-cover
@@ -44,17 +51,16 @@
 
 (defn view-video-item [video]
   [:button.text-sm.text-neutral-300.flex.items-center.w-full.gap-2
-   {;; :href (-> video :video/youtube-watch-url)
-    :x-on:click (str  "videoYoutubeKey = " "\"" (-> video :video/youtube-key) "\"")
+   {:x-on:click (x-toggle-video video)
     :target "_blank"
     :rel "noopener noreferrer"}
    (view-youtube-thumbnail (-> video :video/youtube-key))
    [:p.flex-1.text-left
     (-> video :video/name)]
-   [:div.px-4 {:x-show (video-visible? video)}
+   [:div.px-4 {:x-show (x-video-visible? video)}
     (icon/checkmark)]])
 
-(defn view-videos [media]
+(defn view-video-section [media]
   [:div.flex.flex-col.gap-4
    [:div.px-4
     (view-section-title "Videos")]
@@ -71,33 +77,49 @@
     :allow "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     :allowfullscreen true}])
 
+
+(defmethod handle/hx-get :route/video [request]
+  (-> request
+      (merge (-> request :request/route))
+      (handle/html view-embedded-video)))
+
+
+(defn view-load-video [video]
+  [:div.w-full.h-full.flex.items-center.justify-center.bg-neutral-800.animate-pulse
+   {:hx-trigger "intersect"
+    :hx-target "this"
+    :hx-swap "outerHTML"
+    :hx-get (-> {:route/name :route/video} (merge video) route/encode)}
+   (view/spinner)])
+
+(defn view-video-players [media]
+  (for [video (->> media :media/videos)]
+    [:div.absolute.top-0.left-0.w-full
+     {:x-show (x-video-visible? video)}
+     [:div.aspect-video.w-full.bg-neutral-900
+      (view-load-video video)]
+     (view/button {:button/label "Close"
+                   :x-on:click "videoYoutubeKey = -1"
+                   :button/size :button/sm})]))
+
 (defn view-details [media]
   [:div.w-full.flex.flex-col.flex-1.overflow-hidden.relative
    {:x-data "{ videoPlayerOpen: false, videoYoutubeKey: null }"}
    
-   #_(moviefinder-app.view/top-bar {:top-bar/title (-> media :media/title)})
+   (moviefinder-app.view/top-bar {:top-bar/title (-> media :media/title)})
    
-   (for [video (->> media :media/videos)]
-     [:div.absolute.top-0.left-0.w-full
-      {:x-show (video-visible? video)}
-      [:div.aspect-video.w-full.bg-neutral-900
-       (view-embedded-video video)]
-      (view/button {:button/label "Close"
-                    :x-on:click "videoYoutubeKey = -1"
-                    :button/size :button/sm})])
+   (view-video-players media)
    
    [:div.w-full.flex.flex-col.flex-1.overflow-y-scroll.gap-4
     (view-backdrop media)
     [:div.flex.w-full.justify-center.gap-4
-     #_(view-poster media)
-
      [:div.flex.flex-col
       (view-title media)
       (view-year media)]]
 
     [:div.px-4.flex.flex-col.gap-4
      (view-overview media)]
-    (view-videos media)
+    (view-video-section media)
 
     view-gutter]
    (media-feedback/view-media-feedback-form)])
