@@ -68,8 +68,10 @@
   [(-> props :button/element (or :button))
    (merge {:class (str "relative text-center bg-blue-600 text-white font-bold px-5 py-3 text-lg rounded flex items-center justify-center gap-2 "
                        "enabled:hover:opacity-90 enabled:active:opacity-50 "
-                       "disabled:opacity-80 disabled:cursor-not-allowed ")
+                       "disabled:opacity-80 "
+                       "aria-busy:opacity-80 aria-busy:cursor-progress ")
            :type (-> props :button/type (or "button"))
+           :data-loading-aria-busy true
            :data-loading-disable true}
           props)
    [:span.opacity-100.w-full.flex.items-center.justify-center.gap-2 {:data-loading-class "opacity-0" :data-loading-class-remove "opacity-100"}
