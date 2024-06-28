@@ -62,8 +62,7 @@
 
 (defn view-send-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
-   {:method "POST"
-    :hx-post (-> request
+   {:hx-post (-> request
                  :request/route
                  (assoc :route/name :route/clicked-send-code)
                  route/encode)
@@ -76,8 +75,7 @@
                      :text-field/required? true
                      :text-field/autofocus? true})
    (view/button {:button/type "submit"
-                 :button/label "Send code"
-                 :button/hx-indicator-id "send-code-indicator"})
+                 :button/label "Send code"})
    (when (-> request :request/route :err/err)
      (view/alert {:alert/variant :alert/error
                   :alert/message (-> request :request/route :err/err error/err->msg)}))])

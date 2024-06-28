@@ -1,45 +1,14 @@
 (ns moviefinder-app.view
   (:require [moviefinder-app.route :as route]
             [moviefinder-app.view.icon :as icon]
-            [hiccup2.core :as hiccup]))
+            [hiccup2.core :as hiccup]
+            [garden.core :refer [css]]))
+
 
 (defn view-raw-script [raw-javascript]
   [:script
    {:type "text/javascript"}
    (hiccup/raw raw-javascript)])
-
-(def one-video-allowed-to-play-script
-  "document.addEventListener('OMContentLoaded', function() {
-    function ensureOneVideoPlaying() {
-        const videos = document.querySelectorAll('video');
-
-        videos.forEach(function (video) {
-            video.addEventListener('play', function() {
-                videos.forEach(function (otherVideo) {
-                    if (otherVideo !== video) {
-                        otherVideo.pause();
-                    }
-                });
-            });
-        });
-    }
-
-    // Run the function initially to set up the event listeners
-    ensureOneVideoPlaying();
-
-    // Create a MutationObserver to observe changes in the body
-    const observer = new MutationObserver(function(mutationsList) {
-        for (let mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                // Re-run the function to ensure event listeners are added to new videos
-                ensureOneVideoPlaying();
-            }
-        }
-    });
-
-    // Start observing the body for added or removed nodes
-    observer.observe(document.body, { childList: true, subtree: true });
-});")
 
 (defn html-doc [children]
   [:html {:lang "en" :doctype :html5}
@@ -51,16 +20,16 @@
     [:meta {:name :viewport :content "width=device-width, initial-scale=1.0"}]
     [:script {:src "https://cdn.tailwindcss.com"}]
     [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
+    [:script {:src "https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]
-    [:script {:src "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"}]
-    (view-raw-script one-video-allowed-to-play-script)
-    #_[:script {:src "https://unpkg.com/swiper/swiper-bundle.min.js"}]
-    #_[:link {:rel "stylesheet" :href "https://unpkg.com/swiper/swiper-bundle.min.css"}]]
+    [:script {:src "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" :defer true}]
+    [:style (css ["[data-loading]" {:display :none}])]]
 
    [:body
     [:div
      {:class "bg-neutral-950 text-white fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"
       :hx-boost true 
+      :hx-ext "loading-states"
       :hx-target "#app" 
       :hx-swap "innerHTML"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center overflow-hidden rounded border border-neutral-700"}
@@ -96,19 +65,21 @@
 
 (defn button
   [props]
-  (let [element (-> props :button/element (or :button))
-        hx-indicator-id (-> props :button/hx-indicator-id)
-        label (-> props :button/label)
-        type (-> props :button/type (or "button"))
-        props-base {:class "text-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 text-lg rounded active:opacity-50 flex items-center justify-center gap-2"
-                    :type type}
-        props (merge props-base props)]
-    [element
-     props
-     (-> props :button/start)
-     (when (and hx-indicator-id false)
-       (spinner {:id hx-indicator-id :class "display-none"}))
-     label]))
+  [(-> props :button/element (or :button))
+   (merge {:class (str "relative text-center bg-blue-600 text-white font-bold px-5 py-3 text-lg rounded flex items-center justify-center gap-2 "
+                       "enabled:hover:opacity-90 enabled:active:opacity-50 "
+                       "disabled:opacity-80 disabled:cursor-not-allowed ")
+           :type (-> props :button/type (or "button"))
+           :data-loading-disable true}
+          props)
+   [:span.opacity-100.w-full.flex.items-center.justify-center.gap-2 {:data-loading-class "opacity-0" :data-loading-class-remove "opacity-100"}
+    (-> props :button/start)
+    (-> props :button/label)]
+   [:div.absolute.top-0.left-0.w-full.h-full.flex.justify-center.items-center.hidden
+    {:id (-> props :button/indicator-id)
+     :data-loading-class :block
+     :data-loading-class-remove :hidden}
+    (spinner {:class "size-6 animate-spin"})]])
 
 (defn text-field [input]
   [:div.w-full.flex.flex-col.gap-2.text-lg

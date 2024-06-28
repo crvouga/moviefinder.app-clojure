@@ -93,7 +93,7 @@
    (view/button
     {:type "submit"
      :button/label "Send login link"
-     :button/hx-indicator-id "login-with-email-indicator"})])
+     :button/indicator-id "login-with-email-indicator"})])
 
 
 (defn view-login-screen [request]
