@@ -21,6 +21,7 @@
     [:script {:src "https://cdn.tailwindcss.com"}]
     [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
     [:script {:src "https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"}]
+    [:script {:src "https://unpkg.com/htmx-ext-preload@2.0.0/preload.js"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" :defer true}]
     [:style (css ["[data-loading]" {:display :none}])]]
@@ -29,7 +30,7 @@
     [:div
      {:class "bg-neutral-950 text-white fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"
       :hx-boost true 
-      :hx-ext "loading-states"
+      :hx-ext "loading-states,preload"
       :hx-target "#app" 
       :hx-swap "innerHTML"}
      [:div {:id "app" :class "relative flex h-full max-h-[915px] w-full max-w-[520px] flex-col items-center overflow-hidden rounded border border-neutral-700"}
@@ -68,18 +69,18 @@
   [(-> props :button/element (or :button))
    (merge {:class (str "relative text-center bg-blue-600 text-white font-bold px-5 py-3 text-lg rounded flex items-center justify-center gap-2 "
                        "enabled:hover:opacity-90 enabled:active:opacity-50 "
-                       "disabled:opacity-80 "
+                       "disabled:opacity-80 disabled:cursor-not-allowed"
                        "aria-busy:opacity-80 aria-busy:cursor-progress ")
            :type (-> props :button/type (or "button"))
-           :data-loading-aria-busy true
-           :data-loading-disable true}
+           :data-loading-aria-busy "true"
+           :id (-> props :button/indicator-id)
+           :data-loading-disable "true"}
           props)
    [:span.opacity-100.w-full.flex.items-center.justify-center.gap-2 {:data-loading-class "opacity-0" :data-loading-class-remove "opacity-100"}
     (-> props :button/start)
     (-> props :button/label)]
    [:div.absolute.top-0.left-0.w-full.h-full.flex.justify-center.items-center.hidden
-    {:id (-> props :button/indicator-id)
-     :data-loading-class :block
+    {:data-loading-class :block
      :data-loading-class-remove :hidden}
     (spinner {:class "size-6 animate-spin"})]])
 
@@ -107,6 +108,7 @@
     :class (if (-> input :tab/active?) "text-blue-500" "hover:bg-neutral-800")
     :hx-target "#tabs"
     :hx-swap "innerHTML"
+    :preload "true"
     :hx-push-url (-> input :tab/route route/encode)
     :href (-> input :tab/route route/encode)}
     (-> input :tab/icon)

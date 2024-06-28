@@ -11,6 +11,8 @@
             [moviefinder-app.user-session.user-session-db :as user-session-db]
             [moviefinder-app.user-session.user-session :as user-session]))
 
+(def home-route (-> {:route/name :route/home} route/encode))
+
 (defn view-code-verified [_request]
   [:div.flex.flex-col.w-full
    (view/success {:success/title "Code verified"
@@ -19,10 +21,12 @@
     (view/button {:button/label "Back to app"
                   :button/start (icon/arrow-left)
                   :button/element :a
-                  :hx-get (-> {:route/name :route/home} route/encode)
-                  :hx-push-url (-> {:route/name :route/home} route/encode)
+                  :data-loading-path home-route
+                  :preload "true"
+                  :hx-get home-route
+                  :hx-push-url home-route
                   :hx-boost true
-                  :href (-> {:route/name :route/home} route/encode)})]])
+                  :href home-route})]])
 
 
 (defmethod login-with-sms/view :route/verified-code [request]
@@ -112,14 +116,18 @@
 (defmethod error/err->msg :default []
   "An error occurred")
 
+(defn verify-code-path [request]
+  (-> request
+      :request/route
+      (assoc :route/name :route/clicked-verify-code)
+      route/encode))
+
 (defn view-verify-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
-   {:hx-post (-> request
-                 :request/route
-                 (assoc :route/name :route/clicked-verify-code)
-                 route/encode)
+   {:hx-post (-> request verify-code-path)
     :hx-swap "outerHTML"
-    :hx-target "this"}
+    :hx-target "this"
+    :data-loading-path (-> request verify-code-path)}
    [:p.text-lg
     (str "Enter the code sent to you at "
          (-> request :request/route :user/phone-number))]

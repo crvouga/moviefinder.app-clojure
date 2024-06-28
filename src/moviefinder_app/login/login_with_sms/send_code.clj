@@ -60,13 +60,17 @@
   (str "An error occurred while sending the code"))
   
 
+(defn send-code-route [request]
+  (-> request
+      :request/route
+      (assoc :route/name :route/clicked-send-code)
+      route/encode))
+
 (defn view-send-code-form [request]
   [:form.flex.flex-col.gap-6.w-full
-   {:hx-post (-> request
-                 :request/route
-                 (assoc :route/name :route/clicked-send-code)
-                 route/encode)
+   {:hx-post (-> request send-code-route)
     :hx-swap "outerHTML"
+    :data-loading-path (-> request send-code-route)
     :hx-target "this"}
    (view/text-field {:text-field/id "phone-number"
                      :text-field/label "Phone number"
