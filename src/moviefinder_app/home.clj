@@ -5,14 +5,6 @@
             [moviefinder-app.view :as view]
             [moviefinder-app.view.icon :as icon]))
 
-#_(defn view-youtube-video [props]
-  [:iframe.w-full.h-64 
-   (merge props
-          {:frameBorder "0" 
-           :allow "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-           :allowFullScreen true})])
-
-
 (defn media-details-href [media]
   (route/encode 
    {:route/name :route/media-details
@@ -86,7 +78,7 @@
 
 (defn view-feed! [request]
   [:div#feed-container.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
-   [:div.w-full.flex.items-center
+   #_[:div.w-full.flex.items-center
     [:div.flex-1 (view-filter-chips)]
     [:button.size-16.flex.items-center.justify-center
      (icon/adjustments-horizontal)]]
