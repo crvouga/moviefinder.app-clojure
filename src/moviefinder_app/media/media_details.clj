@@ -91,7 +91,7 @@
        "\t" else "\n"
        "};\n"))
 
-(defn x-effect-iframe-pause-effect [video]
+(defn x-effect-iframe-pause-effect [video] 
   (str (js-const-iframe video)
        (js-if (js-should-pause-iframe video) 
               js-pause-iframe 

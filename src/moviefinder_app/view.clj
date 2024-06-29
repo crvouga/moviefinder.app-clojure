@@ -162,10 +162,10 @@
           :tab/active? (= (active-route :route/name) :route/home)
           :tab/route {:route/name :route/home}
           :tab/icon (icon/home)})
-    (tab {:tab/label "Search"
-          :tab/active? (= (active-route :route/name) :route/search)
-          :tab/route {:route/name :route/search}
-          :tab/icon (icon/search)})
+    #_(tab {:tab/label "Search"
+            :tab/active? (= (active-route :route/name) :route/search)
+            :tab/route {:route/name :route/search}
+            :tab/icon (icon/search)})
     (tab {:tab/label "Account"
           :tab/active? (= (active-route :route/name) :route/account)
           :tab/route {:route/name :route/account}

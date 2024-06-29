@@ -173,8 +173,8 @@
 ;; 
 
 (def discover-url (str base-url "/discover/movie"))
-(def discover-query-params {:include_adult false
-                            :include_video true
+(def discover-query-params {:include_adult "false"
+                            :include_video "true"
                             :language "en-US"
                             :page 1
                             :sort_by "popularity.desc"})
@@ -194,7 +194,7 @@
   (if-let [cached (get @cache! (discover-cache-key 1))]
     cached
     (let [source (get-discover-from-source!)]
-      (swap! cache! assoc (discover-cache-key 1) source)
+      #_(swap! cache! assoc (discover-cache-key 1) source)
       source)))
 
 (defn get-discover-with-videos! []

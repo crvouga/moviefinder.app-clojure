@@ -18,29 +18,41 @@
    {:route/name :route/media-details
     :media/id (-> media :media/id)}))
 
-(defn view-feed-slide [input]
+(defn view-feed-slide-content-base  [& children]
   [:div.w-full.flex.flex-col.justify-center.items-center.relative.h-full
    [:div.w-full.flex.flex-col.justify-center.items-center.relative.flex-1
-    {:hx-boost true}
-    [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200.min-h-full.min-w-full
-     {:src (-> input ::media :media/poster-url)}]
-    [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
-     {:hx-get (-> input ::media media-details-href)
-      :hx-boost true
-      :href (-> input ::media media-details-href)
-      :hx-swap "innerHTML"
-      :hx-target "#app"
-      :hx-push-url (-> input ::media media-details-href)}]]
-   #_(media-feedback/view-media-feedback-form)])
+    children]])
+
+(defn view-feed-slide-content-loading [_input]
+  (view-feed-slide-content-base
+   [:div.w-full.h-full.flex.flex-col.justify-center.items-center
+    (view/spinner)]))
+
+(defn view-feed-slide-content [input]
+  (view-feed-slide-content-base
+   [:img.w-full.h-full.absolute.inset-0.-z-10.object-cover.bg-netural-200.min-h-full.min-w-full
+    {:src (-> input ::media :media/poster-url)}]
+   [:a.w-full.flex-1.flex-col.justify-center.items-center.flex
+    {:hx-get (-> input ::media media-details-href)
+     :hx-boost true
+     :href (-> input ::media media-details-href)
+     :hx-swap "innerHTML"
+     :hx-target "#app"
+     :hx-push-url (-> input ::media media-details-href)}]))
 
 (defn slide-id [slide-index]
   (str "slide-" slide-index))
+
+(defn view-feed-slide [props & children]
+  [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
+   props
+   children])
 
 (defn view-feed-slides! [request]
   (let [media-db (-> request :media-db/media-db)
         media (media-db/find! media-db {})]
     (for [[slide-index media] (map-indexed vector (->> media :paginated/results))]
-      [:swiper-slide.w-full.h-full.overflow-hidden.max-h-full
+      (view-feed-slide
        {:id (slide-id slide-index)}
        [:div.w-full.h-full.flex-1
         {:hx-trigger (str "slide-changed from:#" (slide-id slide-index))
@@ -48,7 +60,7 @@
          :hx-swap "none"
          :hx-get (-> {:route-name :route-changed-slide :feed/slide-index slide-index} route/encode)
          :hx-push-url (-> request :request/route (assoc :feed/slide-index slide-index) route/encode)}
-        (view-feed-slide (assoc request ::media media))]])))
+        (view-feed-slide-content (assoc request ::media media))]))))
 
 (defmethod handle/hx-get :route/changed-slide [request]
   (-> request
@@ -65,17 +77,24 @@
                :chip/variant :chip/contained})])
 
 
+(defn view-feed-slide-container [request & children]
+  [:swiper-container#swiper-container.w-full.flex-1.max-h-full.overflow-hidden
+   {:slides-per-view 1
+    :direction :vertical
+    :initial-slide (-> request :request/route :feed/slide-index)}
+   children])
+
 (defn view-feed! [request]
   [:div#feed-container.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
    [:div.w-full.flex.items-center
     [:div.flex-1 (view-filter-chips)]
     [:button.size-16.flex.items-center.justify-center
      (icon/adjustments-horizontal)]]
-   [:swiper-container#swiper-container.w-full.flex-1.max-h-full.overflow-hidden
-    {:slides-per-view 1
-     :direction :vertical
-     :initial-slide (-> request :request/route :feed/slide-index)}
-    (view-feed-slides! request)]])
+   (view-feed-slide-container
+    request
+    (view-feed-slides! request)
+    (view-feed-slide
+     (view-feed-slide-content-loading request)))])
 
 (defn view-home [input]
   (view/app-tabs-layout {:route/name :route/home}  (view-feed! input)))
