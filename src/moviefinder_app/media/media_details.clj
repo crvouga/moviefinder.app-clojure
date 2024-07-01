@@ -154,13 +154,16 @@
     (view-video-section media)
 
     view-gutter]
-   (media-feedback/view-media-feedback-form)])
+   
+   [:div.absolute.inset-0.flex.flex-col.items-center.justify-center.w-full.p-4.pointer-events-none
+    [:div.flex-1.pointer-events-none]
+    (media-feedback/view-media-feedback-form)]])
 
 (defn view-details! [request]
   (let [media-id (-> request :request/route :media/id)
         media-db (-> request :media-db/media-db)
         media (media-db/get! media-db media-id)]
-    (view-details media)))
+    (view/app-tabs-layout :route/home (view-details media))))
 
 (defmethod moviefinder-app.handle/hx-get :route/media-details [request]
   (-> request

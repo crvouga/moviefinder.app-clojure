@@ -24,8 +24,18 @@
     [:script {:src "https://unpkg.com/htmx-ext-preload@2.0.0/preload.js"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"}]
     [:script {:src "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" :defer true}]
-    [:style (css ["[data-loading]" {:display :none}])]]
-
+    [:style
+     (css
+      ["[data-loading]" {:display :none}]
+      ["::-webkit-scrollbar" {:width "0px" :background "#000"}]
+      ["::-webkit-scrollbar-track" {:background "#000"}]
+      ["::-webkit-scrollbar-thumb" {:background "#000"}]
+      ["::-webkit-scrollbar-thumb:hover" {:background "#555"}]
+      ["*"
+       {:scrollbar-color "#212121 #000"
+        :scrollbar-width "none"
+        :scrollbar-gutter "stable both-edges"
+        :touch-action "manipulation"}])]]
    [:body
     [:div
      {:class "bg-neutral-950 text-white fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-[100dvh] flex flex-col items-center justify-center"
@@ -70,7 +80,8 @@
    (merge {:class (str "relative text-center bg-blue-600 text-white font-bold px-5 py-3 text-lg rounded flex items-center justify-center gap-2 "
                        "enabled:hover:opacity-90 enabled:active:opacity-50 "
                        "disabled:opacity-80 disabled:cursor-not-allowed"
-                       "aria-busy:opacity-80 aria-busy:cursor-progress ")
+                       "aria-busy:opacity-80 aria-busy:cursor-progress "
+                       (when (-> props :button/w-full?) "w-full flex-1 "))
            :type (-> props :button/type (or "button"))
            :data-loading-aria-busy "true"
            :id (-> props :button/indicator-id)
@@ -115,11 +126,11 @@
     (-> input :tab/label)])
 
 (defn tabs [& children]
-  [:nav.flex.w-full.shrink-0.border-t.border-neutral-700 {} children])
+  [:nav.flex.w-full.shrink-0.border-t.border-neutral-700.divide-x.divide-neutral-700 {} children])
 
 
 (defn tab-panel [children]
-  [:div.w-full.flex-1.overflow-hidden.overflow-y-scroll children])
+  [:div.w-full.flex-1.overflow-hidden.flex.flex-col children])
 
 (defn action-button-container [& children]
   [:div.flex.flex-row.w-full.items-center.justify-center.divide-x.divide-neutral-700.border-t.border-neutral-700

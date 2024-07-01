@@ -97,14 +97,40 @@
 
 (def feedbacks-cycle (atom (cycle feedbacks)))
 
+(defn view-toggle-button [input]
+  [:button.flex-1.p-2.flex.flex-col.items-center.justify-center.gap-1.text-xs
+   {}
+   (-> input :toggle-button/icon)
+   (-> input :toggle-button/label)])
+
+(defn view-toggle-buttons []
+  [:div.w-full.flex.border.border-neutral-700.divide-x.divide-neutral-700.rounded-lg.overflow-hidden.bg-neutral-950
+   #_[:div.flex-1
+    (view/button {:button/label "Seen"
+                  :button/w-full? true
+                  :button/start (icon/eye icon-props)})] 
+   #_[:div.flex-1
+    (view/button {:button/label "Not seen"
+                  :button/w-full? true
+                  :button/start (icon/eye-slash icon-props)})]
+   
+   (view-toggle-button {:toggle-button/icon (icon/eye icon-props)
+                        :toggle-button/label "Seen"})
+   (view-toggle-button {:toggle-button/icon (icon/eye-slash icon-props)
+                        :toggle-button/label "Not seen"})])
+
 (defn view-media-feedback-form []
   (let [feedback {:feedback/type (first @feedbacks-cycle)}
-        seen? (-> feedback :feedback/type (contains? :feedback-type/seen))
-        not-seen? (-> feedback :feedback/type (contains? :feedback-type/not-seen))]
+        ;; seen? (-> feedback :feedback/type (contains? :feedback-type/seen))
+        ;; not-seen? (-> feedback :feedback/type (contains? :feedback-type/not-seen))
+        ]
     (swap! feedbacks-cycle rest)
-    [:div.w-full.flex.items-center.justify-center.p-2.gap-4.border-t.border-neutral-700
-     (view-seen-toggle-buttons feedback)
-     (when seen?
-       (view-like-toggle-buttons feedback)) 
-     (when not-seen?
-       (view-interested-toggle-buttons feedback))]))
+    (view-toggle-buttons)
+    
+    #_[:div.w-full.flex.items-center.justify-center.gap-4.border-t.border-neutral-700
+     (view-toggle-buttons)
+     #_(view-seen-toggle-buttons feedback)
+     #_(when seen?
+         (view-like-toggle-buttons feedback))
+     #_(when not-seen?
+         (view-interested-toggle-buttons feedback))]))
