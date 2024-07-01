@@ -101,7 +101,9 @@
 
 (defn view-toggle-button [input]
   [:button
-   (merge input {:class (str "flex-1 p-4 flex flex-row items-center justify-center gap-1 text-lg")})
+   (-> input
+       (dissoc :toggle-button/icon :toggle-button/label)
+       (merge {:class (str "flex-1 p-4 flex flex-row items-center justify-center gap-1 text-lg")}))
    (-> input :toggle-button/icon)
    (-> input :toggle-button/label)])
 
@@ -118,7 +120,7 @@
   (inputted-feedback-route media {:feedback/type :feedback-type/not-seen}))
 
 (defn view-toggle-buttons [media]
-  [:div.w-full.flex.border.border-neutral-700.divide-x.divide-neutral-700.rounded-lg.overflow-hidden.bg-neutral-900.pointer-events-auto.shadow-2xl
+  [:div.w-full.flex.border.border-neutral-700.divide-x.divide-neutral-700.rounded-lg.overflow-hidden.bg-neutral-800.pointer-events-auto.drop-shadow-2xl
    (view-toggle-button {:toggle-button/icon (icon/eye icon-props)
                         :toggle-button/label "Seen"
                         :data-loading-path (inputted-seen-route media)
