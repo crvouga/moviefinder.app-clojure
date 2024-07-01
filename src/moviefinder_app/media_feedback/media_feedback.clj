@@ -1,7 +1,9 @@
 (ns moviefinder-app.media-feedback.media-feedback
   (:require [moviefinder-app.view :as view]
             [moviefinder-app.view.icon :as icon]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [moviefinder-app.route :as route]
+            [moviefinder-app.handle :as handle]))
 
 (def not-empty? (comp not empty?))
 
@@ -98,39 +100,39 @@
 (def feedbacks-cycle (atom (cycle feedbacks)))
 
 (defn view-toggle-button [input]
-  [:button.flex-1.p-2.flex.flex-col.items-center.justify-center.gap-1.text-xs
-   {}
+  [:button
+   (merge input {:class (str "flex-1 p-4 flex flex-row items-center justify-center gap-1 text-lg")})
    (-> input :toggle-button/icon)
    (-> input :toggle-button/label)])
 
-(defn view-toggle-buttons []
-  [:div.w-full.flex.border.border-neutral-700.divide-x.divide-neutral-700.rounded-lg.overflow-hidden.bg-neutral-950
-   #_[:div.flex-1
-    (view/button {:button/label "Seen"
-                  :button/w-full? true
-                  :button/start (icon/eye icon-props)})] 
-   #_[:div.flex-1
-    (view/button {:button/label "Not seen"
-                  :button/w-full? true
-                  :button/start (icon/eye-slash icon-props)})]
-   
-   (view-toggle-button {:toggle-button/icon (icon/eye icon-props)
-                        :toggle-button/label "Seen"})
-   (view-toggle-button {:toggle-button/icon (icon/eye-slash icon-props)
-                        :toggle-button/label "Not seen"})])
+(defn inputted-feedback-route [media feedback]
+  (-> 
+   (merge {:route/name :route/inputted-feedback} feedback media) 
+   (select-keys [:route/name :feedback/type :media/id])
+   route/encode))
 
-(defn view-media-feedback-form []
-  (let [feedback {:feedback/type (first @feedbacks-cycle)}
-        ;; seen? (-> feedback :feedback/type (contains? :feedback-type/seen))
-        ;; not-seen? (-> feedback :feedback/type (contains? :feedback-type/not-seen))
-        ]
-    (swap! feedbacks-cycle rest)
-    (view-toggle-buttons)
-    
-    #_[:div.w-full.flex.items-center.justify-center.gap-4.border-t.border-neutral-700
-     (view-toggle-buttons)
-     #_(view-seen-toggle-buttons feedback)
-     #_(when seen?
-         (view-like-toggle-buttons feedback))
-     #_(when not-seen?
-         (view-interested-toggle-buttons feedback))]))
+(defn inputted-seen-route [media]
+  (inputted-feedback-route media {:feedback/type :feedback-type/seen}))
+
+(defn inputted-not-seen-route [media]
+  (inputted-feedback-route media {:feedback/type :feedback-type/not-seen}))
+
+(defn view-toggle-buttons [media]
+  [:div.w-full.flex.border.border-neutral-700.divide-x.divide-neutral-700.rounded-lg.overflow-hidden.bg-neutral-900.pointer-events-auto.shadow-2xl
+   (view-toggle-button {:toggle-button/icon (icon/eye icon-props)
+                        :toggle-button/label "Seen"
+                        :data-loading-path (inputted-seen-route media)
+                        :hx-target "none"
+                        :hx-post (inputted-seen-route media)})
+   (view-toggle-button {:toggle-button/icon (icon/eye-slash icon-props)
+                        :toggle-button/label "Not seen"
+                        :data-loading-path (inputted-not-seen-route media)
+                        :hx-target "none"
+                        :hx-post (inputted-not-seen-route media)})])
+
+(defn view-media-feedback-form [media]
+  (view-toggle-buttons media))
+
+(defmethod handle/hx-post :route/inputted-feedback [request]
+  (-> request
+      (handle/html view-media-feedback-form)))
