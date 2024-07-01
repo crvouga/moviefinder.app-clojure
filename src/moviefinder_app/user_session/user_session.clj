@@ -12,6 +12,8 @@
 (defn random! []
   {:session/id (session/random-session-id!)
    :user/id (user/random-user-id!)
+   :user-session/session-id (session/random-session-id!)
+   :user-session/user-id (user/random-user-id!)
    :user-session/id (random-user-session-id!)
    :user-session/created-at-posix (System/currentTimeMillis)})
 

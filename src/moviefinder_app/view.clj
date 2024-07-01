@@ -2,8 +2,9 @@
   (:require [moviefinder-app.route :as route]
             [moviefinder-app.view.icon :as icon]
             [hiccup2.core :as hiccup]
-            [garden.core :refer [css]]))
+            [garden.core :as garden]))
 
+(def css garden/css)
 
 (defn view-raw-script [raw-javascript]
   [:script

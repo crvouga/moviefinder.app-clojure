@@ -79,6 +79,7 @@
    :request/hx? (boolean (get-in ring-request [:headers "hx-request"]))
    :request/method (-> ring-request :request-method name keyword)
    :session/id (ring-request :session/id)
+   :request/session-id (ring-request :session/id)
    :request/form-data (-> ring-request :form-params str-keys->keywords)})
 
 

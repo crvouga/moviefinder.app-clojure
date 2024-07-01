@@ -5,3 +5,5 @@
 (defprotocol MediaFeedbackDb
   (put! [this feedbacks])
   (find! [this query]))
+
+(defmulti ->MediaFeedbackDb :media-feedback-db/impl)

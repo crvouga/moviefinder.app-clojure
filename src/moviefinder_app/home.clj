@@ -3,7 +3,8 @@
             [moviefinder-app.media.media-db :as media-db]
             [moviefinder-app.route :as route]
             [moviefinder-app.view :as view]
-            [moviefinder-app.view.icon :as icon]))
+            [moviefinder-app.view.icon :as icon]
+            [moviefinder-app.media-feedback.media-feedback :as media-feedback]))
 
 (defn media-details-href [media]
   (route/encode 
@@ -30,7 +31,8 @@
      :href (-> input ::media media-details-href)
      :hx-swap "innerHTML"
      :hx-target "#app"
-     :hx-push-url (-> input ::media media-details-href)}]))
+     :hx-push-url (-> input ::media media-details-href)}]
+   (media-feedback/view-media-feedback-form (-> input ::media))))
 
 (defn slide-id [slide-index]
   (str "slide-" slide-index))
@@ -76,12 +78,15 @@
     :initial-slide (-> request :request/route :feed/slide-index)}
    children])
 
+(defn view-top-bar []
+  [:div.w-full.flex.items-center
+   [:div.flex-1 (view-filter-chips)]
+   [:button.size-16.flex.items-center.justify-center
+    (icon/adjustments-horizontal)]])
+
 (defn view-feed! [request]
   [:div#feed-container.w-full.max-h-full.overflow-hidden.h-full.flex.flex-col
-   #_[:div.w-full.flex.items-center
-    [:div.flex-1 (view-filter-chips)]
-    [:button.size-16.flex.items-center.justify-center
-     (icon/adjustments-horizontal)]]
+   #_view-top-bar
    (view-feed-slide-container
     request
     (view-feed-slides! request)

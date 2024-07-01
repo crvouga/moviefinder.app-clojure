@@ -155,9 +155,7 @@
 
     view-gutter]
    
-   [:div.absolute.inset-0.flex.flex-col.items-center.justify-center.w-full.p-4.pointer-events-none
-    [:div.flex-1.pointer-events-none]
-    (media-feedback/view-media-feedback-form media)]])
+   (media-feedback/view-media-feedback-form media)])
 
 (defn view-details! [request]
   (let [media-id (-> request :request/route :media/id)
