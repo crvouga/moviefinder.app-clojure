@@ -3,6 +3,7 @@
             [moviefinder-app.media-feedback.media-feedback-type :as media-feedback-type]
             [moviefinder-app.route :as route]))
 
+
 (defn route-clicked-feedback [media media-feedback]
   (-> 
    (merge {:route/name :route/clicked-feedback} media-feedback (select-keys media [:media/id :media/type])) 
@@ -75,5 +76,4 @@
   (-> request
       (merge (-> request :request/route))
       put-feedback!
-      (media/conj-media-feedback)
       (handle/html view-media-feedback-form-buttons)))
