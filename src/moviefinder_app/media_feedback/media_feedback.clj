@@ -1,7 +1,9 @@
 (ns moviefinder-app.media-feedback.media-feedback
   (:require [moviefinder-app.handle :as handle]
             [moviefinder-app.media-feedback.media-feedback-type :as media-feedback-type]
-            [moviefinder-app.route :as route]))
+            [moviefinder-app.route :as route]
+            [clojure.set :as set]
+            [moviefinder-app.media-feedback.media-feedback-db :as media-feedback-db]))
 
 
 (defn route-clicked-feedback [media media-feedback]
@@ -35,11 +37,12 @@
     :icon-button/icon (media-feedback-type/icon media-feedback)
     :hx-post (route-clicked-feedback media media-feedback) 
     :hx-swap "outerHTML"
+    :hx-push-url "false"
     :hx-target "#media-feedback-form-buttons"}))
 
 (def media-feedback-keys [:media-feedback/type
                           :media-feedback/user-id 
-                          :media-feedback/media-id 
+                          :media-feedback/media-id
                           :media-feedback/media-type])
 
 (defn ->media-feedback [input]
@@ -64,7 +67,10 @@
    (view-media-feedback-form-buttons media)])
 
 
-(defn put-feedback! [input]
+(defn put-media-feedback! [input]
+  (let [media-feedback  (-> input ::media-feedback)
+        media-feedback-db (-> input :media-feedback-db/media-feedback-db)]
+    (media-feedback-db/put! media-feedback-db media-feedback))
   input)
 
 
@@ -72,8 +78,18 @@
   (-> input
       (assoc (->media-feedback (get input :media-feedback/type)))))
 
+(defn request->media-feddback [request]
+  (-> request
+      (merge (:request/route request))
+      (set/rename-keys {:media/id :media-feedback/media-id
+                        :user/id :media-feedback/user-id})
+      (select-keys media-feedback-keys)))
+
+(defn assoc-media-feedback [request]
+  (assoc request ::media-feedback (request->media-feddback request)))
+
 (defmethod handle/hx-post :route/clicked-feedback [request]
   (-> request
-      (merge (-> request :request/route))
-      put-feedback!
+      assoc-media-feedback
+      put-media-feedback!
       (handle/html view-media-feedback-form-buttons)))

@@ -6,7 +6,8 @@
             [moviefinder-app.login.login-with-sms.verify-sms.verify-sms-impl :as verify-sms-impl]
             [moviefinder-app.user-session.user-session-db-impl :as user-session-db-impl]
             [moviefinder-app.user.user-db-impl :as user-db-impl]
-            [moviefinder-app.media.media-db-impl :as media-db-impl]))
+            [moviefinder-app.media.media-db-impl :as media-db-impl]
+            [moviefinder-app.media-feedback.media-feedback-db-impl :as media-feedback-db-impl]))
 
 (defn deps-test-unit []
   {:media-db/media-db (media-db-impl/default)
@@ -14,7 +15,8 @@
    :user-session-db/user-session-db (user-session-db-impl/in-memory)
    :login-link-db/login-link-db (login-link-db-impl/in-memory)
    :verify-sms/verify-sms (verify-sms-impl/mock)
-   :send-email/send-email (send-email-impl/mock)})
+   :send-email/send-email (send-email-impl/mock)
+   :media-feedback-db/media-feedback-db (media-feedback-db-impl/in-memory)})
 
 (defn deps-test-int []
   (merge

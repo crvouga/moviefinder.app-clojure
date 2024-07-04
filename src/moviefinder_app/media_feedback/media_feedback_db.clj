@@ -2,6 +2,7 @@
 
 
 
+
 (defprotocol MediaFeedbackDb
   (put! [this feedbacks])
   (find! [this query]))
