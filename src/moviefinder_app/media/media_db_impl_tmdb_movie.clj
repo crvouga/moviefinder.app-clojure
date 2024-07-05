@@ -2,6 +2,7 @@
   (:require [clj-http.client :as client]
             [clojure.set :refer [rename-keys]]
             [moviefinder-app.env :as env]
+            [moviefinder-app.paginated :as paginated]
             [moviefinder-app.media.media-db :as media-db]))
 
 ;; 
@@ -127,9 +128,9 @@
                 :page :paginated/page
                 :results :paginated/results}))
 
-(defn map-paginated-results [paginated-result map-result]
-  (let [results-new (map map-result (:paginated/results paginated-result))]
-    (assoc paginated-result :paginated/results results-new)))
+(defn map-paginated-results [paginated map-result]
+  (let [results-new (map map-result (:paginated/results paginated))]
+    (assoc paginated :paginated/results results-new)))
 
 ;; 
 ;; 
@@ -163,6 +164,9 @@
   (let [videos (get-movie-videos! (movie :media/tmdb-id))]
     (assoc movie :media/videos videos)))
 
+(defn assoc-media-type [movie]
+  (assoc movie :media/media-type :media-type/movie))
+
 
 ;; 
 ;; 
@@ -186,21 +190,22 @@
   [:discover page])
 
 (defn get-discover-from-source! []
-  (let [response (client/get discover-url discover-params)
-        results (-> response :body tmdb->paginated-results (map-paginated-results tmdb->movie!))]
-    results))
+  (-> (client/get discover-url discover-params)
+      :body
+      tmdb->paginated-results
+      (paginated/map-results tmdb->movie!)))
 
 (defn get-discover! []
   (if-let [cached (get @cache! (discover-cache-key 1))]
     cached
     (let [source (get-discover-from-source!)]
-      #_(swap! cache! assoc (discover-cache-key 1) source)
+      (swap! cache! assoc (discover-cache-key 1) source)
       source)))
 
 (defn get-discover-with-videos! []
-  (let [paginated-movies (get-discover!)
-        paginated-movies-with-videos (map-paginated-results paginated-movies assoc-movie-videos!)]
-    paginated-movies-with-videos))
+  (-> (get-discover!)
+      (paginated/map-results assoc-movie-videos!)
+      (paginated/map-results assoc-media-type)))
 
 
 

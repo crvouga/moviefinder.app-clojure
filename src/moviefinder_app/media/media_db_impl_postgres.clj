@@ -1,5 +1,6 @@
 (ns moviefinder-app.media.media-db-impl-postgres
-  (:require [moviefinder-app.media.media-db :as media-db]))
+  (:require [moviefinder-app.media.media-db :as media-db]
+            [moviefinder-app.paginated :as paginated]))
 
 
 (defrecord MediaDbPostgres []
@@ -8,10 +9,7 @@
     nil)
 
   (find! [_this _query]
-    {:paginated/page 1
-     :paginated/total-pages 1
-     :paginated/total-results 0
-     :paginated/results []})
+    (paginated/init))
 
   (put-many! [_this _media-list]
     nil))

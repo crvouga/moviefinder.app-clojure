@@ -1,5 +1,6 @@
 (ns moviefinder-app.media.media-db-impl-combine 
-  (:require [moviefinder-app.media.media-db :as media-db]))
+  (:require [moviefinder-app.media.media-db :as media-db]
+            [moviefinder-app.paginated :as paginated]))
 
 (defrecord MediaDbCombine [media-db media-dbs]
   moviefinder-app.media.media-db/MediaDb
@@ -9,12 +10,10 @@
                  (map #(media-db/get! % media-id))
                  (some identity))))
   (find! [_this query]
-    (let [results (mapcat #(media-db/find! % query) media-dbs)]
-      {:paginated/page 1
-       :paginated/total-pages 1
-       :paginated/total-results (count results)
-       :paginated/results results}))
-  
+    (->> media-dbs
+         (pmap #(media-db/find! % query))
+         (apply paginated/combine)))
+
   (put-many! [_this media-list]
     (doseq [media-db media-dbs]
       (media-db/put-many! media-db media-list))))
