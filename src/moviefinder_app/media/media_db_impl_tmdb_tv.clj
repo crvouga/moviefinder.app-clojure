@@ -30,12 +30,7 @@
 (defn tmdb->tv! [tmdb-tv]
   (tmdb-tv->media (tmdb/get-confguration!) tmdb-tv))
 
-(defn tmdb->paginated-results [tmdb-paginated-results]
-  (rename-keys tmdb-paginated-results
-               {:total_results :paginated/total-results
-                :total_pages :paginated/total-pages
-                :page :paginated/page
-                :results :paginated/results}))
+
 
 ;; 
 ;; 
@@ -105,7 +100,7 @@
   (->> (discover-request)
        http-client/request
        :body
-       tmdb->paginated-results
+       tmdb/tmdb->paginated-results
        (paginated/map-results tmdb->tv!)))
 
 (defn get-discover! []
@@ -118,12 +113,15 @@
 (defn assoc-media-type [tv]
   (assoc tv :media/media-type :media-type/tv))
 
-(defn get-discover-with-videos! []
-  (-> (get-discover!) 
-      #_(paginated/map-results  assoc-tv-videos!)
-      (paginated/map-results  assoc-media-type)))
-
-
+(defn- find! [_query]
+  (->> (get-discover!)
+       (paginated/pmap-results assoc-tv-videos!)
+       (paginated/map-results assoc-media-type)))
+(comment
+  (reset! tmdb/cache! {})
+  (find! {})
+  
+  )
 
 ;; 
 ;; 
@@ -178,8 +176,8 @@
   (get! [_this tv-id]
     (get-tv-details! tv-id))
 
-  (find! [_this _query]
-    (get-discover-with-videos!))
+  (find! [_this query]
+    (find! query))
 
   (put-many! [_this _media-list]
     nil))

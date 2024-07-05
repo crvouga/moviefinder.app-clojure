@@ -48,29 +48,18 @@
 (defn movie-video-url [movie-id]
   (str tmdb/base-url "/movie/" movie-id "/videos"))
 
-(defn movie-videos-cache-key [movie-id]
-  [:movie-videos movie-id])
-
-
 (defn movie-video-request [movie-id]
   (-> tmdb/base-params
       (assoc :url (movie-video-url movie-id)
              :method :get)))
 
-(defn get-movie-videos-from-source! [movie-id]
+(defn get-movie-videos! [movie-id]
   (->> movie-id
        movie-video-request
-       http-client/request
+       http-client/request-with-cache
        :body
        :results
        (map tmdb/tmdb->video)))
-
-(defn get-movie-videos! [movie-id]
-  (if-let [cached (get @tmdb/cache! (movie-videos-cache-key movie-id))]
-    cached
-    (let [source (get-movie-videos-from-source! movie-id)]
-      (swap! tmdb/cache! assoc (movie-videos-cache-key movie-id) source)
-      source)))
 
 (defn assoc-movie-videos! [movie]
   (let [videos (get-movie-videos! (movie :media/tmdb-id))]
@@ -98,33 +87,24 @@
                       :query-params discover-query-params
                       :as :json-strict})
 
-(defn discover-cache-key [page]
-  [:discover page])
-
 (def discover-request
   (-> discover-params
       (assoc :url discover-url
              :method :get)))
 
-(defn get-discover-from-source! []
-  (->> (http-client/request discover-request)
+(defn get-discover! []
+  (->> discover-request
+       http-client/request-with-cache
        :body
        tmdb->paginated-results
        (paginated/map-results tmdb->movie!)))
 
-(defn get-discover! []
-  (if-let [cached (get @tmdb/cache! (discover-cache-key 1))]
-    cached
-    (let [source (get-discover-from-source!)]
-      (swap! tmdb/cache! assoc (discover-cache-key 1) source)
-      source)))
-
 (defn get-discover-with-videos! []
   (->> (get-discover!)
-       (paginated/map-results assoc-movie-videos!)
+       (paginated/pmap-results assoc-movie-videos!)
        (paginated/map-results assoc-media-type)))
 
-
+(get-discover-with-videos!)
 
 ;; 
 ;; 

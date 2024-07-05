@@ -3,7 +3,8 @@
             [moviefinder-app.paginated :as paginated]
             [moviefinder-app.media.media-db-impl-tmdb-movie :as media-db-impl-tmdb-movie]
             [moviefinder-app.media.media-db-impl-tmdb-tv :as media-db-impl-tmdb-tv]
-            [moviefinder-app.media.media-db-impl-in-memory :as media-db-impl-in-memory]))
+            [moviefinder-app.media.media-db-impl-in-memory :as media-db-impl-in-memory]
+            [moviefinder-app.media.tmdb :as tmdb]))
 
 (defrecord MediaDbCombine [media-db media-dbs]
   moviefinder-app.media.media-db/MediaDb
@@ -16,7 +17,7 @@
     (->> media-dbs
          (pmap #(media-db/find! % query))
          (apply paginated/combine)
-         (paginated/map-results #(sort-by :media/popularity > %))))
+         #_this(paginated/map-results #(sort-by :media/popularity > %))))
 
   (put-many! [_this media-list]
     (doseq [media-db media-dbs]
@@ -39,23 +40,25 @@
   #(select-keys % [:media/title :media/media-type]))
 
 (comment
+  (reset! tmdb/cache! {})
+  
   (->> (media-db/find! media-db-tv {})
-       :paginated/results
-       (map media-select-keys)
-       (take 10))
+       #_:paginated/results
+       #_(map media-select-keys)
+       #_(take 10))
 
 
   (->> (media-db/find! media-db-movie {})
-       :paginated/results
+       #_:paginated/results
        #_(map media-select-keys)
-       (take 10))
+       #_(take 10))
 
   (->> (media-db/find! media-db-combined {})
-       :paginated/results
+       #_:paginated/results
        #_(map media-select-keys)
-       (map #(dissoc % :media/videos))
-       (map keys)
-       (take 100))
+       #_(map #(dissoc % :media/videos))
+       #_(map keys)
+       #_(take 100))
 
 
   (->> (media-db/find! media-db-movie {})

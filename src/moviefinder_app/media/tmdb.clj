@@ -95,3 +95,11 @@
   (-> tmdb-video
       assoc-youtube-video-url
       tmdb-video->video))
+
+
+(defn tmdb->paginated-results [tmdb-paginated-results]
+  (rename-keys tmdb-paginated-results
+               {:total_results :paginated/total-results
+                :total_pages :paginated/total-pages
+                :page :paginated/page
+                :results :paginated/results}))
