@@ -1,9 +1,9 @@
 (ns moviefinder-app.paginated)
 
 
-(defn map-results [paginated map-result]
-  (let [results-new (map map-result (:paginated/results paginated))]
-    (assoc paginated :paginated/results results-new)))
+(defn map-results [map-result paginated]
+  (-> paginated
+      (update :paginated/results #(map map-result %))))
 
 (defn- interleave-append [seq1 seq2]
   (let [interleaved (interleave seq1 seq2)

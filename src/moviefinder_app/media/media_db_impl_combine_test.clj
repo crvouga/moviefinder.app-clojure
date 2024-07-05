@@ -15,21 +15,24 @@
                         media-db-in-memory
                         [media-db-movie media-db-tv]))
 
+(def media-select-keys
+  #(select-keys % [:media/title :media/media-type]))
+
 (comment
   (->> (media-db/find! media-db-tv {})
        :paginated/results
-       (map #(select-keys % [:media/title :media/media-type]))
+       (map media-select-keys)
        (take 10))
 
 
   (->> (media-db/find! media-db-movie {})
        :paginated/results
-       (map #(select-keys % [:media/title :media/media-type]))
+       (map media-select-keys)
        (take 10))
 
   (->> (media-db/find! media-db-combined {})
        :paginated/results
-       (map #(select-keys % [:media/media-type :media/title]))
+       (map media-select-keys)
        #_(map #(dissoc % :media/videos))
        (map vals)
        (take 100))
