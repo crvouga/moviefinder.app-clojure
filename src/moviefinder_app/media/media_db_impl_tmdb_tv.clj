@@ -88,34 +88,24 @@
                       :query-params discover-query-params
                       :as :json-strict})
 
-(defn discover-cache-key [page]
-  [:discover page])
-
 (defn discover-request []
   (-> discover-params
       (assoc :url discover-url
              :method :get)))
 
-(defn get-discover-from-source! []
+(defn get-discover! []
   (->> (discover-request)
-       http-client/request
+       http-client/request-with-cache
        :body
        tmdb/tmdb->paginated-results
        (paginated/map-results tmdb->tv!)))
-
-(defn get-discover! []
-  (if-let [cached (get @tmdb/cache! (discover-cache-key 1))]
-    cached
-    (let [source (get-discover-from-source!)]
-      (swap! tmdb/cache! assoc (discover-cache-key 1) source)
-      source)))
 
 (defn assoc-media-type [tv]
   (assoc tv :media/media-type :media-type/tv))
 
 (defn- find! [_query]
   (->> (get-discover!)
-       (paginated/pmap-results assoc-tv-videos!)
+       #_(paginated/pmap-results assoc-tv-videos!)
        (paginated/map-results assoc-media-type)))
 (comment
   (reset! tmdb/cache! {})

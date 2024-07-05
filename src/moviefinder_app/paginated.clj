@@ -11,7 +11,9 @@
   [^clojure.lang.IFn map-result
    ^clojure.lang.IPersistentMap paginated]
   (-> paginated
-      (update :paginated/results #(map map-result %))))
+      (update :paginated/results #(pmap map-result %))))
+
+
 
 (defn- interleave-append [seq1 seq2]
   (let [interleaved (interleave seq1 seq2)

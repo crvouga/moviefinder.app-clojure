@@ -17,7 +17,7 @@
     (->> media-dbs
          (pmap #(media-db/find! % query))
          (apply paginated/combine)
-         #_this(paginated/map-results #(sort-by :media/popularity > %))))
+         #_(update :paginated/results #(sort-by :media/popularity %))))
 
   (put-many! [_this media-list]
     (doseq [media-db media-dbs]
@@ -41,7 +41,7 @@
 
 (comment
   (reset! tmdb/cache! {})
-  
+
   (->> (media-db/find! media-db-tv {})
        #_:paginated/results
        #_(map media-select-keys)
