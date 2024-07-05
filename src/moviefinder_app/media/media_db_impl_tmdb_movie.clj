@@ -27,7 +27,7 @@
       (assoc :media/id (:id tmdb-movie))))
 
 (defn tmdb->movie! [tmdb-movie]
-  (tmdb->movie (tmdb/get-confguration!) tmdb-movie))
+  (tmdb->movie (tmdb/get-configuration!) tmdb-movie))
 
 (defn tmdb->paginated-results [tmdb-paginated-results]
   (rename-keys tmdb-paginated-results
@@ -121,29 +121,18 @@
 (def movie-details-params
   (merge-with merge tmdb/base-params {:query-params {:language "en-US"}}))
 
-(defn movie-details-cache-key [movie-id]
-  [:movie-details movie-id])
-
-
 (defn get-movie-details-params [movie-id]
   (-> movie-details-params
       (assoc :url (movie-details-url movie-id)
              :method :get)))
 
-(defn get-movie-details-from-source! [movie-id]
+(defn get-movie-details! [movie-id]
   (-> movie-id
       get-movie-details-params
-      http-client/request
+      http-client/request-with-cache
       :body
       tmdb->movie!
       assoc-movie-videos!))
-
-(defn get-movie-details! [movie-id]
-  (if-let [cached (get @tmdb/cache! (movie-details-cache-key movie-id))]
-    cached
-    (let [source (get-movie-details-from-source! movie-id)]
-      (swap! tmdb/cache! assoc (movie-details-cache-key movie-id) source)
-      source)))
 
 ;; 
 ;; 

@@ -1,16 +1,7 @@
 (ns moviefinder-app.media.tmdb
-  (:require [clj-http.client :as client]
-            [clojure.set :refer [rename-keys]]
-            [moviefinder-app.env :as env]))
-
-;; 
-;; 
-;; 
-;; 
-;; 
-;; 
-
-(def cache! (atom {}))
+  (:require [clojure.set :refer [rename-keys]]
+            [moviefinder-app.env :as env]
+            [moviefinder-app.http-client :as http-client]))
 
 ;; 
 ;; 
@@ -40,19 +31,14 @@
 (def configuration-params {:headers base-headers
                            :as :json-strict})
 
-(def cofiguration-cache-key :configuration)
+(def configuration-request 
+  (assoc configuration-params
+         :url configuration-url
+         :method :get))
 
-(defn get-configuration-source! []
-  (-> (client/get configuration-url configuration-params) :body))
-
-(defn get-confguration! []
-  (if-let [cached (get @cache! cofiguration-cache-key)]
-    cached
-    (let [source  (get-configuration-source!)]
-      (swap! cache! assoc cofiguration-cache-key source)
-      source)))
-;; 
-;; 
+(defn get-configuration! []
+  (-> (http-client/request-with-cache configuration-request)
+      :body))
 ;; 
 ;; 
 ;; 

@@ -1,9 +1,9 @@
 (ns moviefinder-app.login.login-with-sms.verify-sms.verify-sms-impl-twilio
-  (:require [clj-http.client :as http]
-            [moviefinder-app.base64 :as base64]
+  (:require [moviefinder-app.base64 :as base64]
             [moviefinder-app.env :as env]
             [moviefinder-app.login.login-with-sms.verify-sms.verify-sms :as verify-sms]
-            [moviefinder-app.error :as error]))
+            [moviefinder-app.error :as error]
+            [moviefinder-app.http-client :as http-client]))
 
 (def twilio-service-sid (env/get! "TWILIO_SERVICE_SID"))
 (def twilio-auth-token (env/get! "TWILIO_AUTH_TOKEN"))
@@ -16,18 +16,22 @@
 (def verification-checks-url (str base-url "/VerificationCheck"))
 
 (defn post-send-code! [phone-number]
-  (http/post verifications-url
-             {:form-params {:To phone-number :Channel "sms"}
-              :headers {"Authorization" authorization
-                        "Content-Type" "application/x-www-form-urlencoded"}}))
+  (http-client/request
+   {:url verifications-url
+    :method :post
+    :form-params {:To phone-number :Channel "sms"}
+    :headers {"Authorization" authorization
+              "Content-Type" "application/x-www-form-urlencoded"}}))
 
 
 
 (defn post-verify-code! [phone-number code]
-  (http/post verification-checks-url
-             {:form-params {:To phone-number :Code code}
-              :headers {"Authorization" authorization
-                        "Content-Type" "application/x-www-form-urlencoded"}}))
+  (http-client/request
+   {:url verification-checks-url
+    :method :post
+    :form-params {:To phone-number :Code code}
+    :headers {"Authorization" authorization
+              "Content-Type" "application/x-www-form-urlencoded"}}))
 
 (defrecord VerifySMSTwilio []
   verify-sms/VerifySms

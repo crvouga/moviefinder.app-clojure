@@ -28,7 +28,7 @@
       (assoc :media/id (:id tmdb-tv))))
 
 (defn tmdb->tv! [tmdb-tv]
-  (tmdb-tv->media (tmdb/get-confguration!) tmdb-tv))
+  (tmdb-tv->media (tmdb/get-configuration!) tmdb-tv))
 
 
 
@@ -43,27 +43,17 @@
 (defn tv-video-url [tv-id]
   (str tmdb/base-url "/tv/" tv-id "/videos"))
 
-(defn tv-videos-cache-key [tv-id]
-  [:tv-videos tv-id])
-
 (defn tv-videos-request [tv-id]
   (-> tmdb/base-params
       (assoc :url (tv-video-url tv-id)
              :method :get)))
 
-(defn get-tv-videos-from-source! [tv-id]
+(defn get-tv-videos! [tv-id]
   (-> tv-id
       tv-videos-request
       http-client/request
       :body
       :results))
-
-(defn get-tv-videos! [tv-id]
-  (if-let [cached (get @tmdb/cache! (tv-videos-cache-key tv-id))]
-    cached
-    (let [source (get-tv-videos-from-source! tv-id)]
-      (swap! tmdb/cache! assoc (tv-videos-cache-key tv-id) source)
-      source)))
 
 (defn assoc-tv-videos! [tv]
   (let [videos (get-tv-videos! (tv :media/tmdb-id))]
@@ -128,30 +118,19 @@
 (def tv-details-params
   (merge-with merge tmdb/base-params {:query-params {:language "en-US"}}))
 
-(defn tv-details-cache-key [tv-id]
-  [:tv-details tv-id])
-
-
 (defn tv-details-request [tv-id]
   (-> tv-id
       tv-details-params
       (assoc :url (tv-details-url tv-id)
              :method :get)))
 
-(defn get-tv-details-from-source! [tv-id]
+(defn get-tv-details! [tv-id]
   (-> tv-id
       tv-details-request
-      http-client/request
+      http-client/request-with-cache
       :body
       tmdb->tv!
       assoc-tv-videos!))
-
-(defn get-tv-details! [tv-id]
-  (if-let [cached (get @tmdb/cache! (tv-details-cache-key tv-id))]
-    cached
-    (let [source (get-tv-details-from-source! tv-id)]
-      (swap! tmdb/cache! assoc (tv-details-cache-key tv-id) source)
-      source)))
 
 ;; 
 ;; 
