@@ -1,7 +1,9 @@
 (ns moviefinder-app.paginated)
 
 
-(defn map-results [map-result paginated]
+(defn map-results
+  [^clojure.lang.IFn map-result
+   ^clojure.lang.IPersistentMap paginated]
   (-> paginated
       (update :paginated/results #(map map-result %))))
 
@@ -15,9 +17,6 @@
        (map :paginated/results)
        (reduce interleave-append [])
        shuffle))
-
-(->> [[1 2 3] [4 5] []] 
-     (reduce interleave-append []))
 
 (defn- combined-total-results [paginateds]
   (->> paginateds
@@ -47,3 +46,8 @@
    :paginated/total-pages 0
    :paginated/total-results 0
    :paginated/results []})
+
+
+(def paginated-a (merge (init) {:paginated/results [1 2 3 4 5]}))
+(def paginated-b (merge (init) {:paginated/results [1 2 3 4 5]}))
+(combine paginated-a paginated-b)

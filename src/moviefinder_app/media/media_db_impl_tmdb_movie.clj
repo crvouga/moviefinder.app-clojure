@@ -197,5 +197,5 @@
              [:q/<= :media/release-year 2020]
              [:q/= :media/genre :genre/horror]]})
 (comment
-  @tmdb/cache!
+  (reset! tmdb/cache! {})
   (-> (media-db/find! media-db q) :paginated/results (nth 5)))

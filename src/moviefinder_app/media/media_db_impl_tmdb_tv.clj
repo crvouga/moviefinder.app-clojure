@@ -102,11 +102,11 @@
              :method :get)))
 
 (defn get-discover-from-source! []
-  (-> (discover-request)
-      http-client/request
-      :body
-      tmdb->paginated-results
-      (paginated/map-results tmdb->tv!)))
+  (->> (discover-request)
+       http-client/request
+       :body
+       tmdb->paginated-results
+       (paginated/map-results tmdb->tv!)))
 
 (defn get-discover! []
   (if-let [cached (get @tmdb/cache! (discover-cache-key 1))]
@@ -195,7 +195,7 @@
    :q/where [[:q/>= :media/release-year 2010]
              [:q/<= :media/release-year 2020]
              [:q/= :media/genre :genre/horror]]})
-(comment
+(comment 
   (-> (media-db/find! media-db q) :paginated/results (rand-nth))
   
   )

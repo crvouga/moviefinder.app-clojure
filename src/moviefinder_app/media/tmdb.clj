@@ -61,7 +61,6 @@
 ;; 
 
 (defn assoc-image-urls [tmdb-data tmdb-configration]
-  (println "assoc-image-urls" tmdb-data tmdb-configration)
   (let [base-url (-> tmdb-configration :images :secure_base_url)
         poster-size (-> tmdb-configration :images :poster_sizes (or []) last (or ""))
         backdrop-size  (-> tmdb-configration :images :backdrop_sizes (or []) last (or ""))]
