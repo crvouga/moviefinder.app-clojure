@@ -47,7 +47,7 @@
 
   (->> (media-db/find! media-db-movie {})
        :paginated/results
-       (map media-select-keys)
+       #_(map media-select-keys)
        (take 10))
 
   (->> (media-db/find! media-db-combined {})
