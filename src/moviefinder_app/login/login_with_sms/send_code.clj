@@ -58,7 +58,7 @@
 
 (defmethod error/err->msg :err/send-sms-errored [_err]
   (str "An error occurred while sending the code"))
-  
+
 
 (defn send-code-route [request]
   (-> request

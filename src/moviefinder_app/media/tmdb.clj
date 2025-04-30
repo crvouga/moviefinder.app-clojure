@@ -31,7 +31,7 @@
 (def configuration-params {:headers base-headers
                            :as :json-strict})
 
-(def configuration-request 
+(def configuration-request
   (assoc configuration-params
          :url configuration-url
          :method :get))
@@ -46,10 +46,10 @@
 ;; 
 ;; 
 
-(defn assoc-image-urls [tmdb-data tmdb-configration]
-  (let [base-url (-> tmdb-configration :images :secure_base_url)
-        poster-size (-> tmdb-configration :images :poster_sizes (or []) last (or ""))
-        backdrop-size  (-> tmdb-configration :images :backdrop_sizes (or []) last (or ""))]
+(defn assoc-image-urls [tmdb-data tmdb-configuration]
+  (let [base-url (-> tmdb-configuration :images :secure_base_url)
+        poster-size (-> tmdb-configuration :images :poster_sizes (or []) last (or ""))
+        backdrop-size  (-> tmdb-configuration :images :backdrop_sizes (or []) last (or ""))]
     (-> tmdb-data
         (assoc :poster_url (str base-url poster-size (tmdb-data :poster_path)))
         (assoc :backdrop_url (str base-url backdrop-size (tmdb-data :backdrop_path))))))
